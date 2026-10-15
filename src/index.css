@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --color-canvas: #050505;
+  --color-surface: #121212;
+  --color-surfaceHover: #1c1c1c;
+  --color-muted: #888888;
+  --color-brand: #ff4d00;
+  --color-brandMuted: rgba(255, 77, 0, 0.15);
+  --color-textMain: #ffffff;
+  --color-textMuted: #a0a0a0;
+  --color-borderRoot: #222222;
+
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', Menlo, monospace;
+}
+
+@utility bg-base {
+  background-color: #050505;
+}
+
+@layer base {
+  html {
+    overflow-y: scroll;
+    overflow-x: clip;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    overscroll-behavior-y: none;
+  }
+  
+  body {
+    background-color: #050505;
+    color: var(--color-textMain);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100dvh;
+    overflow-x: clip;
+  }
+  
+  ::selection {
+    background-color: var(--color-brand);
+    color: #ffffff;
+  }
+
+  /* Mobile Native Touch & Input Ergonomics */
+  button, a, [role="button"] {
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* Prevent iOS Safari aggressive auto-zoom on input focus */
+  @media (pointer: coarse) {
+    input, textarea, select {
+      font-size: 16px !important;
+    }
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+::-webkit-scrollbar-thumb {
+  background: #222222;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #444444;
+}
