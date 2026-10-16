@@ -44,7 +44,7 @@ const Privacy = () => {
           </div>
           <div className="md:text-right max-w-sm pt-2 sm:pt-0 border-t border-white/5 md:border-none">
             <p className="text-xs sm:text-[15px] font-light leading-relaxed text-white/60">
-              How IRCTC API collects, uses, and protects information when you use our website and APIs. Last updated {new Date('2 June 2026').toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}.
+              How IRCTC API collects, uses, and protects information when you use our website and APIs. Last updated {new Date('16 October 2026').toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}.
             </p>
           </div>
         </div>

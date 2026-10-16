@@ -57,7 +57,7 @@ const Terms = () => {
           </div>
           <div className="md:text-right max-w-sm pt-2 sm:pt-0 border-t border-white/5 md:border-none">
             <p className="text-xs sm:text-[15px] font-light leading-relaxed text-white/60">
-              The agreement that governs your use of IRCTC API. Last updated {new Date('3 August 2026').toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}.
+              The agreement that governs your use of IRCTC API. Last updated {new Date('16 October 2026').toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}.
             </p>
           </div>
         </div>
