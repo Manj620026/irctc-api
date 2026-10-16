@@ -36,3 +36,7 @@ audit.md
 PROJECT_STATUS.md
 *.rdb
 *.dump
+
+# Knowledge Graph
+graphify-out/
+
