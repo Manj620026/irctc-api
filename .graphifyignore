@@ -1,0 +1,6 @@
+# Graphify ignore patterns for IRCTC_API
+archive/
+dist/
+node_modules/
+graphify-out/
+package-lock.json
