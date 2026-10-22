@@ -5,6 +5,7 @@
 
 [![Live Portal](https://img.shields.io/badge/Portal-irctc.dev-orange.svg?style=for-the-badge)](https://irctc.dev)
 [![API Gateway](https://img.shields.io/badge/API-api.irctc.dev-blue.svg?style=for-the-badge)](https://api.irctc.dev)
+[![API Version](https://img.shields.io/badge/API%20Version-v1.0.1-emerald.svg?style=for-the-badge)](https://api.irctc.dev/health)
 [![npm version](https://img.shields.io/npm/v/irctc-api.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/irctc-api)
 [![npm downloads](https://img.shields.io/npm/dm/irctc-api.svg?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/irctc-api)
 [![npm total downloads](https://img.shields.io/npm/dt/irctc-api.svg?style=for-the-badge&logo=npm&color=blue)](https://www.npmjs.com/package/irctc-api)
@@ -25,11 +26,11 @@ Designed for developers building train tracking applications, travel booking int
 | Resource | URL | Description |
 |---|---|---|
 | **🌍 Web Portal** | [https://irctc.dev](https://irctc.dev) | High-performance developer platform & landing page |
-| **⚡ API Gateway** | [https://api.irctc.dev](https://api.irctc.dev) | Production REST API base URL |
+| **⚡ API Gateway** | [https://api.irctc.dev](https://api.irctc.dev) | Production REST API base URL (v1.0.1) |
 | **🧪 API Playground** | [https://irctc.dev/playground](https://irctc.dev/playground) | In-browser interactive API sandbox with real-time latency benchmarks |
 | **📑 Documentation** | [https://irctc.dev/docs](https://irctc.dev/docs) | Complete endpoint schemas, parameters & multi-language code snippets |
 | **🔑 Developer Console** | [https://irctc.dev/dashboard](https://irctc.dev/dashboard) | Google OAuth, API key management, quota tracking & telemetry logs |
-| **📦 Official Client SDK** | [`irctc-api` on npm](https://www.npmjs.com/package/irctc-api) | Zero-dependency Node.js & TypeScript client library (v4.0.1) |
+| **📦 Official Client SDK** | [`irctc-api` on npm](https://www.npmjs.com/package/irctc-api) | Zero-dependency Node.js & TypeScript client library (v4.0.2) |
 | **📫 Developer Support** | [support@irctc.dev](mailto:support@irctc.dev) | Integration assistance, technical inquiries & enterprise support |
 
 ---
@@ -75,7 +76,7 @@ The web application is built as a blazing-fast, edge-deployed single-page applic
 ## ✨ Key Frontend Features & Capabilities
 
 ### 1. 🧪 In-Browser Interactive API Playground
-- **Zero-Setup Testing**: Execute live authenticated queries against railway endpoints directly from the browser.
+- **Zero-Setup Testing**: Execute live authenticated queries against all railway endpoints (train search, schedule, fare breakup, cancelled trains, live GPS status, NTES station board, and PNR verification) directly from the browser.
 - **Latency Benchmarking**: Automatically captures network round-trip time (`performance.now()`) alongside server execution times (`_time`).
 - **Race Condition Prevention**: Employs `AbortController` to cancel in-flight queries when switching endpoints, preventing stale responses from overwriting active state.
 - **Screen-Share Safety**: Masked password inputs (`type="password"`) with an explicit `+ Use My Key` populator and visual reveal toggle.
@@ -88,9 +89,9 @@ The web application is built as a blazing-fast, edge-deployed single-page applic
 - **Telemetry Logs Viewer & CSV Export**: Searchable table of past requests with RFC 4180 formula injection defense.
 
 ### 3. 📑 Comprehensive API Documentation (`/docs`)
-- **Complete Endpoint Specifications**: Method, path, query parameters, request bodies, and expected response payloads.
+- **Complete Endpoint Specifications**: Method, path, query parameters, request bodies, and expected response payloads for all railway intelligence endpoints.
 - **Multi-Language Snippets**: Interactive code tabs for TypeScript (`fetch`), Python (`requests`), and cURL.
-- **RFC 8259 Syntax Highlighter**: Custom regex tokenizer rendering syntax-colored JSON with strict HTML entity escaping (`escapeHtml`).
+- **Pure React Token Renderer**: Eliminates raw HTML injection sinks with a safe syntax token renderer.
 
 ### 4. 📱 Mobile Touch Ergonomics & Micro-Interactions
 - **iOS Safari Auto-Zoom Prevention**: Input fields lock to `16px` on coarse pointer devices to eliminate unwanted zoom on focus.
@@ -103,7 +104,7 @@ The web application is built as a blazing-fast, edge-deployed single-page applic
 
 ---
 
-## 📂 Repository Directory Tree (31 Core Files)
+## 📂 Repository Directory Tree (Core Files)
 
 This repository contains the complete source code for the **Developer Portal, Interactive Playground & Documentation Client**:
 
@@ -127,8 +128,7 @@ irctc-api/
 ├── public/
 │   ├── _headers                         # Production Cloudflare Pages headers (CSP Level 3, HSTS Preload, COOP)
 │   ├── _redirects                       # SPA routing fallback directive (/* /index.html 200)
-│   ├── favicon.svg                      # Scalable vector brand identity graphic
-│   └── icons.svg                        # SVG sprite sheet containing platform iconography
+│   └── favicon.svg                      # Scalable architectural brand identity graphic
 │
 └── src/
     ├── App.tsx                          # Router layout, dynamic navigation island, and hash anchor preservation
@@ -136,18 +136,13 @@ irctc-api/
     ├── index.css                        # Global CSS declaring Inter & JetBrains Mono fonts and touch rules
     ├── main.tsx                         # Client bootstrap inside GoogleOAuthProvider & React StrictMode
     │
-    ├── assets/
-    │   ├── hero.png                     # Marketing visual asset showing analytics terminal
-    │   ├── react.svg                    # React vector logo
-    │   └── vite.svg                     # Vite vector logo
-    │
     ├── context/
     │   └── AuthContext.tsx              # Symmetric cross-tab session sync, 401 handling, and user hydration
     │
     └── pages/
         ├── ApiPlayground.tsx            # Interactive API tester, AbortController cancellation & key masking
         ├── Dashboard.tsx                # Key management, RFC 4180 CSV export & Razorpay top-up flow
-        ├── Docs.tsx                     # API reference, RFC 8259 syntax tokenizer & multi-language tabs
+        ├── Docs.tsx                     # API reference, syntax tokenizer & multi-language tabs
         ├── LandingPage.tsx              # Conversion hero, animated request firehose & benchmark stats
         ├── Privacy.tsx                  # DPDP/GDPR compliant privacy policy with mobile bottom sheet index
         └── Terms.tsx                    # Commercial API usage agreement with mobile drawer navigation
@@ -236,7 +231,7 @@ async function runRailwayQueries() {
 
     // 9. Gateway Health & Status
     const health = await client.health();
-    console.log(`Status: ${health.status} | Uptime: ${health.uptimeSeconds}s`);
+    console.log(`Status: ${health.status} | Version: ${health.version}`);
 
   } catch (error) {
     if (error instanceof RateLimitError) {
@@ -318,6 +313,28 @@ print("Live:", live_resp.json())
 # 3. Real-Time PNR Status
 pnr_resp = requests.get(f"{BASE_URL}/api/v1/pnr/2434567890", headers=headers, timeout=10)
 print("PNR:", pnr_resp.json())
+
+# 4. Official Train Fare Breakup
+fare_resp = requests.get(
+    f"{BASE_URL}/api/v1/trains/12558/fare",
+    params={"from": "ANVT", "to": "MFP", "class": "all", "quota": "GN"},
+    headers=headers,
+    timeout=10
+)
+print("Fare Breakup:", fare_resp.json())
+
+# 5. Daily Cancelled Trains
+cancelled_resp = requests.get(f"{BASE_URL}/api/v1/trains/cancelled", headers=headers, timeout=10)
+print("Cancelled Trains:", cancelled_resp.json())
+
+# 6. Live Station Board (Arrivals/Departures)
+station_board_resp = requests.get(
+    f"{BASE_URL}/api/v1/live/station/NDLS",
+    params={"hours": 2},
+    headers=headers,
+    timeout=10
+)
+print("Live Station Board:", station_board_resp.json())
 ```
 
 ---
@@ -338,7 +355,19 @@ curl -s -X GET "https://api.irctc.dev/api/v1/trains/search?from=NDLS&to=PNBE&dat
 curl -s -X GET "https://api.irctc.dev/api/v1/trains/stations?q=patna" \
   -H "x-api-key: YOUR_API_KEY"
 
-# 4. Gateway Health Check (No Key Required)
+# 4. Calculate Train Fare Breakup
+curl -s -X GET "https://api.irctc.dev/api/v1/trains/12558/fare?from=ANVT&to=MFP&class=all&quota=GN" \
+  -H "x-api-key: YOUR_API_KEY"
+
+# 5. Get Daily Cancelled Trains
+curl -s -X GET "https://api.irctc.dev/api/v1/trains/cancelled" \
+  -H "x-api-key: YOUR_API_KEY"
+
+# 6. Live Station Board (NTES Arrivals & Departures)
+curl -s -X GET "https://api.irctc.dev/api/v1/live/station/NDLS?hours=2" \
+  -H "x-api-key: YOUR_API_KEY"
+
+# 7. Gateway Health Check (No Key Required)
 curl -s -X GET "https://api.irctc.dev/health"
 ```
 
@@ -352,14 +381,17 @@ Base URL: `https://api.irctc.dev`
 
 | Category | Endpoint | Method | Key Parameters | Description |
 |---|---|:---:|---|---|
-| **System** | `/health` | `GET` | None | Verify cluster uptime, service status & platform health |
+| **System** | `/health` | `GET` | None | Check API gateway liveness, service status & platform version (v1.0.1) |
 | **Trains** | `/api/v1/trains/search` | `GET` | `from`, `to`, `date` (YYYY-MM-DD) | Sub-millisecond direct route search between stations |
 | **Trains** | `/api/v1/trains/search/name` | `GET` | `name` (min 2 chars) | Search trains by partial or full name string |
 | **Trains** | `/api/v1/trains/:trainNo` | `GET` | `:trainNo` (5-digit) | Full timetable, route halts, distance & lat/lng coordinates |
+| **Trains** | `/api/v1/trains/:trainNo/fare` | `GET` | `:trainNo`, `from`, `to`, `class` (default `all`), `quota` (default `GN`) | Real-time official IRCTC ticket fare breakup (Base, Superfast, GST, Catering) |
+| **Trains** | `/api/v1/trains/cancelled` | `GET` | None | Daily fully & partially cancelled trains across Indian Railways (0ms cache) |
 | **Stations** | `/api/v1/trains/stations` | `GET` | `q` (min 2 chars) | High-speed prefix-tree station autocomplete |
 | **Stations** | `/api/v1/trains/stations/:code` | `GET` | `:code` (e.g. `NDLS`) | Station metadata, full name, railway zone & state |
 | **Stations** | `/api/v1/trains/stations/:code/timetable/:date` | `GET` | `:code`, `:date` (optional) | Scheduled daily arrivals and departures for a station |
 | **Live Tracking** | `/api/v1/live/:trainNo` | `GET` | `:trainNo`, `date` (optional) | Real-time GPS running position, current halt & delay status |
+| **Live Tracking** | `/api/v1/live/station/:stationCode` | `GET` | `:stationCode`, `hours` (2, 4, 8), `toStation` | Real-time NTES station arrivals & departures board with platforms and delay minutes |
 | **PNR Status** | `/api/v1/pnr/:pnr` | `GET` | `:pnr` (10-digit) | Live PNR passenger manifest, berth/coach & charting status |
 
 ### B. Developer Console & Account Management Endpoints
@@ -379,11 +411,13 @@ Base URL: `https://api.irctc.dev`
 
 The platform is engineered developer-first with a generous welcome tier, an ultra-affordable on-demand top-up model, and tailored enterprise solutions:
 
-| Plan Tier | Price | API Credits / Quota | Rate Limit | Primary Intended Use |
-|:---:|:---:|:---:|:---:|---|
-| **Free Welcome** 🎁 | **₹0** (Free Forever) | **10,000 credits** on signup | **600 req / 10 min** | Instant testing, prototyping, student & hobby projects |
-| **Pro Top-Up** ⚡ | **₹99** / pack | **100,000 credits** | **2,000 req / 10 min** | Commercial tools, Telegram/WhatsApp bots, mobile apps |
-| **Custom Enterprise** 🏢 | **Custom Pricing** | Tailored / Unlimited | **Dedicated Pool** | High-volume OTAs, commercial travel portals & booking apps |
+| Plan Tier | Price | API Credits / Quota | General API Rate Limit | Live Tracking & PNR Limit | Primary Intended Use |
+|:---:|:---:|:---:|:---:|:---:|---|
+| **Free Welcome** 🎁 | **₹0** (Free Forever) | **10,000 credits** on signup | **600 req / 10 min** | **10 req / min** | Instant testing, prototyping, student & hobby projects |
+| **Pro Top-Up** ⚡ | **₹99** / pack | **100,000 credits** | **2,000 req / 10 min** | **30 req / min** | Commercial tools, WhatsApp/Telegram integrations, mobile apps |
+| **Custom Enterprise** 🏢 | **Custom Pricing** | Tailored / Unlimited | **Dedicated Pool** | **Custom RPS** | High-volume OTAs, commercial travel portals & booking apps |
+
+> ⏱️ **Live Tracking & PNR Telemetry:** Live train GPS tracking (`/api/v1/live/*`) and real-time PNR verification (`/api/v1/pnr/*`) endpoints feature dedicated rate limits (**10 req/min on Free**, **30 req/min on Pro**) to guarantee ultra-low latency and zero concurrency bottlenecks during high-traffic booking hours.
 
 ### ⚡ Super-Affordable Pro Top-Up (Only ₹99)
 Developers can instantly top up their account balance at any time directly from the [Developer Console](https://irctc.dev/dashboard):
@@ -393,7 +427,7 @@ Developers can instantly top up their account balance at any time directly from 
 
 ### 🏢 Custom Enterprise Solutions
 Building an OTA, high-traffic commercial booking engine, or enterprise travel management software?
-- **Dedicated Concurrency**: Dedicated proxy routing pools ensuring zero congestion during peak Tatkal booking hours.
+- **Dedicated Infrastructure**: Dedicated gateway compute pools ensuring zero congestion during peak Tatkal booking hours.
 - **Custom Rate Limits**: Tailored requests-per-second (RPS) limits built specifically to match your throughput requirements.
 - **Guaranteed 99.99% SLA**: Dedicated priority support channel, uptime guarantees, and direct integration engineering assistance.
 - **Get in Touch**: Email us directly at **[support@irctc.dev](mailto:support@irctc.dev)** with your expected query volume for custom enterprise onboarding.
@@ -408,7 +442,8 @@ All responses return a standardized JSON envelope with microsecond-accurate serv
 {
   "success": false,
   "error": "Invalid 10-digit PNR format",
-  "code": "INVALID_PNR",
+  "message": "Invalid 10-digit PNR format",
+  "code": "BAD_REQUEST",
   "_time": 0.32
 }
 ```
@@ -416,12 +451,13 @@ All responses return a standardized JSON envelope with microsecond-accurate serv
 | HTTP Status | Error Code | Meaning & Recommended Remediation |
 |:---:|---|---|
 | `200 OK` | `SUCCESS` | Request succeeded. Response body contains requested payload in `data`. |
-| `400 Bad Request` | `VALIDATION_ERROR` | Missing or invalid parameter (e.g. invalid train number or PNR format). |
-| `401 Unauthorized` | `AUTH_REQUIRED` | Missing, invalid, or expired API key or Bearer token. |
-| `403 Forbidden` | `QUOTA_EXHAUSTED` | Account monthly credits have been depleted. Top up via Developer Console. |
-| `404 Not Found` | `NOT_FOUND` | Specified train, station code, or PNR does not exist in railway database. |
-| `429 Too Many Requests` | `RATE_LIMITED` | Concurrency rate limit exceeded. Implement exponential backoff retry. |
-| `503 Service Unavailable` | `MAINTENANCE` | Upstream railway system maintenance (daily maintenance window 23:45–00:30 IST). |
+| `400 Bad Request` | `BAD_REQUEST` | Missing or invalid parameter (e.g. invalid train number or PNR format). |
+| `401 Unauthorized` | `UNAUTHORIZED` | Missing, invalid, or expired API key (`MISSING_API_KEY`, `INVALID_API_KEY`, `API_KEY_EXPIRED`). |
+| `402 Payment Required` | `INSUFFICIENT_CREDITS` | Account credit balance exhausted. Top up credits via Developer Console. |
+| `403 Forbidden` | `FORBIDDEN` | Access denied or account suspended (`ACCOUNT_SUSPENDED`). |
+| `404 Not Found` | `NOT_FOUND` | Specified train, station code, or route does not exist in railway database. |
+| `429 Too Many Requests` | `RATE_LIMIT_EXCEEDED` | Concurrency rate limit exceeded. Implement exponential backoff retry. |
+| `503 Service Unavailable` | `SERVICE_UNAVAILABLE` | Upstream railway system maintenance or service temporarily unavailable. |
 
 ---
 
@@ -518,6 +554,7 @@ All responses return a standardized JSON envelope with microsecond-accurate serv
         "status": "CNF",
         "coach": "B1",
         "seat": "42",
+        "berth": "LOWER",
         "isConfirmed": true
       },
       {
@@ -525,6 +562,7 @@ All responses return a standardized JSON envelope with microsecond-accurate serv
         "status": "CNF",
         "coach": "B1",
         "seat": "45",
+        "berth": "UPPER",
         "isConfirmed": true
       }
     ],
@@ -537,8 +575,146 @@ All responses return a standardized JSON envelope with microsecond-accurate serv
 ```
 </details>
 
+<details open>
+<summary><b>3. Calculate Train Fare Breakup (<code>GET /api/v1/trains/12558/fare?from=ANVT&to=MFP&class=all&quota=GN</code>)</b></summary>
+
+```json
+{
+  "success": true,
+  "trainNumber": "12558",
+  "trainName": "Sapt Kranti Exp",
+  "from": "ANVT",
+  "to": "MFP",
+  "quota": "GN",
+  "category": "Adult",
+  "totalClasses": 5,
+  "fares": [
+    {
+      "class": "1A",
+      "className": "First AC",
+      "totalFare": 3410,
+      "breakup": {
+        "baseFare": 3112,
+        "reservationCharge": 60,
+        "superfastCharge": 75,
+        "gst": 163,
+        "cateringCharge": 0,
+        "dynamicFare": 0
+      }
+    },
+    {
+      "class": "3A",
+      "className": "Third AC",
+      "totalFare": 1445,
+      "breakup": {
+        "baseFare": 1291,
+        "reservationCharge": 40,
+        "superfastCharge": 45,
+        "gst": 69,
+        "cateringCharge": 0,
+        "dynamicFare": 0
+      }
+    },
+    {
+      "class": "SL",
+      "className": "Sleeper",
+      "totalFare": 565,
+      "breakup": {
+        "baseFare": 515,
+        "reservationCharge": 20,
+        "superfastCharge": 30,
+        "gst": 0,
+        "cateringCharge": 0,
+        "dynamicFare": 0
+      }
+    }
+  ],
+  "_cached": true,
+  "_time": 7.0
+}
+```
+</details>
+
+<details open>
+<summary><b>4. Get Cancelled Trains (<code>GET /api/v1/trains/cancelled</code>)</b></summary>
+
+```json
+{
+  "success": true,
+  "date": "20-10-2026",
+  "dateISO": "2026-10-20",
+  "total": 59,
+  "fullyCancelledCount": 19,
+  "partiallyCancelledCount": 40,
+  "trains": [
+    {
+      "trainNumber": "11002",
+      "trainName": "NANDIGRAM EXP",
+      "source": "BALHARSHAH",
+      "destination": "C SHIVAJI MAH T",
+      "trainType": "EXPRESS",
+      "isPartial": true,
+      "cancellationType": "PARTIALLY_CANCELLED",
+      "cancelledFromStation": "DR",
+      "cancelledToStation": "CSMT",
+      "startDate": "20-10-2026",
+      "railwayTimestamp": "2026-10-01T10:34:23.283000"
+    }
+  ],
+  "source": "irctc-api",
+  "_time": 0.0
+}
+```
+</details>
+
+<details open>
+<summary><b>5. Live Station Arrivals & Departures (<code>GET /api/v1/live/station/NDLS?hours=2</code>)</b></summary>
+
+```json
+{
+  "success": true,
+  "stationCode": "NDLS",
+  "stationName": "NEW DELHI",
+  "hours": 2,
+  "toStation": null,
+  "totalTrains": 28,
+  "trains": [
+    {
+      "trainNo": "12004",
+      "trainName": "LKO SHTBDI EXP",
+      "route": "NDLS-LKO",
+      "trainType": "SHATABDI",
+      "platform": {
+        "number": "1",
+        "isProvisional": false
+      },
+      "hasCoachPosition": true,
+      "arrival": {
+        "isSource": true,
+        "scheduled": null,
+        "actualOrEstimated": null,
+        "delay": "Originates Here",
+        "delayMinutes": 0,
+        "status": "SOURCE"
+      },
+      "departure": {
+        "isDestination": false,
+        "scheduled": "06:10",
+        "actualOrEstimated": "06:10",
+        "delay": "On Time",
+        "delayMinutes": 0,
+        "status": "ON_TIME"
+      }
+    }
+  ],
+  "source": "irctc-api",
+  "_time": 210.4
+}
+```
+</details>
+
 <details>
-<summary><b>3. Train Search Between Stations (<code>GET /api/v1/trains/search?from=NDLS&to=PNBE</code>)</b></summary>
+<summary><b>6. Train Search Between Stations (<code>GET /api/v1/trains/search?from=NDLS&to=PNBE</code>)</b></summary>
 
 ```json
 {
@@ -569,7 +745,7 @@ All responses return a standardized JSON envelope with microsecond-accurate serv
 </details>
 
 <details>
-<summary><b>4. Complete Train Route Schedule & Halts (<code>GET /api/v1/trains/12309</code>)</b></summary>
+<summary><b>7. Complete Train Route Schedule & Halts (<code>GET /api/v1/trains/12309</code>)</b></summary>
 
 ```json
 {
@@ -626,7 +802,7 @@ All responses return a standardized JSON envelope with microsecond-accurate serv
 </details>
 
 <details>
-<summary><b>5. Station Autocomplete (<code>GET /api/v1/trains/stations?q=patna</code>)</b></summary>
+<summary><b>8. Station Autocomplete (<code>GET /api/v1/trains/stations?q=patna</code>)</b></summary>
 
 ```json
 {
@@ -645,19 +821,13 @@ All responses return a standardized JSON envelope with microsecond-accurate serv
 </details>
 
 <details>
-<summary><b>6. Gateway Health & Status (<code>GET /health</code>)</b></summary>
+<summary><b>9. Gateway Health & Status (<code>GET /health</code>)</b></summary>
 
 ```json
 {
-  "status": "healthy",
-  "engine": "IRCTC API Gateway",
-  "uptimeSeconds": 21922,
-  "memory": {
-    "rssMb": 185,
-    "heapUsedMb": 89
-  },
-  "source": "irctc-api",
-  "_time": 1.34
+  "status": "up",
+  "version": "1.0.1",
+  "_time": 0.05
 }
 ```
 </details>

@@ -5,7 +5,10 @@ import { Link } from 'react-router-dom';
 
 const FIREHOSE_LOGS = [
   { method: "GET", path: "/api/v1/live/12309", status: 200, time: "0.4ms" },
+  { method: "GET", path: "/api/v1/trains/12558/fare?from=ANVT&to=MFP", status: 200, time: "0.7ms" },
   { method: "GET", path: "/api/v1/trains/search?from=NDLS&to=PNBE", status: 200, time: "1.2ms" },
+  { method: "GET", path: "/api/v1/live/station/NDLS?hours=2", status: 200, time: "1.1ms" },
+  { method: "GET", path: "/api/v1/trains/cancelled", status: 200, time: "0.0ms" },
   { method: "GET", path: "/api/v1/trains/stations?q=patna", status: 200, time: "0.1ms" },
   { method: "GET", path: "/api/v1/pnr/2434567890", status: 200, time: "0.8ms" },
   { method: "GET", path: "/api/v1/trains/12309", status: 200, time: "0.3ms" },
@@ -187,7 +190,7 @@ export default function LandingPage() {
                 rel="noreferrer"
                 className="hover:text-brand transition-colors font-mono text-[11px] text-textMuted/70 hover:underline py-1 px-1 rounded"
               >
-                v4.0.1 on npm ↗
+                v4.0.2 on npm ↗
               </a>
             </div>
           </div>
@@ -238,8 +241,12 @@ export default function LandingPage() {
                   <p className="text-xs sm:text-sm text-textMuted group-hover:text-textMain transition-colors leading-snug">Pinpoint real-time GPS location and delay status of any running train.</p>
                 </div>
                 <div className="group cursor-default">
+                  <div className="text-[10px] sm:text-[11px] font-mono text-emerald-400 mb-1 sm:mb-1.5 bg-emerald-400/10 inline-block px-2 py-0.5 rounded border border-emerald-400/20 break-all sm:break-normal">GET /api/v1/live/station/:stationCode</div>
+                  <p className="text-xs sm:text-sm text-textMuted group-hover:text-textMain transition-colors leading-snug">Real-time NTES station arrivals &amp; departures board with platform numbers and delays.</p>
+                </div>
+                <div className="group cursor-default">
                   <div className="text-[10px] sm:text-[11px] font-mono text-emerald-400 mb-1 sm:mb-1.5 bg-emerald-400/10 inline-block px-2 py-0.5 rounded border border-emerald-400/20 break-all sm:break-normal">GET /api/v1/pnr/:pnr</div>
-                  <p className="text-xs sm:text-sm text-textMuted group-hover:text-textMain transition-colors leading-snug">Fetch passenger manifests, charting status, and current waitlist movements.</p>
+                  <p className="text-xs sm:text-sm text-textMuted group-hover:text-textMain transition-colors leading-snug">Fetch passenger manifests, berth types, charting status, and waitlist movements.</p>
                 </div>
               </div>
             </div>
@@ -248,7 +255,7 @@ export default function LandingPage() {
             <div className="flex flex-col gap-4 sm:gap-5 bg-surface/40 border border-borderRoot p-4 sm:p-6 rounded-2xl shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
               <div className="flex items-center gap-2.5 sm:gap-3 text-textMain font-medium border-b border-borderRoot pb-3 text-sm sm:text-base">
                 <Route className="text-brand" size={18} />
-                Train Routing
+                Train Routing & Fares
               </div>
               <div className="flex flex-col gap-3.5 sm:gap-4">
                 <div className="group cursor-default">
@@ -256,8 +263,12 @@ export default function LandingPage() {
                   <p className="text-xs sm:text-sm text-textMuted group-hover:text-textMain transition-colors leading-snug">Intelligent pathfinding between any two station codes on specific dates.</p>
                 </div>
                 <div className="group cursor-default">
-                  <div className="text-[10px] sm:text-[11px] font-mono text-emerald-400 mb-1 sm:mb-1.5 bg-emerald-400/10 inline-block px-2 py-0.5 rounded border border-emerald-400/20 break-all sm:break-normal">GET /api/v1/trains/:trainNo</div>
-                  <p className="text-xs sm:text-sm text-textMuted group-hover:text-textMain transition-colors leading-snug">Complete A-to-Z running schedule, halt durations, and day offsets.</p>
+                  <div className="text-[10px] sm:text-[11px] font-mono text-emerald-400 mb-1 sm:mb-1.5 bg-emerald-400/10 inline-block px-2 py-0.5 rounded border border-emerald-400/20 break-all sm:break-normal">GET /api/v1/trains/:trainNo/fare</div>
+                  <p className="text-xs sm:text-sm text-textMuted group-hover:text-textMain transition-colors leading-snug">Real-time official IRCTC ticket fare breakup (Base, Superfast, GST, Catering).</p>
+                </div>
+                <div className="group cursor-default">
+                  <div className="text-[10px] sm:text-[11px] font-mono text-emerald-400 mb-1 sm:mb-1.5 bg-emerald-400/10 inline-block px-2 py-0.5 rounded border border-emerald-400/20 break-all sm:break-normal">GET /api/v1/trains/cancelled</div>
+                  <p className="text-xs sm:text-sm text-textMuted group-hover:text-textMain transition-colors leading-snug">Daily fully and partially cancelled trains across Indian Railways with 0ms cache.</p>
                 </div>
               </div>
             </div>
@@ -272,6 +283,10 @@ export default function LandingPage() {
                 <div className="group cursor-default">
                   <div className="text-[10px] sm:text-[11px] font-mono text-emerald-400 mb-1 sm:mb-1.5 bg-emerald-400/10 inline-block px-2 py-0.5 rounded border border-emerald-400/20 break-all sm:break-normal">GET /api/v1/trains/stations</div>
                   <p className="text-xs sm:text-sm text-textMuted group-hover:text-textMain transition-colors leading-snug">High-speed prefix-tree autocomplete for over 8,500+ Indian Railway stations.</p>
+                </div>
+                <div className="group cursor-default">
+                  <div className="text-[10px] sm:text-[11px] font-mono text-emerald-400 mb-1 sm:mb-1.5 bg-emerald-400/10 inline-block px-2 py-0.5 rounded border border-emerald-400/20 break-all sm:break-normal">GET /api/v1/trains/:trainNo</div>
+                  <p className="text-xs sm:text-sm text-textMuted group-hover:text-textMain transition-colors leading-snug">Complete A-to-Z running schedule, halt durations, and day offsets.</p>
                 </div>
                 <div className="group cursor-default">
                   <div className="text-[10px] sm:text-[11px] font-mono text-emerald-400 mb-1 sm:mb-1.5 bg-emerald-400/10 inline-block px-2 py-0.5 rounded border border-emerald-400/20 break-all sm:break-normal">GET /api/v1/trains/stations/:code</div>

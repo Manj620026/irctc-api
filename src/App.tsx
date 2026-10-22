@@ -1,14 +1,16 @@
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Terminal, LayoutDashboard, Zap, BookOpen } from 'lucide-react';
+import { Terminal, LayoutDashboard, Zap, BookOpen, ShieldCheck } from 'lucide-react';
 import LandingPage from './pages/LandingPage';
 import Dashboard from './pages/Dashboard';
 import ApiPlayground from './pages/ApiPlayground';
 import Docs from './pages/Docs';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
-import { AuthProvider } from './context/AuthContext';
+import AdminPortal from './pages/admin/AdminPortal';
+import { AdminRoute } from './components/AdminRoute';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { ErrorBoundary } from './ErrorBoundary';
 import { Toaster } from 'sonner';
 
@@ -31,36 +33,46 @@ function ScrollToTop() {
 
 function Navigation() {
   const location = useLocation();
+  const { user } = useAuth();
   const navItems = [
-    { 
-      path: '/', 
-      icon: <Zap size={14} className="sm:w-[17px] sm:h-[17px] shrink-0" />, 
-      label: 'Engine', 
-      renderMobile: 'Engine' 
+    {
+      path: '/',
+      icon: <Zap size={14} className="sm:w-[17px] sm:h-[17px] shrink-0" />,
+      label: 'Engine',
+      renderMobile: 'Engine'
     },
-    { 
-      path: '/dashboard', 
-      icon: <LayoutDashboard size={14} className="sm:w-[17px] sm:h-[17px] shrink-0" />, 
-      label: 'Dashboard', 
+    {
+      path: '/dashboard',
+      icon: <LayoutDashboard size={14} className="sm:w-[17px] sm:h-[17px] shrink-0" />,
+      label: 'Dashboard',
       renderMobile: (
         <>Dash<span className="hidden min-[420px]:inline">board</span></>
       )
     },
-    { 
-      path: '/playground', 
-      icon: <Terminal size={14} className="sm:w-[17px] sm:h-[17px] shrink-0" />, 
-      label: 'API Playground', 
+    {
+      path: '/playground',
+      icon: <Terminal size={14} className="sm:w-[17px] sm:h-[17px] shrink-0" />,
+      label: 'API Playground',
       renderMobile: (
         <>Play<span className="hidden min-[420px]:inline">ground</span></>
       )
     },
-    { 
-      path: '/docs', 
-      icon: <BookOpen size={14} className="sm:w-[17px] sm:h-[17px] shrink-0" />, 
-      label: 'Docs', 
-      renderMobile: 'Docs' 
+    {
+      path: '/docs',
+      icon: <BookOpen size={14} className="sm:w-[17px] sm:h-[17px] shrink-0" />,
+      label: 'Docs',
+      renderMobile: 'Docs'
     },
   ];
+
+  if (user?.role === 'admin') {
+    navItems.push({
+      path: '/admin',
+      icon: <ShieldCheck size={14} className="sm:w-[17px] sm:h-[17px] shrink-0 text-amber-400" />,
+      label: 'Admin',
+      renderMobile: 'Admin',
+    });
+  }
 
   return (
     <nav className="fixed top-0 inset-x-0 w-full flex justify-center z-50 pt-[max(0.75rem,env(safe-area-inset-top))] px-1 sm:px-4 pb-8 bg-gradient-to-b from-[#050505] via-[#050505]/95 to-transparent pointer-events-none">
@@ -104,6 +116,7 @@ function AnimatedRoutes() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/playground" element={<ApiPlayground />} />
         <Route path="/docs" element={<Docs />} />
+        <Route path="/admin/*" element={<AdminRoute><AdminPortal /></AdminRoute>} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
       </Routes>

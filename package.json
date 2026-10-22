@@ -2,7 +2,7 @@
   "name": "irctc-api",
   "description": "Official Developer Portal, Documentation & Interactive API Playground for IRCTC API",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",

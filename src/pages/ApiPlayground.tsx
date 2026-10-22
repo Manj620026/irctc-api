@@ -10,6 +10,7 @@ type Param = {
   label: string;
   type: 'path' | 'query';
   default: string;
+  options?: string[];
 };
 
 type Endpoint = {
@@ -34,16 +35,42 @@ const ENDPOINTS: Endpoint[] = [
       { key: 'date', label: 'Date', type: 'query', default: new Date().toISOString().split('T')[0] }
     ]
   },
-  { 
+  {
     group: 'Trains', id: 'trainSearchByName', method: 'GET', basePath: '/api/v1/trains/search/name', name: 'Search Trains by Name',
     params: [
       { key: 'name', label: 'Train Name', type: 'query', default: 'shatabdi' }
     ]
   },
-  { 
+  {
+    group: 'Trains', id: 'cancelledTrains', method: 'GET', basePath: '/api/v1/trains/cancelled', name: 'Get Cancelled Trains',
+    params: []
+  },
+  {
     group: 'Trains', id: 'trainSchedule', method: 'GET', basePath: '/api/v1/trains/:trainNo', name: 'Get Train Schedule',
     params: [
       { key: 'trainNo', label: 'Train Number', type: 'path', default: '12309' }
+    ]
+  },
+  {
+    group: 'Trains', id: 'trainFare', method: 'GET', basePath: '/api/v1/trains/:trainNo/fare', name: 'Calculate Train Fare Breakup',
+    params: [
+      { key: 'trainNo', label: 'Train Number', type: 'path', default: '12558' },
+      { key: 'from', label: 'Origin Station', type: 'query', default: 'ANVT' },
+      { key: 'to', label: 'Destination Station', type: 'query', default: 'MFP' },
+      {
+        key: 'class',
+        label: 'Travel Class',
+        type: 'query',
+        default: 'all',
+        options: ['all', '1A', '2A', '3A', '3E', 'CC', 'EC', 'SL', '2S']
+      },
+      {
+        key: 'quota',
+        label: 'Quota',
+        type: 'query',
+        default: 'GN',
+        options: ['GN', 'TQ', 'PT', 'LD']
+      }
     ]
   },
 
@@ -69,14 +96,22 @@ const ENDPOINTS: Endpoint[] = [
   },
 
   // --- LIVE & PNR ---
-  { 
+  {
     group: 'Live Status & PNR', id: 'live', method: 'GET', basePath: '/api/v1/live/:trainNo', name: 'Get Live Train Status',
     params: [
       { key: 'trainNo', label: 'Train Number', type: 'path', default: '12309' },
       { key: 'date', label: 'Date', type: 'query', default: new Date().toISOString().split('T')[0] }
     ]
   },
-  { 
+  {
+    group: 'Live Status & PNR', id: 'liveStation', method: 'GET', basePath: '/api/v1/live/station/:stationCode', name: 'Live Station Board (Arrivals/Departures)',
+    params: [
+      { key: 'stationCode', label: 'Station Code', type: 'path', default: 'NDLS' },
+      { key: 'hours', label: 'Hours Window', type: 'query', default: '2', options: ['2', '4', '8'] },
+      { key: 'toStation', label: 'Destination Filter (Optional)', type: 'query', default: '' }
+    ]
+  },
+  {
     group: 'Live Status & PNR', id: 'pnr', method: 'GET', basePath: '/api/v1/pnr/:pnr', name: 'Get PNR Status',
     params: [
       { key: 'pnr', label: 'PNR Number', type: 'path', default: '2434567890' }
@@ -523,18 +558,32 @@ export default function ApiPlayground() {
                           {param.type === 'path' ? `:${param.key}` : `?${param.key}=`}
                         </span>
                       </label>
-                      <input
-                        type={param.key === 'date' ? 'date' : 'text'}
-                        value={paramValues[param.key] || ''}
-                        onChange={(e) => setParamValues(prev => ({...prev, [param.key]: e.target.value}))}
-                        onKeyDown={(e) => e.key === 'Enter' && handleTest()}
-                        className="w-full bg-[#050505] border border-borderRoot rounded-md px-3 py-2 text-base sm:text-[13px] text-textMain focus:ring-2 focus:ring-brand/20 focus:border-brand/50 focus:outline-none transition-all placeholder:text-textMuted/40 shadow-sm"
-                        placeholder={`Enter ${param.label.toLowerCase()}`}
-                        autoCapitalize={['from', 'to', 'code', 'station', 'trainNo', 'pnr'].includes(param.key) ? 'characters' : 'none'}
-                        autoCorrect="off"
-                        spellCheck="false"
-                        style={{ colorScheme: 'dark' }}
-                      />
+                      {param.options ? (
+                        <select
+                          value={paramValues[param.key] ?? param.default}
+                          onChange={(e) => setParamValues(prev => ({...prev, [param.key]: e.target.value}))}
+                          className="w-full bg-[#050505] border border-borderRoot rounded-md px-3 py-2 text-base sm:text-[13px] text-textMain focus:ring-2 focus:ring-brand/20 focus:border-brand/50 focus:outline-none transition-all shadow-sm cursor-pointer"
+                        >
+                          {param.options.map(opt => (
+                            <option key={opt} value={opt} className="bg-[#111] text-textMain">
+                              {opt === 'all' ? 'all (All Running Classes)' : opt}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          type={param.key === 'date' ? 'date' : 'text'}
+                          value={paramValues[param.key] || ''}
+                          onChange={(e) => setParamValues(prev => ({...prev, [param.key]: e.target.value}))}
+                          onKeyDown={(e) => e.key === 'Enter' && handleTest()}
+                          className="w-full bg-[#050505] border border-borderRoot rounded-md px-3 py-2 text-base sm:text-[13px] text-textMain focus:ring-2 focus:ring-brand/20 focus:border-brand/50 focus:outline-none transition-all placeholder:text-textMuted/40 shadow-sm"
+                          placeholder={`Enter ${param.label.toLowerCase()}`}
+                          autoCapitalize={['from', 'to', 'code', 'station', 'trainNo', 'pnr'].includes(param.key) ? 'characters' : 'none'}
+                          autoCorrect="off"
+                          spellCheck="false"
+                          style={{ colorScheme: 'dark' }}
+                        />
+                      )}
                     </div>
                   ))}
                 </div>

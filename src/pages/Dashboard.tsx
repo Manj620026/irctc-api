@@ -22,7 +22,8 @@ export default function Dashboard() {
   const sanitizeCsvCell = (val: any): string => {
     if (val === null || val === undefined) return '""';
     let str = String(val);
-    if (/^[=+\-@\t\r]/.test(str)) {
+    // Neutralize formula injection including leading spaces, tabs, carriage returns, and pipe/percent operators
+    if (/^\s*[=+\-@|%]/.test(str)) {
       str = "'" + str;
     }
     return `"${str.replace(/"/g, '""')}"`;
