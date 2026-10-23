@@ -24,10 +24,10 @@ type Endpoint = {
 
 const ENDPOINTS: Endpoint[] = [
   // --- CORE SYSTEM & HEALTH ---
-  { group: 'System', id: 'health', method: 'GET', basePath: '/health', name: 'Get Server Health', params: [] },
+  { group: 'System', id: 'health', method: 'GET', basePath: '/health', name: 'Gateway Health', params: [] },
 
   // --- TRAINS ---
-  { 
+  {
     group: 'Trains', id: 'trainSearch', method: 'GET', basePath: '/api/v1/trains/search', name: 'Find Trains (Between Stations)',
     params: [
       { key: 'from', label: 'From Code', type: 'query', default: 'NDLS' },
@@ -36,23 +36,23 @@ const ENDPOINTS: Endpoint[] = [
     ]
   },
   {
-    group: 'Trains', id: 'trainSearchByName', method: 'GET', basePath: '/api/v1/trains/search/name', name: 'Search Trains by Name',
+    group: 'Trains', id: 'trainSearchByName', method: 'GET', basePath: '/api/v1/trains/search/name', name: 'Train by Name',
     params: [
       { key: 'name', label: 'Train Name', type: 'query', default: 'shatabdi' }
     ]
   },
   {
-    group: 'Trains', id: 'cancelledTrains', method: 'GET', basePath: '/api/v1/trains/cancelled', name: 'Get Cancelled Trains',
+    group: 'Trains', id: 'cancelledTrains', method: 'GET', basePath: '/api/v1/trains/cancelled', name: 'Cancelled Trains',
     params: []
   },
   {
-    group: 'Trains', id: 'trainSchedule', method: 'GET', basePath: '/api/v1/trains/:trainNo', name: 'Get Train Schedule',
+    group: 'Trains', id: 'trainSchedule', method: 'GET', basePath: '/api/v1/trains/:trainNo', name: 'Train by Number',
     params: [
       { key: 'trainNo', label: 'Train Number', type: 'path', default: '12309' }
     ]
   },
   {
-    group: 'Trains', id: 'trainFare', method: 'GET', basePath: '/api/v1/trains/:trainNo/fare', name: 'Calculate Train Fare Breakup',
+    group: 'Trains', id: 'trainFare', method: 'GET', basePath: '/api/v1/trains/:trainNo/fare', name: 'Fare Lookup',
     params: [
       { key: 'trainNo', label: 'Train Number', type: 'path', default: '12558' },
       { key: 'from', label: 'Origin Station', type: 'query', default: 'ANVT' },
@@ -73,23 +73,61 @@ const ENDPOINTS: Endpoint[] = [
       }
     ]
   },
+  {
+    group: 'Trains', id: 'seatAvailability', method: 'GET', basePath: '/api/v1/trains/:trainNo/availability', name: 'Seat Availability',
+    params: [
+      { key: 'trainNo', label: 'Train Number', type: 'path', default: '12557' },
+      { key: 'from', label: 'Origin Station', type: 'query', default: 'NKE' },
+      { key: 'to', label: 'Destination Station', type: 'query', default: 'ANVT' },
+      { key: 'date', label: 'Journey Date (DD-MM-YYYY)', type: 'query', default: '17-11-2026' },
+      {
+        key: 'class',
+        label: 'Travel Class',
+        type: 'query',
+        default: '3A',
+        options: ['3A', '2A', '1A', '3E', 'CC', 'EC', 'SL', '2S']
+      },
+      {
+        key: 'quota',
+        label: 'Quota',
+        type: 'query',
+        default: 'GN',
+        options: ['GN', 'TQ', 'PT', 'LD']
+      }
+    ]
+  },
+  {
+    group: 'Trains', id: 'chartVacant', method: 'GET', basePath: '/api/v1/trains/:trainNo/chart-vacant', name: 'Vacant Seats After Chart Preparation',
+    params: [
+      { key: 'trainNo', label: 'Train Number', type: 'path', default: '12557' },
+      { key: 'boardingStation', label: 'Boarding Station', type: 'query', default: 'NKE' },
+      { key: 'date', label: 'Journey Date (YYYY-MM-DD)', type: 'query', default: new Date().toISOString().split('T')[0] },
+      {
+        key: 'class',
+        label: 'Travel Class',
+        type: 'query',
+        default: 'ALL',
+        options: ['ALL', '3A', '2A', '1A', '3E', 'SL', 'CC', '2S']
+      }
+    ]
+  },
 
   // --- STATIONS ---
-  { 
-    group: 'Stations', id: 'stationAutocomplete', method: 'GET', basePath: '/api/v1/trains/stations', name: 'Search Stations (Autocomplete)',
+  {
+    group: 'Stations', id: 'stationAutocomplete', method: 'GET', basePath: '/api/v1/trains/stations', name: 'Station by Name',
     params: [
       { key: 'q', label: 'Search Query', type: 'query', default: 'patna' }
     ]
   },
-  { 
-    group: 'Stations', id: 'stationTimetable', method: 'GET', basePath: '/api/v1/trains/stations/:code/timetable/:date', name: 'Get Station Timetable',
+  {
+    group: 'Stations', id: 'stationTimetable', method: 'GET', basePath: '/api/v1/trains/stations/:code/timetable/:date', name: 'Station Timetable',
     params: [
       { key: 'code', label: 'Station Code', type: 'path', default: 'NDLS' },
       { key: 'date', label: 'Date', type: 'path', default: new Date().toISOString().split('T')[0] }
     ]
   },
-  { 
-    group: 'Stations', id: 'stationByCode', method: 'GET', basePath: '/api/v1/trains/stations/:code', name: 'Get Station Details',
+  {
+    group: 'Stations', id: 'stationByCode', method: 'GET', basePath: '/api/v1/trains/stations/:code', name: 'Station by Code',
     params: [
       { key: 'code', label: 'Station Code', type: 'path', default: 'NDLS' }
     ]
@@ -97,14 +135,14 @@ const ENDPOINTS: Endpoint[] = [
 
   // --- LIVE & PNR ---
   {
-    group: 'Live Status & PNR', id: 'live', method: 'GET', basePath: '/api/v1/live/:trainNo', name: 'Get Live Train Status',
+    group: 'Live Status & PNR', id: 'live', method: 'GET', basePath: '/api/v1/live/:trainNo', name: 'Live Train Running Status',
     params: [
       { key: 'trainNo', label: 'Train Number', type: 'path', default: '12309' },
       { key: 'date', label: 'Date', type: 'query', default: new Date().toISOString().split('T')[0] }
     ]
   },
   {
-    group: 'Live Status & PNR', id: 'liveStation', method: 'GET', basePath: '/api/v1/live/station/:stationCode', name: 'Live Station Board (Arrivals/Departures)',
+    group: 'Live Status & PNR', id: 'liveStation', method: 'GET', basePath: '/api/v1/live/station/:stationCode', name: 'Live Station Display Board',
     params: [
       { key: 'stationCode', label: 'Station Code', type: 'path', default: 'NDLS' },
       { key: 'hours', label: 'Hours Window', type: 'query', default: '2', options: ['2', '4', '8'] },
@@ -112,7 +150,7 @@ const ENDPOINTS: Endpoint[] = [
     ]
   },
   {
-    group: 'Live Status & PNR', id: 'pnr', method: 'GET', basePath: '/api/v1/pnr/:pnr', name: 'Get PNR Status',
+    group: 'Live Status & PNR', id: 'pnr', method: 'GET', basePath: '/api/v1/pnr/:pnr', name: 'PNR Status',
     params: [
       { key: 'pnr', label: 'PNR Number', type: 'path', default: '2434567890' }
     ]

@@ -4,16 +4,16 @@ import { Copy, Check } from 'lucide-react';
 
 const ENDPOINTS = [
   {
-    title: 'Get Server Health',
+    title: 'Gateway Health',
     method: 'GET',
     path: '/health',
     description: 'Check if the API server is up and running.',
     reqPath: '/health',
     parameters: [],
-    response: `{\n  "status": "up",\n  "version": "1.0.1"\n}`
+    response: `{\n  "status": "up",\n  "version": "1.0.2"\n}`
   },
   {
-    title: 'Search Trains Between Stations',
+    title: 'Find Trains (Between Stations)',
     method: 'GET',
     path: '/api/v1/trains/search',
     description: 'Discover direct and connecting trains between two station codes.',
@@ -26,7 +26,7 @@ const ENDPOINTS = [
     response: `{\n  "success": true,\n  "data": [\n    {\n      "trainNo": "12304",\n      "trainName": "POORVA EXPRESS",\n      "trainType": "SUPERFAST",\n      "fromStation": "NDLS",\n      "toStation": "PNBE",\n      "fromStationName": "NEW DELHI",\n      "toStationName": "PATNA JN",\n      "trainSrc": "NDLS",\n      "trainDstn": "HWH",\n      "departure": "17:40",\n      "arrival": "06:48",\n      "durationMin": 788,\n      "durationStr": "13:08",\n      "runningDays": ["Wed", "Thu", "Sat", "Sun"],\n      "classes": [],\n      "distance": "995",\n      "estimatedFare": 518,\n      "halts": 9,\n      "fromStationDayOffset": 0,\n      "toStationDayOffset": 1\n    },\n    {\n      "trainNo": "12310",\n      "trainName": "RJPB TEJAS RAJ",\n      "trainType": "RAJDHANI",\n      "fromStation": "NDLS",\n      "toStation": "PNBE",\n      "fromStationName": "NEW DELHI",\n      "toStationName": "PATNA JN",\n      "trainSrc": "NDLS",\n      "trainDstn": "RJPB",\n      "departure": "17:10",\n      "arrival": "04:38",\n      "durationMin": 688,\n      "durationStr": "11:28",\n      "runningDays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],\n      "classes": [],\n      "distance": "996",\n      "estimatedFare": 518,\n      "halts": 4,\n      "fromStationDayOffset": 0,\n      "toStationDayOffset": 1\n    }\n  ],\n  "source": "irctc-api",\n  "cached": true,\n  "_time": 4.19\n}`
   },
   {
-    title: 'Search Trains by Name',
+    title: 'Train by Name',
     method: 'GET',
     path: '/api/v1/trains/search/name',
     description: 'Search for trains using a partial or full name.',
@@ -37,7 +37,7 @@ const ENDPOINTS = [
     response: `{\n  "success": true,\n  "data": [\n    {\n      "trainNo": "12301",\n      "trainName": "RAJDHANI EXPRESS",\n      "trainType": "RAJDHANI",\n      "from": "HWH",\n      "to": "NDLS"\n    },\n    {\n      "trainNo": "12302",\n      "trainName": "HWH RAJDHANI",\n      "trainType": "RAJDHANI",\n      "from": "NDLS",\n      "to": "HWH"\n    },\n    {\n      "trainNo": "12305",\n      "trainName": "RAJDHANI EXPRES",\n      "trainType": "RAJDHANI",\n      "from": "HWH",\n      "to": "NDLS"\n    },\n    {\n      "trainNo": "12313",\n      "trainName": "RAJDHANI EXPRES",\n      "trainType": "RAJDHANI",\n      "from": "SDAH",\n      "to": "NDLS"\n    }\n  ],\n  "total": 10,\n  "source": "irctc-api",\n  "cached": true,\n  "_time": 4.301\n}`
   },
   {
-    title: 'Get Train Schedule',
+    title: 'Train by Number',
     method: 'GET',
     path: '/api/v1/trains/:trainNo',
     description: 'Get the full schedule, halts, timings, and route for a specific 5-digit train number.',
@@ -48,7 +48,7 @@ const ENDPOINTS = [
     response: `{\n  "success": true,\n  "data": {\n    "trainNo": "12309",\n    "trainName": "RJPB TEJAS RAJ",\n    "trainType": "RAJDHANI",\n    "runningDays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],\n    "totalDistance": 998,\n    "originCode": "RJPB",\n    "destinationCode": "NDLS",\n    "stationCodes": ["RJPB", "PNBE", "DNR", "DDU", "PRYJ", "CNB", "NDLS"],\n    "stations": [\n      {\n        "seq": 1,\n        "code": "RJPB",\n        "name": "RAJENDRA NAGAR",\n        "arrival": null,\n        "departure": "19:10",\n        "arrivalMin": null,\n        "departureMin": 1150,\n        "dayOffset": 0,\n        "haltMinutes": 0,\n        "distanceKm": 0,\n        "lat": 25.6027429,\n        "lng": 85.1626146\n      },\n      {\n        "seq": 2,\n        "code": "PNBE",\n        "name": "PATNA JN",\n        "arrival": "19:23",\n        "departure": "19:30",\n        "arrivalMin": 1163,\n        "departureMin": 1170,\n        "dayOffset": 0,\n        "haltMinutes": 7,\n        "distanceKm": 2,\n        "lat": 25.6032109,\n        "lng": 85.1376861\n      },\n      {\n        "seq": 6,\n        "code": "CNB",\n        "name": "KANPUR CENTRAL",\n        "arrival": "02:15",\n        "departure": "02:20",\n        "arrivalMin": 135,\n        "departureMin": 140,\n        "dayOffset": 1,\n        "haltMinutes": 5,\n        "distanceKm": 557,\n        "lat": 26.4538613,\n        "lng": 80.3512433\n      },\n      {\n        "seq": 7,\n        "code": "NDLS",\n        "name": "NEW DELHI",\n        "arrival": "07:40",\n        "departure": null,\n        "arrivalMin": 460,\n        "departureMin": null,\n        "dayOffset": 1,\n        "haltMinutes": 0,\n        "distanceKm": 998,\n        "lat": 28.6428915,\n        "lng": 77.2190894\n      }\n    ],\n    "convertedAt": "2026-07-08T11:06:03.313Z",\n    "dataVersion": 2\n  },\n  "source": "irctc-api",\n  "cached": true,\n  "_time": 4.218\n}`
   },
   {
-    title: 'Calculate Train Fare Breakup',
+    title: 'Fare Lookup',
     method: 'GET',
     path: '/api/v1/trains/:trainNo/fare',
     description: 'Fetch real-time official IRCTC train ticket fare breakup (Base, Reservation, Superfast, GST, Catering) for all running classes or a specific class.',
@@ -63,7 +63,37 @@ const ENDPOINTS = [
     response: `{\n  "success": true,\n  "trainNumber": "12558",\n  "trainName": "Sapt Kranti Exp",\n  "from": "ANVT",\n  "to": "MFP",\n  "quota": "GN",\n  "category": "Adult",\n  "availableClasses": [\n    { "code": "1A", "name": "First AC" },\n    { "code": "2A", "name": "Second AC" },\n    { "code": "3A", "name": "Third AC" },\n    { "code": "3E", "name": "AC 3 Tier Economy" },\n    { "code": "SL", "name": "Sleeper" }\n  ],\n  "availableQuotas": [\n    { "code": "GN", "name": "General Quota" },\n    { "code": "TQ", "name": "Tatkal Quota" }\n  ],\n  "totalClasses": 5,\n  "fares": [\n    {\n      "class": "1A",\n      "className": "First AC",\n      "totalFare": 3410,\n      "breakup": {\n        "baseFare": 3112,\n        "reservationCharge": 60,\n        "superfastCharge": 75,\n        "gst": 163,\n        "cateringCharge": 0,\n        "dynamicFare": 0\n      }\n    },\n    {\n      "class": "2A",\n      "className": "Second AC",\n      "totalFare": 2040,\n      "breakup": {\n        "baseFare": 1848,\n        "reservationCharge": 50,\n        "superfastCharge": 45,\n        "gst": 97,\n        "cateringCharge": 0,\n        "dynamicFare": 0\n      }\n    },\n    {\n      "class": "3A",\n      "className": "Third AC",\n      "totalFare": 1445,\n      "breakup": {\n        "baseFare": 1291,\n        "reservationCharge": 40,\n        "superfastCharge": 45,\n        "gst": 69,\n        "cateringCharge": 0,\n        "dynamicFare": 0\n      }\n    },\n    {\n      "class": "3E",\n      "className": "AC 3 Tier Economy",\n      "totalFare": 1350,\n      "breakup": {\n        "baseFare": 1200,\n        "reservationCharge": 40,\n        "superfastCharge": 45,\n        "gst": 65,\n        "cateringCharge": 0,\n        "dynamicFare": 0\n      }\n    },\n    {\n      "class": "SL",\n      "className": "Sleeper",\n      "totalFare": 565,\n      "breakup": {\n        "baseFare": 515,\n        "reservationCharge": 20,\n        "superfastCharge": 30,\n        "gst": 0,\n        "cateringCharge": 0,\n        "dynamicFare": 0\n      }\n    }\n  ],\n  "_cached": true,\n  "_time": 4.372\n}`
   },
   {
-    title: 'Get Cancelled Trains',
+    title: 'Seat Availability',
+    method: 'GET',
+    path: '/api/v1/trains/:trainNo/availability',
+    description: 'Query real-time official Indian Railways (CRIS) seat & berth availability across travel classes (1A, 2A, 3A, 3E, CC, SL) and quotas (GN, TQ, PT, LD). Returns an authentic 14-day availability calendar forecast with exact confirmation status.',
+    reqPath: '/api/v1/trains/12557/availability?from=NKE&to=ANVT&date=17-11-2026&class=3A&quota=GN',
+    parameters: [
+      { name: 'trainNo', in: 'PATH', type: 'string', required: true, description: '5-digit train number (e.g. 12557)' },
+      { name: 'from', in: 'QUERY', type: 'string', required: true, description: 'Origin station code (e.g. NKE)' },
+      { name: 'to', in: 'QUERY', type: 'string', required: true, description: 'Destination station code (e.g. ANVT)' },
+      { name: 'date', in: 'QUERY', type: 'string', required: true, description: 'Journey date in DD-MM-YYYY format (e.g. 17-11-2026)' },
+      { name: 'class', in: 'QUERY', type: 'string', required: false, description: 'Travel class code (1A, 2A, 3A, 3E, CC, EC, SL). Default: 3A' },
+      { name: 'quota', in: 'QUERY', type: 'string', required: false, description: 'Quota code (GN, TQ, PT, LD). Default: GN' }
+    ],
+    response: `{\n  "success": true,\n  "trainNumber": "12557",\n  "trainName": "SAPT KRANTI EXP",\n  "from": "NKE",\n  "to": "ANVT",\n  "date": "17-11-2026",\n  "class": "3A",\n  "quota": "GN",\n  "availability": [\n    {\n      "date": "2026-11-17",\n      "status": "REGRET/GNWL151",\n      "type": "REGRET",\n      "currentBooking": "N"\n    },\n    {\n      "date": "2026-11-18",\n      "status": "GNWL271/WL140",\n      "type": "WAITLIST",\n      "currentBooking": "N"\n    },\n    {\n      "date": "2026-11-19",\n      "status": "GNWL200/WL138",\n      "type": "WAITLIST",\n      "currentBooking": "N"\n    },\n    {\n      "date": "2026-11-20",\n      "status": "GNWL160/WL110",\n      "type": "WAITLIST",\n      "currentBooking": "N"\n    },\n    {\n      "date": "2026-11-21",\n      "status": "AVAILABLE-0042",\n      "type": "AVAILABLE",\n      "currentBooking": "N"\n    }\n  ],\n  "source": "irctc-api",\n  "_cached": true,\n  "_time": 1.482\n}`
+  },
+  {
+    title: 'Vacant Seats After Chart Preparation',
+    method: 'GET',
+    path: '/api/v1/trains/:trainNo/chart-vacant',
+    description: 'Query real-time vacant berths post-charting (First & Second reservation charts) from official IRCTC Online Charts. Returns coach composition, total vacant berths, class summary, and berth-by-berth allocations for Current Booking & TTE allotment.',
+    reqPath: '/api/v1/trains/12557/chart-vacant?boardingStation=NKE&class=ALL',
+    parameters: [
+      { name: 'trainNo', in: 'PATH', type: 'string', required: true, description: '5-digit train number (e.g. 12557)' },
+      { name: 'boardingStation', in: 'QUERY', type: 'string', required: true, description: 'Boarding station code (e.g. NKE)' },
+      { name: 'date', in: 'QUERY', type: 'string', required: false, description: 'Journey date in YYYY-MM-DD or DD-MM-YYYY format (defaults to today)' },
+      { name: 'class', in: 'QUERY', type: 'string', required: false, description: 'Travel class code (1A, 2A, 3A, 3E, SL, or ALL). Default: ALL' }
+    ],
+    response: `{\n  "success": true,\n  "trainNumber": "12557",\n  "trainName": "SAPT KRANTI EXP",\n  "boardingStation": "NKE",\n  "from": "MFP",\n  "to": "ANVT",\n  "date": "2026-10-23",\n  "chartStatus": {\n    "isChartPrepared": true,\n    "firstChartTime": "2026-10-22 22:46:19",\n    "currentChartTime": "2026-10-23 11:09:00",\n    "remoteStation": "MFP",\n    "nextRemoteStation": "GKP"\n  },\n  "totalVacantBerths": 85,\n  "summaryByClass": {\n    "2A": 85,\n    "3A": 0,\n    "1A": 0,\n    "3E": 0,\n    "SL": 0\n  },\n  "vacantBerths": [\n    {\n      "coach": "A1",\n      "class": "2A",\n      "berthNo": 2,\n      "berthType": "Upper",\n      "berthCode": "U",\n      "cabin": "1",\n      "from": "MFP",\n      "to": "SGL"\n    }\n  ],\n  "coaches": [\n    { "coach": "A1", "class": "2A", "position": 0, "vacantBerths": 85 },\n    { "coach": "B1", "class": "3A", "position": 0, "vacantBerths": 0 }\n  ],\n  "source": "irctc-charts",\n  "syncedAt": "2026-10-23T06:15:00.000Z",\n  "_cached": true,\n  "_time": 0.385\n}`
+  },
+  {
+    title: 'Cancelled Trains',
     method: 'GET',
     path: '/api/v1/trains/cancelled',
     description: 'Fetch daily fully and partially cancelled trains across Indian Railways.',
@@ -72,7 +102,7 @@ const ENDPOINTS = [
     response: `{\n  "success": true,\n  "date": "22-10-2026",\n  "dateISO": "2026-10-22",\n  "total": 57,\n  "fullyCancelledCount": 16,\n  "partiallyCancelledCount": 41,\n  "trains": [\n    {\n      "trainNumber": "11002",\n      "trainName": "NANDIGRAM EXP",\n      "source": "BALHARSHAH",\n      "destination": "C SHIVAJI MAH T",\n      "trainType": "EXPRESS",\n      "isPartial": true,\n      "cancellationType": "PARTIALLY_CANCELLED",\n      "cancelledFromStation": "DR",\n      "cancelledToStation": "CSMT",\n      "startDate": "22-10-2026",\n      "railwayTimestamp": "2026-10-01T10:34:23.286000"\n    },\n    {\n      "trainNumber": "11020",\n      "trainName": "KONARK EXPRESS",\n      "source": "BHUBANESWAR NEW JN",\n      "destination": "C SHIVAJI MAH T",\n      "trainType": "EXPRESS",\n      "isPartial": true,\n      "cancellationType": "PARTIALLY_CANCELLED",\n      "cancelledFromStation": "DR",\n      "cancelledToStation": "CSMT",\n      "startDate": "22-10-2026",\n      "railwayTimestamp": "2026-10-01T06:09:16.748000"\n    },\n    {\n      "trainNumber": "17005",\n      "trainName": "HYB RXL EXP",\n      "source": "HYDERABAD",\n      "destination": "RAXAUL JN",\n      "trainType": "EXPRESS",\n      "isPartial": false,\n      "cancellationType": "FULLY_CANCELLED",\n      "cancelledFromStation": "HYB",\n      "cancelledToStation": "RXL",\n      "startDate": "22-10-2026",\n      "railwayTimestamp": "2026-07-25T07:16:27.562000"\n    }\n  ],\n  "syncedAt": "2026-10-22T05:29:12.943Z",\n  "_time": 3.852\n}`
   },
   {
-    title: 'Search Stations (Autocomplete)',
+    title: 'Station by Name',
     method: 'GET',
     path: '/api/v1/trains/stations',
     description: 'Lightning-fast autocomplete search for railway stations by name or exact code.',
@@ -83,7 +113,7 @@ const ENDPOINTS = [
     response: `{\n  "success": true,\n  "data": [\n    {\n      "code": "PNBE",\n      "name": "Patna Jn",\n      "state": "Patna"\n    },\n    {\n      "code": "PNC",\n      "name": "Patna Saheb",\n      "state": "Patna"\n    }\n  ],\n  "source": "irctc-api",\n  "degraded": false,\n  "cached": true,\n  "_time": 4.679\n}`
   },
   {
-    title: 'Get Station Timetable',
+    title: 'Station Timetable',
     method: 'GET',
     path: '/api/v1/trains/stations/:code/timetable/:date',
     description: 'Get a complete list of all trains arriving or departing from a specific station on a given date.',
@@ -95,7 +125,7 @@ const ENDPOINTS = [
     response: `{\n  "success": true,\n  "data": {\n    "stationCode": "NDLS",\n    "day": "Thu",\n    "total": 241,\n    "trains": [\n      {\n        "trainNo": "12004",\n        "trainName": "LKO SHTBDI EXP",\n        "trainType": "SHATABDI",\n        "arrival": null,\n        "departure": "06:10",\n        "dayOffset": 0,\n        "from": "NDLS",\n        "to": "LKO",\n        "runsOn": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]\n      },\n      {\n        "trainNo": "12040",\n        "trainName": "KATHGODAM SHTBDI",\n        "trainType": "SHATABDI",\n        "arrival": null,\n        "departure": "06:20",\n        "dayOffset": 0,\n        "from": "NDLS",\n        "to": "KGM",\n        "runsOn": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]\n      },\n      {\n        "trainNo": "12310",\n        "trainName": "RJPB TEJAS RAJ",\n        "trainType": "RAJDHANI",\n        "arrival": null,\n        "departure": "17:10",\n        "dayOffset": 0,\n        "from": "NDLS",\n        "to": "RJPB",\n        "runsOn": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]\n      }\n    ]\n  },\n  "source": "irctc-api",\n  "cached": true,\n  "_time": 7.458\n}`
   },
   {
-    title: 'Get Station Details',
+    title: 'Station by Code',
     method: 'GET',
     path: '/api/v1/trains/stations/:code',
     description: 'Fetch detailed information about a station including its full name, zone, and location.',
@@ -106,7 +136,7 @@ const ENDPOINTS = [
     response: `{\n  "success": true,\n  "data": {\n    "code": "NDLS",\n    "name": "New Delhi",\n    "state": "Delhi"\n  },\n  "source": "redis_offline",\n  "cached": true,\n  "_time": 3.685\n}`
   },
   {
-    title: 'Track Live Train Status',
+    title: 'Live Train Running Status',
     method: 'GET',
     path: '/api/v1/live/:trainNo',
     description: 'Get real-time running status, current station, delay, and upcoming halts.',
@@ -118,7 +148,7 @@ const ENDPOINTS = [
     response: `{\n  "success": true,\n  "data": {\n    "trainNumber": "12558",\n    "trainName": "Sapt Kranti Exp",\n    "currentLocation": "Anand Vihar Trm",\n    "locationStatus": "yet to start",\n    "currentDelayMin": 0,\n    "currentDelayStr": "Right Time",\n    "lastUpdated": "22 Oct 2026 00:05",\n    "totalDistanceKm": 1060,\n    "totalHalts": 18,\n    "stops": [\n      {\n        "stationName": "Anand Vihar Trm",\n        "day": 1,\n        "date": "22-Oct",\n        "arrives": "14:35",\n        "departs": "14:50",\n        "delayMin": 0,\n        "delayStr": "Right Time",\n        "isOnTime": true,\n        "status": "upcoming",\n        "distanceKm": 0\n      },\n      {\n        "stationName": "Moradabad",\n        "day": 1,\n        "date": "22-Oct",\n        "arrives": "17:05",\n        "departs": "17:13",\n        "delayMin": 0,\n        "delayStr": "Right Time",\n        "isOnTime": true,\n        "status": "upcoming",\n        "distanceKm": 154\n      },\n      {\n        "stationName": "Gorakhpur Jn",\n        "day": 2,\n        "date": "23-Oct",\n        "arrives": "03:37",\n        "departs": "03:47",\n        "delayMin": 0,\n        "delayStr": "Right Time",\n        "isOnTime": true,\n        "status": "upcoming",\n        "distanceKm": 750\n      },\n      {\n        "stationName": "Muzaffarpur Jn",\n        "day": 2,\n        "date": "23-Oct",\n        "arrives": "11:05",\n        "departs": null,\n        "delayMin": 0,\n        "delayStr": "Right Time",\n        "isOnTime": true,\n        "status": "upcoming",\n        "distanceKm": 1060\n      }\n    ],\n    "updatedAt": "2026-10-22T05:38:30.080Z"\n  },\n  "source": "irctc-api",\n  "_time": 625.362\n}`
   },
   {
-    title: 'Live Station Arrivals & Departures',
+    title: 'Live Station Display Board',
     method: 'GET',
     path: '/api/v1/live/station/:stationCode',
     description: 'Real-time train arrivals and departures board from NTES with platform, delay, and coach info.',
@@ -131,7 +161,7 @@ const ENDPOINTS = [
     response: `{\n  "success": true,\n  "stationCode": "NDLS",\n  "stationName": "NEW DELHI",\n  "totalTrains": 43,\n  "trains": [\n    {\n      "trainNo": "64567",\n      "trainName": "BSC-TKJ MEMU",\n      "route": "BSC-TKJ",\n      "trainType": "MEMU GEN",\n      "platform": {\n        "number": "5",\n        "isProvisional": false\n      },\n      "hasCoachPosition": true,\n      "arrival": {\n        "isSource": false,\n        "scheduled": "08:56",\n        "actualOrEstimated": "10:28",\n        "delay": "01:32 Hrs.",\n        "delayMinutes": 92,\n        "status": "DELAYED"\n      },\n      "departure": {\n        "isDestination": false,\n        "scheduled": "08:58",\n        "actualOrEstimated": "10:29*",\n        "delay": "01:31 Hrs.",\n        "delayMinutes": 91,\n        "status": "DELAYED"\n      }\n    },\n    {\n      "trainNo": "12004",\n      "trainName": "LKO SHTBDI EXP",\n      "route": "NDLS-LKO",\n      "trainType": "SHATABDI",\n      "platform": {\n        "number": "1",\n        "isProvisional": false\n      },\n      "hasCoachPosition": true,\n      "arrival": {\n        "isSource": true,\n        "scheduled": null,\n        "actualOrEstimated": null,\n        "delay": "Originates Here",\n        "delayMinutes": 0,\n        "status": "SOURCE"\n      },\n      "departure": {\n        "isDestination": false,\n        "scheduled": "06:10",\n        "actualOrEstimated": "06:10",\n        "delay": "On Time",\n        "delayMinutes": 0,\n        "status": "ON_TIME"\n      }\n    }\n  ],\n  "hours": 2,\n  "toStation": null,\n  "queryTime": "2026-10-22T05:38:40.781Z",\n  "_time": 8286.1\n}`
   },
   {
-    title: 'Check PNR Status',
+    title: 'PNR Status',
     method: 'GET',
     path: '/api/v1/pnr/:pnr',
     description: 'Fetch real-time current PNR status, passenger info, and charting status.',

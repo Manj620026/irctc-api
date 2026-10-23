@@ -5,7 +5,7 @@
 
 [![Live Portal](https://img.shields.io/badge/Portal-irctc.dev-orange.svg?style=for-the-badge)](https://irctc.dev)
 [![API Gateway](https://img.shields.io/badge/API-api.irctc.dev-blue.svg?style=for-the-badge)](https://api.irctc.dev)
-[![API Version](https://img.shields.io/badge/API%20Version-v1.0.1-emerald.svg?style=for-the-badge)](https://api.irctc.dev/health)
+[![API Version](https://img.shields.io/badge/API%20Version-v1.0.2-emerald.svg?style=for-the-badge)](https://api.irctc.dev/health)
 [![npm version](https://img.shields.io/npm/v/irctc-api.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/irctc-api)
 [![npm downloads](https://img.shields.io/npm/dm/irctc-api.svg?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/irctc-api)
 [![npm total downloads](https://img.shields.io/npm/dt/irctc-api.svg?style=for-the-badge&logo=npm&color=blue)](https://www.npmjs.com/package/irctc-api)
@@ -26,11 +26,11 @@ Designed for developers building train tracking applications, travel booking int
 | Resource | URL | Description |
 |---|---|---|
 | **🌍 Web Portal** | [https://irctc.dev](https://irctc.dev) | High-performance developer platform & landing page |
-| **⚡ API Gateway** | [https://api.irctc.dev](https://api.irctc.dev) | Production REST API base URL (v1.0.1) |
+| **⚡ API Gateway** | [https://api.irctc.dev](https://api.irctc.dev) | Production REST API base URL (v1.0.2) |
 | **🧪 API Playground** | [https://irctc.dev/playground](https://irctc.dev/playground) | In-browser interactive API sandbox with real-time latency benchmarks |
 | **📑 Documentation** | [https://irctc.dev/docs](https://irctc.dev/docs) | Complete endpoint schemas, parameters & multi-language code snippets |
 | **🔑 Developer Console** | [https://irctc.dev/dashboard](https://irctc.dev/dashboard) | Google OAuth, API key management, quota tracking & telemetry logs |
-| **📦 Official Client SDK** | [`irctc-api` on npm](https://www.npmjs.com/package/irctc-api) | Zero-dependency Node.js & TypeScript client library (v4.0.2) |
+| **📦 Official Client SDK** | [`irctc-api` on npm](https://www.npmjs.com/package/irctc-api) | Zero-dependency Node.js & TypeScript client library (v4.1.0) |
 | **📫 Developer Support** | [support@irctc.dev](mailto:support@irctc.dev) | Integration assistance, technical inquiries & enterprise support |
 
 ---
@@ -76,7 +76,7 @@ The web application is built as a blazing-fast, edge-deployed single-page applic
 ## ✨ Key Frontend Features & Capabilities
 
 ### 1. 🧪 In-Browser Interactive API Playground
-- **Zero-Setup Testing**: Execute live authenticated queries against all railway endpoints (train search, schedule, fare breakup, cancelled trains, live GPS status, NTES station board, and PNR verification) directly from the browser.
+- **Zero-Setup Testing**: Execute live authenticated queries against all 14 railway intelligence endpoints (route search, train info, fare lookup, 14-day seat availability, post-charting vacant berths, cancelled trains, station autocomplete, live GPS tracking, live station board, and PNR verification) directly from the browser.
 - **Latency Benchmarking**: Automatically captures network round-trip time (`performance.now()`) alongside server execution times (`_time`).
 - **Race Condition Prevention**: Employs `AbortController` to cancel in-flight queries when switching endpoints, preventing stale responses from overwriting active state.
 - **Screen-Share Safety**: Masked password inputs (`type="password"`) with an explicit `+ Use My Key` populator and visual reveal toggle.
@@ -197,7 +197,7 @@ const client = new IrctcApi({
 
 async function runRailwayQueries() {
   try {
-    // 1. Search Trains Between Stations
+    // 1. Find Trains (Between Stations)
     const trains = await client.trains.search({
       from: 'NDLS',
       to: 'PNBE',
@@ -205,31 +205,51 @@ async function runRailwayQueries() {
     });
     console.log(`Found ${trains.length} direct trains.`);
 
-    // 2. Search Trains by Full or Partial Name
+    // 2. Train by Name (Search & Autocomplete)
     const rajdhaniTrains = await client.trains.searchByName('rajdhani');
 
-    // 3. Complete Train Route Timetable & Halts
+    // 3. Train by Number (Full Timetable & Halts)
     const schedule = await client.trains.getSchedule('12309');
     console.log(`Train ${schedule.trainName} has ${schedule.stations.length} halts.`);
 
-    // 4. Station Autocomplete Search
+    // 4. Fare Lookup (Official IRCTC Breakup)
+    const fare = await client.trains.getFare('12558', { from: 'ANVT', to: 'MFP', class: 'all', quota: 'GN' });
+    console.log(`Fare classes available: ${fare.fares.length}`);
+
+    // 5. Seat Availability (Official 14-Day Calendar Forecast)
+    const seatForecast = await client.trains.getAvailability('12557', { from: 'NKE', to: 'ANVT', date: '17-11-2026', class: '3A', quota: 'GN' });
+    console.log(`Seat Status on ${seatForecast.date}: ${seatForecast.availability[0]?.status}`);
+
+    // 6. Vacant Seats After Chart Preparation (Current Booking)
+    const chartVacant = await client.trains.getChartVacant('26501', { boardingStation: 'BTH', class: 'ALL' });
+    console.log(`Total Vacant Berths post-charting: ${chartVacant.totalVacantBerths}`);
+
+    // 7. Cancelled Trains Bulletin
+    const cancelled = await client.trains.getCancelledTrains();
+    console.log(`Total Cancelled Trains today: ${cancelled.total}`);
+
+    // 8. Station by Name (Autocomplete Search)
     const stations = await client.stations.search('patna');
 
-    // 5. Station Daily Timetable (Scheduled Arrivals & Departures)
-    const stationBoard = await client.stations.getTimetable('NDLS', '2026-10-15');
-
-    // 6. Station Metadata (Zone, State, Name)
+    // 9. Station by Code (Details & Metadata)
     const stationMeta = await client.stations.getByCode('NDLS');
 
-    // 7. Real-Time GPS Train Running Status & Delay
+    // 10. Station Timetable (Scheduled Daily Trains)
+    const stationBoard = await client.stations.getTimetable('NDLS', '2026-10-15');
+
+    // 11. Live Train Running Status (GPS & Delays)
     const live = await client.live.getStatus('12558', { date: '2026-10-15' });
     console.log(`Location: ${live.currentLocation} | Status: ${live.currentDelayStr}`);
 
-    // 8. Real-Time PNR Confirmation & Charting
+    // 12. Live Station Display Board (Platforms & Real-Time Delays)
+    const liveBoard = await client.live.getStation('NDLS', { hours: 2 });
+    console.log(`Live Trains at ${liveBoard.stationName}: ${liveBoard.totalTrains}`);
+
+    // 13. PNR Status & Passenger Manifest
     const pnr = await client.pnr.check('2434567890');
     console.log(`Train: ${pnr.trainNumber} | Chart: ${pnr.chartStatus}`);
 
-    // 9. Gateway Health & Status
+    // 14. Gateway Health & Status
     const health = await client.health();
     console.log(`Status: ${health.status} | Version: ${health.version}`);
 
@@ -323,11 +343,29 @@ fare_resp = requests.get(
 )
 print("Fare Breakup:", fare_resp.json())
 
-# 5. Daily Cancelled Trains
+# 5. Live Seat Availability (14-Day Forecast)
+seat_resp = requests.get(
+    f"{BASE_URL}/api/v1/trains/12557/availability",
+    params={"from": "NKE", "to": "ANVT", "date": "17-11-2026", "class": "3A", "quota": "GN"},
+    headers=headers,
+    timeout=10
+)
+print("Seat Availability:", seat_resp.json())
+
+# 6. Vacant Seats After Chart Preparation (Current Booking)
+chart_resp = requests.get(
+    f"{BASE_URL}/api/v1/trains/26501/chart-vacant",
+    params={"boardingStation": "BTH", "class": "ALL"},
+    headers=headers,
+    timeout=10
+)
+print("Chart Vacant Berths:", chart_resp.json())
+
+# 7. Daily Cancelled Trains
 cancelled_resp = requests.get(f"{BASE_URL}/api/v1/trains/cancelled", headers=headers, timeout=10)
 print("Cancelled Trains:", cancelled_resp.json())
 
-# 6. Live Station Board (Arrivals/Departures)
+# 8. Live Station Display Board (Arrivals/Departures)
 station_board_resp = requests.get(
     f"{BASE_URL}/api/v1/live/station/NDLS",
     params={"hours": 2},
@@ -347,7 +385,7 @@ curl -s -X GET "https://api.irctc.dev/api/v1/live/12558?date=2026-10-15" \
   -H "x-api-key: YOUR_API_KEY" \
   -H "accept: application/json"
 
-# 2. Train Search
+# 2. Find Trains Between Stations
 curl -s -X GET "https://api.irctc.dev/api/v1/trains/search?from=NDLS&to=PNBE&date=2026-10-15" \
   -H "Authorization: Bearer YOUR_API_KEY"
 
@@ -359,15 +397,23 @@ curl -s -X GET "https://api.irctc.dev/api/v1/trains/stations?q=patna" \
 curl -s -X GET "https://api.irctc.dev/api/v1/trains/12558/fare?from=ANVT&to=MFP&class=all&quota=GN" \
   -H "x-api-key: YOUR_API_KEY"
 
-# 5. Get Daily Cancelled Trains
+# 5. Check Seat Availability (14-Day Forecast)
+curl -s -X GET "https://api.irctc.dev/api/v1/trains/12557/availability?from=NKE&to=ANVT&date=17-11-2026&class=3A&quota=GN" \
+  -H "x-api-key: YOUR_API_KEY"
+
+# 6. Vacant Seats After Chart Preparation (Current Booking)
+curl -s -X GET "https://api.irctc.dev/api/v1/trains/26501/chart-vacant?boardingStation=BTH&class=ALL" \
+  -H "x-api-key: YOUR_API_KEY"
+
+# 7. Get Daily Cancelled Trains
 curl -s -X GET "https://api.irctc.dev/api/v1/trains/cancelled" \
   -H "x-api-key: YOUR_API_KEY"
 
-# 6. Live Station Board (NTES Arrivals & Departures)
+# 8. Live Station Board (NTES Arrivals & Departures)
 curl -s -X GET "https://api.irctc.dev/api/v1/live/station/NDLS?hours=2" \
   -H "x-api-key: YOUR_API_KEY"
 
-# 7. Gateway Health Check (No Key Required)
+# 9. Gateway Health Check (No Key Required)
 curl -s -X GET "https://api.irctc.dev/health"
 ```
 
@@ -379,20 +425,22 @@ Base URL: `https://api.irctc.dev`
 
 ### A. Railway Intelligence & Tracking Endpoints
 
-| Category | Endpoint | Method | Key Parameters | Description |
+| Category | Endpoint | Method | Key Parameters | Operation Name & Description |
 |---|---|:---:|---|---|
-| **System** | `/health` | `GET` | None | Check API gateway liveness, service status & platform version (v1.0.1) |
-| **Trains** | `/api/v1/trains/search` | `GET` | `from`, `to`, `date` (YYYY-MM-DD) | Sub-millisecond direct route search between stations |
-| **Trains** | `/api/v1/trains/search/name` | `GET` | `name` (min 2 chars) | Search trains by partial or full name string |
-| **Trains** | `/api/v1/trains/:trainNo` | `GET` | `:trainNo` (5-digit) | Full timetable, route halts, distance & lat/lng coordinates |
-| **Trains** | `/api/v1/trains/:trainNo/fare` | `GET` | `:trainNo`, `from`, `to`, `class` (default `all`), `quota` (default `GN`) | Real-time official IRCTC ticket fare breakup (Base, Superfast, GST, Catering) |
-| **Trains** | `/api/v1/trains/cancelled` | `GET` | None | Daily fully & partially cancelled trains across Indian Railways (0ms cache) |
-| **Stations** | `/api/v1/trains/stations` | `GET` | `q` (min 2 chars) | High-speed prefix-tree station autocomplete |
-| **Stations** | `/api/v1/trains/stations/:code` | `GET` | `:code` (e.g. `NDLS`) | Station metadata, full name, railway zone & state |
-| **Stations** | `/api/v1/trains/stations/:code/timetable/:date` | `GET` | `:code`, `:date` (optional) | Scheduled daily arrivals and departures for a station |
-| **Live Tracking** | `/api/v1/live/:trainNo` | `GET` | `:trainNo`, `date` (optional) | Real-time GPS running position, current halt & delay status |
-| **Live Tracking** | `/api/v1/live/station/:stationCode` | `GET` | `:stationCode`, `hours` (2, 4, 8), `toStation` | Real-time NTES station arrivals & departures board with platforms and delay minutes |
-| **PNR Status** | `/api/v1/pnr/:pnr` | `GET` | `:pnr` (10-digit) | Live PNR passenger manifest, berth/coach & charting status |
+| **System** | `/health` | `GET` | None | **Gateway Health:** Check API gateway liveness, service status & platform version (v1.0.2) |
+| **Trains** | `/api/v1/trains/search` | `GET` | `from`, `to`, `date` (YYYY-MM-DD) | **Find Trains (Between Stations):** Sub-millisecond direct route search between stations |
+| **Trains** | `/api/v1/trains/search/name` | `GET` | `name` (min 2 chars) | **Train by Name:** Search trains by partial or full name string |
+| **Trains** | `/api/v1/trains/:trainNo` | `GET` | `:trainNo` (5-digit) | **Train by Number:** Full timetable, route halts, distance & lat/lng coordinates |
+| **Trains** | `/api/v1/trains/:trainNo/fare` | `GET` | `:trainNo`, `from`, `to`, `class` (default `all`), `quota` (default `GN`) | **Fare Lookup:** Real-time official IRCTC ticket fare breakup (Base, Superfast, GST, Catering) |
+| **Trains** | `/api/v1/trains/:trainNo/availability` | `GET` | `:trainNo`, `from`, `to`, `date`, `class` (default `3A`), `quota` (default `GN`) | **Seat Availability:** Real-time official CRIS seat & berth availability with 14-day forecast |
+| **Trains** | `/api/v1/trains/:trainNo/chart-vacant` | `GET` | `:trainNo`, `boardingStation`, `date`, `class` (default `ALL`) | **Vacant Seats After Chart Preparation:** Real-time IRCTC reservation chart vacant berths post-charting (Current Booking / TTE) |
+| **Trains** | `/api/v1/trains/cancelled` | `GET` | None | **Cancelled Trains:** Daily fully & partially cancelled trains across Indian Railways (0ms cache) |
+| **Stations** | `/api/v1/trains/stations` | `GET` | `q` (min 2 chars) | **Station by Name:** High-speed prefix-tree station autocomplete |
+| **Stations** | `/api/v1/trains/stations/:code` | `GET` | `:code` (e.g. `NDLS`) | **Station by Code:** Station metadata, full name, railway zone & state |
+| **Stations** | `/api/v1/trains/stations/:code/timetable/:date` | `GET` | `:code`, `:date` (optional) | **Station Timetable:** Scheduled daily arrivals and departures for a station |
+| **Live Tracking** | `/api/v1/live/:trainNo` | `GET` | `:trainNo`, `date` (optional) | **Live Train Running Status:** Real-time GPS running position, current halt & delay status |
+| **Live Tracking** | `/api/v1/live/station/:stationCode` | `GET` | `:stationCode`, `hours` (2, 4, 8), `toStation` | **Live Station Display Board:** Real-time NTES station arrivals & departures board with platforms and delay minutes |
+| **PNR Status** | `/api/v1/pnr/:pnr` | `GET` | `:pnr` (10-digit) | **PNR Status:** Live PNR passenger manifest, berth/coach & charting status |
 
 ### B. Developer Console & Account Management Endpoints
 
@@ -464,119 +512,197 @@ All responses return a standardized JSON envelope with microsecond-accurate serv
 ## 📋 Live API Response Samples
 
 <details open>
-<summary><b>1. Live Train Tracking (<code>GET /api/v1/live/12558?date=2026-10-15</code>)</b></summary>
+<summary><b>1. Gateway Health (<code>GET /health</code>)</b></summary>
 
 ```json
 {
-  "success": true,
-  "data": {
-    "trainNumber": "12558",
-    "trainName": "Sapt Kranti Exp",
-    "currentLocation": "KATHOLA",
-    "locationStatus": "departed from",
-    "currentDelayMin": 0,
-    "currentDelayStr": "Right Time",
-    "totalDistanceKm": 1060,
-    "totalHalts": 19,
-    "stops": [
-      {
-        "stationName": "Anand Vihar TRM",
-        "day": 1,
-        "date": "15-Oct",
-        "arrives": "14:46",
-        "delayMin": 11,
-        "delayStr": "+11 min",
-        "status": "passed",
-        "distanceKm": 0
-      },
-      {
-        "stationName": "Moradabad",
-        "day": 1,
-        "date": "15-Oct",
-        "arrives": "17:16",
-        "departs": "17:33",
-        "delayMin": 20,
-        "delayStr": "+20 min",
-        "status": "passed",
-        "distanceKm": 154
-      },
-      {
-        "stationName": "KATHOLA",
-        "day": 2,
-        "date": "16-Oct",
-        "arrives": "00:25",
-        "departs": "00:25",
-        "delayMin": 0,
-        "delayStr": "Right Time",
-        "isOnTime": true,
-        "status": "current"
-      },
-      {
-        "stationName": "Muzaffarpur Jn",
-        "day": 2,
-        "date": "16-Oct",
-        "arrives": "11:06",
-        "departs": null,
-        "delayMin": 1,
-        "delayStr": "+1 min",
-        "status": "upcoming",
-        "distanceKm": 1060
-      }
-    ],
-    "updatedAt": "2026-10-15T18:57:35.462Z"
-  },
-  "source": "irctc-api",
-  "_time": 663.1
+  "status": "up",
+  "version": "1.0.2",
+  "_time": 0.05
 }
 ```
 </details>
 
 <details open>
-<summary><b>2. PNR Status & Berth Confirmation (<code>GET /api/v1/pnr/2434567890</code>)</b></summary>
+<summary><b>2. Find Trains (Between Stations) (<code>GET /api/v1/trains/search?from=NDLS&to=PNBE&date=2026-10-22</code>)</b></summary>
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "trainNo": "12304",
+      "trainName": "POORVA EXPRESS",
+      "trainType": "SUPERFAST",
+      "fromStation": "NDLS",
+      "toStation": "PNBE",
+      "fromStationName": "NEW DELHI",
+      "toStationName": "PATNA JN",
+      "trainSrc": "NDLS",
+      "trainDstn": "HWH",
+      "departure": "17:40",
+      "arrival": "06:48",
+      "durationMin": 788,
+      "durationStr": "13:08",
+      "runningDays": ["Wed", "Thu", "Sat", "Sun"],
+      "classes": [],
+      "distance": "995",
+      "estimatedFare": 518,
+      "halts": 9,
+      "fromStationDayOffset": 0,
+      "toStationDayOffset": 1
+    },
+    {
+      "trainNo": "12310",
+      "trainName": "RJPB TEJAS RAJ",
+      "trainType": "RAJDHANI",
+      "fromStation": "NDLS",
+      "toStation": "PNBE",
+      "fromStationName": "NEW DELHI",
+      "toStationName": "PATNA JN",
+      "trainSrc": "NDLS",
+      "trainDstn": "RJPB",
+      "departure": "17:10",
+      "arrival": "04:38",
+      "durationMin": 688,
+      "durationStr": "11:28",
+      "runningDays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      "classes": [],
+      "distance": "996",
+      "estimatedFare": 518,
+      "halts": 4,
+      "fromStationDayOffset": 0,
+      "toStationDayOffset": 1
+    }
+  ],
+  "source": "irctc-api",
+  "cached": true,
+  "_time": 4.19
+}
+```
+</details>
+
+<details>
+<summary><b>3. Train by Name (<code>GET /api/v1/trains/search/name?name=rajdhani</code>)</b></summary>
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "trainNo": "12301",
+      "trainName": "RAJDHANI EXPRESS",
+      "trainType": "RAJDHANI",
+      "from": "HWH",
+      "to": "NDLS"
+    },
+    {
+      "trainNo": "12302",
+      "trainName": "HWH RAJDHANI",
+      "trainType": "RAJDHANI",
+      "from": "NDLS",
+      "to": "HWH"
+    }
+  ],
+  "total": 10,
+  "source": "irctc-api",
+  "cached": true,
+  "_time": 4.301
+}
+```
+</details>
+
+<details>
+<summary><b>4. Cancelled Trains (<code>GET /api/v1/trains/cancelled</code>)</b></summary>
+
+```json
+{
+  "success": true,
+  "date": "23-10-2026",
+  "dateISO": "2026-10-23",
+  "total": 64,
+  "fullyCancelledCount": 18,
+  "partiallyCancelledCount": 46,
+  "trains": [
+    {
+      "trainNumber": "11002",
+      "trainName": "NANDIGRAM EXP",
+      "source": "BALHARSHAH",
+      "destination": "C SHIVAJI MAH T",
+      "trainType": "EXPRESS",
+      "isPartial": true,
+      "cancellationType": "PARTIALLY_CANCELLED",
+      "cancelledFromStation": "DR",
+      "cancelledToStation": "CSMT",
+      "startDate": "23-10-2026",
+      "railwayTimestamp": "2026-10-01T10:34:23.286000"
+    }
+  ],
+  "source": "irctc-api",
+  "_time": 0.0
+}
+```
+</details>
+
+<details>
+<summary><b>5. Train by Number (<code>GET /api/v1/trains/12309</code>)</b></summary>
 
 ```json
 {
   "success": true,
   "data": {
-    "pnr": "2434567890",
-    "trainNumber": "12309",
+    "trainNo": "12309",
     "trainName": "RJPB TEJAS RAJ",
-    "from": { "code": "RJPB", "time": "19:10" },
-    "to": { "code": "NDLS", "time": "07:40" },
-    "journeyDate": "2026-10-20",
-    "class": "3A",
-    "quota": "GN",
-    "expectedPlatform": "1",
-    "chartStatus": "not prepared",
-    "passengers": [
+    "trainType": "RAJDHANI",
+    "runningDays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    "totalDistance": 1001,
+    "originCode": "RJPB",
+    "destinationCode": "NDLS",
+    "stationCodes": ["RJPB", "PNBE", "DDU", "PRYJ", "CNB", "NDLS"],
+    "stations": [
       {
-        "number": 1,
-        "status": "CNF",
-        "coach": "B1",
-        "seat": "42",
-        "berth": "LOWER",
-        "isConfirmed": true
+        "seq": 1,
+        "code": "RJPB",
+        "name": "RAJENDRA NAGAR T",
+        "arrival": null,
+        "departure": "19:10",
+        "haltMinutes": 0,
+        "distanceKm": 0,
+        "lat": 25.6025,
+        "lng": 85.1638
       },
       {
-        "number": 2,
-        "status": "CNF",
-        "coach": "B1",
-        "seat": "45",
-        "berth": "UPPER",
-        "isConfirmed": true
+        "seq": 2,
+        "code": "PNBE",
+        "name": "PATNA JN",
+        "arrival": "19:25",
+        "departure": "19:35",
+        "haltMinutes": 10,
+        "distanceKm": 3,
+        "lat": 25.6022,
+        "lng": 85.1376
+      },
+      {
+        "seq": 6,
+        "code": "NDLS",
+        "name": "NEW DELHI",
+        "arrival": "07:40",
+        "departure": null,
+        "haltMinutes": 0,
+        "distanceKm": 1001,
+        "lat": 28.6424,
+        "lng": 77.2195
       }
-    ],
-    "updatedAt": "2026-10-15T18:45:00.000Z",
-    "source": "irctc-api"
+    ]
   },
   "source": "irctc-api",
-  "_time": 412.5
+  "_time": 3.29
 }
 ```
 </details>
 
-<details open>
-<summary><b>3. Calculate Train Fare Breakup (<code>GET /api/v1/trains/12558/fare?from=ANVT&to=MFP&class=all&quota=GN</code>)</b></summary>
+<details>
+<summary><b>6. Fare Lookup (<code>GET /api/v1/trains/12558/fare?from=ANVT&to=MFP&class=all&quota=GN</code>)</b></summary>
 
 ```json
 {
@@ -635,40 +761,241 @@ All responses return a standardized JSON envelope with microsecond-accurate serv
 ```
 </details>
 
-<details open>
-<summary><b>4. Get Cancelled Trains (<code>GET /api/v1/trains/cancelled</code>)</b></summary>
+<details>
+<summary><b>7. Seat Availability (<code>GET /api/v1/trains/12557/availability?from=NKE&to=ANVT&date=17-11-2026&class=3A&quota=GN</code>)</b></summary>
 
 ```json
 {
   "success": true,
-  "date": "20-10-2026",
-  "dateISO": "2026-10-20",
-  "total": 59,
-  "fullyCancelledCount": 19,
-  "partiallyCancelledCount": 40,
-  "trains": [
+  "trainNumber": "12557",
+  "trainName": "SAPT KRANTI EXP",
+  "from": "NKE",
+  "to": "ANVT",
+  "date": "17-11-2026",
+  "class": "3A",
+  "quota": "GN",
+  "availability": [
     {
-      "trainNumber": "11002",
-      "trainName": "NANDIGRAM EXP",
-      "source": "BALHARSHAH",
-      "destination": "C SHIVAJI MAH T",
-      "trainType": "EXPRESS",
-      "isPartial": true,
-      "cancellationType": "PARTIALLY_CANCELLED",
-      "cancelledFromStation": "DR",
-      "cancelledToStation": "CSMT",
-      "startDate": "20-10-2026",
-      "railwayTimestamp": "2026-10-01T10:34:23.283000"
+      "date": "2026-11-17",
+      "status": "REGRET/GNWL151",
+      "type": "REGRET",
+      "currentBooking": "N"
+    },
+    {
+      "date": "2026-11-18",
+      "status": "GNWL271/WL140",
+      "type": "WAITLIST",
+      "currentBooking": "N"
+    },
+    {
+      "date": "2026-11-21",
+      "status": "AVAILABLE-0042",
+      "type": "AVAILABLE",
+      "currentBooking": "N"
     }
   ],
   "source": "irctc-api",
-  "_time": 0.0
+  "_cached": true,
+  "_time": 1.482
 }
 ```
 </details>
 
-<details open>
-<summary><b>5. Live Station Arrivals & Departures (<code>GET /api/v1/live/station/NDLS?hours=2</code>)</b></summary>
+<details>
+<summary><b>8. Vacant Seats After Chart Preparation (<code>GET /api/v1/trains/26501/chart-vacant?boardingStation=BTH&class=ALL</code>)</b></summary>
+
+```json
+{
+  "success": true,
+  "trainNumber": "26501",
+  "trainName": "VANDE BHARAT EX",
+  "boardingStation": "BTH",
+  "from": "PPTA",
+  "to": "GKP",
+  "date": "2026-10-23",
+  "chartStatus": {
+    "isChartPrepared": true,
+    "firstChartTime": "2026-10-23 07:30:38",
+    "currentChartTime": "2026-10-23 16:50:14",
+    "remoteStation": "PPTA",
+    "nextRemoteStation": "GKP"
+  },
+  "totalVacantBerths": 185,
+  "summaryByClass": {
+    "CC": 149,
+    "EC": 36
+  },
+  "vacantBerths": [
+    {
+      "coach": "C1",
+      "class": "CC",
+      "berthNo": 16,
+      "berthType": "Middle",
+      "berthCode": "M",
+      "cabin": "2",
+      "from": "BTH",
+      "to": "GKP"
+    },
+    {
+      "coach": "C1",
+      "class": "CC",
+      "berthNo": 17,
+      "berthType": "S",
+      "berthCode": "S",
+      "cabin": "2",
+      "from": "BMKI",
+      "to": "GKP"
+    }
+  ],
+  "coaches": [
+    { "coach": "C1", "class": "CC", "position": 0, "vacantBerths": 149 }
+  ],
+  "source": "irctc-charts",
+  "syncedAt": "2026-10-23T11:20:00.000Z",
+  "_cached": true,
+  "_time": 0.899
+}
+```
+</details>
+
+<details>
+<summary><b>9. Station by Name (<code>GET /api/v1/trains/stations?q=patna</code>)</b></summary>
+
+```json
+{
+  "success": true,
+  "data": [
+    { "code": "PNBE", "name": "Patna Junction", "state": "Bihar" },
+    { "code": "PPTA", "name": "Patliputra Junction", "state": "Bihar" },
+    { "code": "PNC", "name": "Patna Saheb", "state": "Bihar" },
+    { "code": "RJPB", "name": "Rajendra Nagar Terminal", "state": "Bihar" }
+  ],
+  "source": "irctc-api",
+  "cached": true,
+  "_time": 0.84
+}
+```
+</details>
+
+<details>
+<summary><b>10. Station Timetable (<code>GET /api/v1/trains/stations/NDLS/timetable/2026-10-22</code>)</b></summary>
+
+```json
+{
+  "success": true,
+  "data": {
+    "stationCode": "NDLS",
+    "day": "Thu",
+    "total": 241,
+    "trains": [
+      {
+        "trainNo": "12004",
+        "trainName": "LKO SHTBDI EXP",
+        "trainType": "SHATABDI",
+        "arrival": null,
+        "departure": "06:10",
+        "dayOffset": 0,
+        "from": "NDLS",
+        "to": "LKO",
+        "runsOn": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+      },
+      {
+        "trainNo": "12310",
+        "trainName": "RJPB TEJAS RAJ",
+        "trainType": "RAJDHANI",
+        "arrival": null,
+        "departure": "17:10",
+        "dayOffset": 0,
+        "from": "NDLS",
+        "to": "RJPB",
+        "runsOn": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+      }
+    ]
+  },
+  "source": "irctc-api",
+  "cached": true,
+  "_time": 7.458
+}
+```
+</details>
+
+<details>
+<summary><b>11. Station by Code (<code>GET /api/v1/trains/stations/NDLS</code>)</b></summary>
+
+```json
+{
+  "success": true,
+  "data": {
+    "code": "NDLS",
+    "name": "New Delhi",
+    "state": "Delhi"
+  },
+  "source": "redis_offline",
+  "cached": true,
+  "_time": 3.685
+}
+```
+</details>
+
+<details>
+<summary><b>12. Live Train Running Status (<code>GET /api/v1/live/12558?date=2026-10-15</code>)</b></summary>
+
+```json
+{
+  "success": true,
+  "data": {
+    "trainNumber": "12558",
+    "trainName": "Sapt Kranti Exp",
+    "currentLocation": "KATHOLA",
+    "locationStatus": "departed from",
+    "currentDelayMin": 0,
+    "currentDelayStr": "Right Time",
+    "totalDistanceKm": 1060,
+    "totalHalts": 19,
+    "stops": [
+      {
+        "stationName": "Anand Vihar TRM",
+        "day": 1,
+        "date": "15-Oct",
+        "arrives": "14:46",
+        "delayMin": 11,
+        "delayStr": "+11 min",
+        "status": "passed",
+        "distanceKm": 0
+      },
+      {
+        "stationName": "Moradabad",
+        "day": 1,
+        "date": "15-Oct",
+        "arrives": "17:16",
+        "departs": "17:33",
+        "delayMin": 20,
+        "delayStr": "+20 min",
+        "status": "passed",
+        "distanceKm": 154
+      },
+      {
+        "stationName": "Muzaffarpur Jn",
+        "day": 2,
+        "date": "16-Oct",
+        "arrives": "11:06",
+        "departs": null,
+        "delayMin": 1,
+        "delayStr": "+1 min",
+        "status": "upcoming",
+        "distanceKm": 1060
+      }
+    ],
+    "updatedAt": "2026-10-15T18:57:35.462Z"
+  },
+  "source": "irctc-api",
+  "_time": 663.1
+}
+```
+</details>
+
+<details>
+<summary><b>13. Live Station Display Board (<code>GET /api/v1/live/station/NDLS?hours=2</code>)</b></summary>
 
 ```json
 {
@@ -714,120 +1041,45 @@ All responses return a standardized JSON envelope with microsecond-accurate serv
 </details>
 
 <details>
-<summary><b>6. Train Search Between Stations (<code>GET /api/v1/trains/search?from=NDLS&to=PNBE</code>)</b></summary>
-
-```json
-{
-  "success": true,
-  "data": [
-    {
-      "trainNo": "12309",
-      "trainName": "RJPB TEJAS RAJ",
-      "trainType": "RAJDHANI",
-      "fromStation": "NDLS",
-      "toStation": "PNBE",
-      "fromStationName": "NEW DELHI",
-      "toStationName": "PATNA JN",
-      "departure": "17:10",
-      "arrival": "06:50",
-      "durationMin": 820,
-      "durationStr": "13:40",
-      "runningDays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-      "distance": "1001",
-      "estimatedFare": 2240,
-      "halts": 4
-    }
-  ],
-  "source": "irctc-api",
-  "_time": 4.19
-}
-```
-</details>
-
-<details>
-<summary><b>7. Complete Train Route Schedule & Halts (<code>GET /api/v1/trains/12309</code>)</b></summary>
+<summary><b>14. PNR Status (<code>GET /api/v1/pnr/2434567890</code>)</b></summary>
 
 ```json
 {
   "success": true,
   "data": {
-    "trainNo": "12309",
+    "pnr": "2434567890",
+    "trainNumber": "12309",
     "trainName": "RJPB TEJAS RAJ",
-    "trainType": "RAJDHANI",
-    "runningDays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    "totalDistance": 1001,
-    "originCode": "RJPB",
-    "destinationCode": "NDLS",
-    "stationCodes": ["RJPB", "PNBE", "DDU", "PRYJ", "CNB", "NDLS"],
-    "stations": [
+    "from": { "code": "RJPB", "time": "19:10" },
+    "to": { "code": "NDLS", "time": "07:40" },
+    "journeyDate": "2026-10-20",
+    "class": "3A",
+    "quota": "GN",
+    "expectedPlatform": "1",
+    "chartStatus": "not prepared",
+    "passengers": [
       {
-        "seq": 1,
-        "code": "RJPB",
-        "name": "RAJENDRA NAGAR T",
-        "arrival": null,
-        "departure": "19:10",
-        "haltMinutes": 0,
-        "distanceKm": 0,
-        "lat": 25.6025,
-        "lng": 85.1638
+        "number": 1,
+        "status": "CNF",
+        "coach": "B1",
+        "seat": "42",
+        "berth": "LOWER",
+        "isConfirmed": true
       },
       {
-        "seq": 2,
-        "code": "PNBE",
-        "name": "PATNA JN",
-        "arrival": "19:25",
-        "departure": "19:35",
-        "haltMinutes": 10,
-        "distanceKm": 3,
-        "lat": 25.6022,
-        "lng": 85.1376
-      },
-      {
-        "seq": 6,
-        "code": "NDLS",
-        "name": "NEW DELHI",
-        "arrival": "07:40",
-        "departure": null,
-        "haltMinutes": 0,
-        "distanceKm": 1001,
-        "lat": 28.6424,
-        "lng": 77.2195
+        "number": 2,
+        "status": "CNF",
+        "coach": "B1",
+        "seat": "45",
+        "berth": "UPPER",
+        "isConfirmed": true
       }
-    ]
+    ],
+    "updatedAt": "2026-10-15T18:45:00.000Z",
+    "source": "irctc-api"
   },
   "source": "irctc-api",
-  "_time": 3.29
-}
-```
-</details>
-
-<details>
-<summary><b>8. Station Autocomplete (<code>GET /api/v1/trains/stations?q=patna</code>)</b></summary>
-
-```json
-{
-  "success": true,
-  "data": [
-    { "code": "PNBE", "name": "Patna Junction", "state": "Bihar" },
-    { "code": "PPTA", "name": "Patliputra Junction", "state": "Bihar" },
-    { "code": "PNC", "name": "Patna Saheb", "state": "Bihar" },
-    { "code": "RJPB", "name": "Rajendra Nagar Terminal", "state": "Bihar" }
-  ],
-  "source": "irctc-api",
-  "cached": true,
-  "_time": 0.84
-}
-```
-</details>
-
-<details>
-<summary><b>9. Gateway Health & Status (<code>GET /health</code>)</b></summary>
-
-```json
-{
-  "status": "up",
-  "version": "1.0.1",
-  "_time": 0.05
+  "_time": 412.5
 }
 ```
 </details>

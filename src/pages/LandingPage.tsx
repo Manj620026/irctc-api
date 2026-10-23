@@ -10,7 +10,9 @@ const FIREHOSE_LOGS = [
   { method: "GET", path: "/api/v1/live/station/NDLS?hours=2", status: 200, time: "1.1ms" },
   { method: "GET", path: "/api/v1/trains/cancelled", status: 200, time: "0.0ms" },
   { method: "GET", path: "/api/v1/trains/stations?q=patna", status: 200, time: "0.1ms" },
+  { method: "GET", path: "/api/v1/trains/12557/availability?from=NKE&to=ANVT", status: 200, time: "1.4s" },
   { method: "GET", path: "/api/v1/pnr/2434567890", status: 200, time: "0.8ms" },
+  { method: "GET", path: "/api/v1/trains/26501/chart-vacant?boardingStation=BTH", status: 200, time: "0.8s" },
   { method: "GET", path: "/api/v1/trains/12309", status: 200, time: "0.3ms" },
   { method: "GET", path: "/health", status: 200, time: "0.1ms" },
   { method: "GET", path: "/api/v1/trains/stations/NDLS", status: 200, time: "0.2ms" },
@@ -190,7 +192,7 @@ export default function LandingPage() {
                 rel="noreferrer"
                 className="hover:text-brand transition-colors font-mono text-[11px] text-textMuted/70 hover:underline py-1 px-1 rounded"
               >
-                v4.0.2 on npm ↗
+                v4.1.0 on npm ↗
               </a>
             </div>
           </div>
@@ -260,15 +262,23 @@ export default function LandingPage() {
               <div className="flex flex-col gap-3.5 sm:gap-4">
                 <div className="group cursor-default">
                   <div className="text-[10px] sm:text-[11px] font-mono text-emerald-400 mb-1 sm:mb-1.5 bg-emerald-400/10 inline-block px-2 py-0.5 rounded border border-emerald-400/20 break-all sm:break-normal">GET /api/v1/trains/search</div>
-                  <p className="text-xs sm:text-sm text-textMuted group-hover:text-textMain transition-colors leading-snug">Intelligent pathfinding between any two station codes on specific dates.</p>
+                  <p className="text-xs sm:text-sm text-textMuted group-hover:text-textMain transition-colors leading-snug">Find Trains (Between Stations) with intelligent pathfinding and running days.</p>
                 </div>
                 <div className="group cursor-default">
                   <div className="text-[10px] sm:text-[11px] font-mono text-emerald-400 mb-1 sm:mb-1.5 bg-emerald-400/10 inline-block px-2 py-0.5 rounded border border-emerald-400/20 break-all sm:break-normal">GET /api/v1/trains/:trainNo/fare</div>
-                  <p className="text-xs sm:text-sm text-textMuted group-hover:text-textMain transition-colors leading-snug">Real-time official IRCTC ticket fare breakup (Base, Superfast, GST, Catering).</p>
+                  <p className="text-xs sm:text-sm text-textMuted group-hover:text-textMain transition-colors leading-snug">Fare Lookup: real-time official ticket fare breakup across classes.</p>
+                </div>
+                <div className="group cursor-default">
+                  <div className="text-[10px] sm:text-[11px] font-mono text-emerald-400 mb-1 sm:mb-1.5 bg-emerald-400/10 inline-block px-2 py-0.5 rounded border border-emerald-400/20 break-all sm:break-normal">GET /api/v1/trains/:trainNo/availability</div>
+                  <p className="text-xs sm:text-sm text-textMuted group-hover:text-textMain transition-colors leading-snug">Seat Availability: official 14-day multi-class confirmation forecast.</p>
+                </div>
+                <div className="group cursor-default">
+                  <div className="text-[10px] sm:text-[11px] font-mono text-emerald-400 mb-1 sm:mb-1.5 bg-emerald-400/10 inline-block px-2 py-0.5 rounded border border-emerald-400/20 break-all sm:break-normal">GET /api/v1/trains/:trainNo/chart-vacant</div>
+                  <p className="text-xs sm:text-sm text-textMuted group-hover:text-textMain transition-colors leading-snug">Vacant Seats After Chart Preparation: current booking &amp; TTE berth allocations.</p>
                 </div>
                 <div className="group cursor-default">
                   <div className="text-[10px] sm:text-[11px] font-mono text-emerald-400 mb-1 sm:mb-1.5 bg-emerald-400/10 inline-block px-2 py-0.5 rounded border border-emerald-400/20 break-all sm:break-normal">GET /api/v1/trains/cancelled</div>
-                  <p className="text-xs sm:text-sm text-textMuted group-hover:text-textMain transition-colors leading-snug">Daily fully and partially cancelled trains across Indian Railways with 0ms cache.</p>
+                  <p className="text-xs sm:text-sm text-textMuted group-hover:text-textMain transition-colors leading-snug">Cancelled Trains: daily fully &amp; partially cancelled trains with 0ms cache.</p>
                 </div>
               </div>
             </div>
