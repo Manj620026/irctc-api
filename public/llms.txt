@@ -1,0 +1,189 @@
+# IRCTC API
+
+> High-performance developer platform and REST API gateway for Indian Railways. Access real-time PNR verification, live train GPS tracking, 14-day seat availability calendar forecasts, post-charting vacant berth allocations, real-time ticket fare breakups, and station intelligence.
+
+## Quickstart
+
+### 1. cURL
+```bash
+curl -s -H "x-api-key: YOUR_API_KEY" \
+  "https://api.irctc.dev/api/v1/pnr/2265248473"
+```
+
+### 2. Node.js & TypeScript
+```bash
+npm install irctc-api
+```
+```typescript
+import { IrctcApi } from 'irctc-api';
+
+const client = new IrctcApi({ apiKey: 'YOUR_API_KEY' });
+
+// 1. Live 14-day seat availability forecast (date: DD-MM-YYYY)
+const seats = await client.trains.getAvailability('12557', {
+  from: 'NKE',
+  to: 'ANVT',
+  date: '17-11-2026',
+  class: '3A',
+  quota: 'GN',
+});
+console.log(seats.availability[0]);
+
+// 2. Real-time vacant berths after chart preparation (Current Booking)
+const vacant = await client.trains.getChartVacant('26501', {
+  boardingStation: 'BTH',
+  class: 'ALL',
+});
+console.log(`Vacant Berths: ${vacant.totalVacantBerths}`);
+
+// 3. Live PNR status (10-digit number)
+const pnr = await client.pnr.check('2265248473');
+console.log(`Train: ${pnr.trainNumber} | Status: ${pnr.chartStatus}`);
+```
+
+### 3. Python
+```bash
+pip install requests
+```
+```python
+import requests
+
+BASE_URL = "https://api.irctc.dev"
+headers = {"x-api-key": "YOUR_API_KEY", "accept": "application/json"}
+
+# Live seat availability (date: DD-MM-YYYY)
+res = requests.get(
+    f"{BASE_URL}/api/v1/trains/12557/availability",
+    params={"from": "NKE", "to": "ANVT", "date": "17-11-2026", "class": "3A", "quota": "GN"},
+    headers=headers
+)
+print(res.json())
+```
+
+---
+
+## API Gateway Overview
+
+- **Base URL:** `https://api.irctc.dev`
+- **Protocol:** HTTPS REST with JSON responses and microsecond execution timestamps (`_time` in ms)
+- **Authentication:** Header `x-api-key: YOUR_KEY` or `Authorization: Bearer YOUR_KEY`
+- **Welcome Credits:** 10,000 free API credits upon signup at https://irctc.dev/dashboard
+- **Date Format Rule:**
+  - Route Search (`/api/v1/trains/search`): `YYYY-MM-DD`
+  - Seat Availability (`/api/v1/trains/:trainNo/availability`): `DD-MM-YYYY`
+  - Station Timetable (`/api/v1/trains/stations/:code/timetable/:date`): `DD-MM-YYYY`
+
+---
+
+## Core Endpoints
+
+### Trains & Booking
+- `GET /api/v1/trains/search?from=NDLS&to=PNBE&date=YYYY-MM-DD`: Sub-millisecond direct route search between stations.
+- `GET /api/v1/trains/search/name?name=shatabdi`: Instant prefix search for trains matching partial or full name.
+- `GET /api/v1/trains/:trainNo`: Full timetable, sequential route halts, distance, and lat/lng coordinates.
+- `GET /api/v1/trains/:trainNo/fare?from=ANVT&to=MFP&class=all&quota=GN`: Real-time ticket fare breakup across classes (Base, Superfast, GST, Catering).
+- `GET /api/v1/trains/:trainNo/availability?from=NKE&to=ANVT&date=DD-MM-YYYY&class=3A&quota=GN`: Real-time PRS seat & berth availability with 14-day forecast.
+- `GET /api/v1/trains/:trainNo/chart-vacant?boardingStation=BTH&class=ALL`: Real-time post-charting vacant berths for Current Booking & TTE allotment.
+- `GET /api/v1/trains/cancelled`: Daily fully and partially cancelled trains across Indian Railways with 0ms cache.
+
+### Stations & Timetables
+- `GET /api/v1/trains/stations?q=patna`: High-speed prefix-tree station autocomplete for 8,500+ Indian Railways stations.
+- `GET /api/v1/trains/stations/:code`: Station metadata, full name, railway zone, and state.
+- `GET /api/v1/trains/stations/:code/timetable/:date`: Complete daily scheduled arrivals and departures (`date: DD-MM-YYYY`).
+
+### Live Telemetry & PNR
+- `GET /api/v1/live/:trainNo`: Real-time GPS running position, current halt, and delay minutes.
+- `GET /api/v1/live/station/:stationCode?hours=2`: Real-time station arrivals & departures board with platform numbers and delay minutes.
+- `GET /api/v1/pnr/:pnr`: Live 10-digit PNR passenger manifest, berth/coach allocation, and charting status.
+
+### System & Health
+- `GET /health`: Public gateway liveness check returning `{"status":"up","version":"1.0.2"}`.
+
+---
+
+## Railway Constants Cheatsheet
+
+### Travel Classes
+- `1A`: First AC
+- `2A`: Second AC
+- `3A`: Third AC
+- `3E`: AC 3-Tier Economy
+- `SL`: Sleeper Class
+- `CC`: AC Chair Car
+- `2S`: Second Sitting (Non-AC)
+- `EC`: Executive Chair Car
+- `EA`: Anubhuti Executive Class
+
+### Booking Quotas
+- `GN`: General Quota (default)
+- `TQ`: Tatkal Quota
+- `PT`: Premium Tatkal Quota
+- `LD`: Ladies Quota
+- `SS`: Senior Citizen / Lower Berth Quota
+- `HP`: Physically Handicapped Quota
+
+### PNR Passenger Status
+- `CNF`: Confirmed (Berth and Coach assigned)
+- `RAC`: Reservation Against Cancellation (Guaranteed seat onboard, shared berth)
+- `WL`: Waitlist (Not guaranteed travel)
+- `RLWL`: Remote Location Waitlist
+- `PQWL`: Pooled Quota Waitlist
+- `CAN`: Cancelled
+
+### Berth Identifiers
+- `LB`: Lower Berth | `MB`: Middle Berth | `UB`: Upper Berth
+- `SL`: Side Lower | `SU`: Side Upper | `SM`: Side Middle (3E coaches)
+- `WS`: Window Seat (Chair Car)
+
+---
+
+## Standard Error Envelope
+
+When a request encounters an error (HTTP 4xx/5xx), the gateway returns:
+
+```json
+{
+  "success": false,
+  "error": "Detailed error message",
+  "code": "ERROR_CODE",
+  "_time": 0.42
+}
+```
+
+### Standard Error Codes
+- `BAD_REQUEST` (400): Missing or malformed parameters.
+- `UNAUTHORIZED` (401): Missing or invalid API key.
+- `INSUFFICIENT_CREDITS` (402): Account credit balance exhausted. Top up via dashboard.
+- `FORBIDDEN` (403): Account suspended or permission denied.
+- `NOT_FOUND` (404): Resource (train, station, or PNR) not found.
+- `RATE_LIMIT_EXCEEDED` (429): Concurrency limit reached.
+- `SERVICE_UNAVAILABLE` (503): Upstream railway system under maintenance.
+
+---
+
+## Documentation & Guides
+
+- [Developer Portal](https://irctc.dev): Developer platform, playground, and account dashboard.
+- [API Documentation](https://irctc.dev/docs): Interactive schema definitions and multi-language code snippets.
+- [API Playground](https://irctc.dev/playground): In-browser testing sandbox with real-time latency metrics.
+- [PNR Status API](https://irctc.dev/pnr-status-api): Real-time Indian Railways PNR passenger manifest, berth/coach allocation, and charting status.
+- [IRCTC Seat Availability API](https://irctc.dev/irctc-seats-availability-api): 14-day continuous calendar forecast across travel classes and quotas.
+- [Vacant Berths After Charting API](https://irctc.dev/chart-vacant-berths-api): Real-time vacant berths post-charting for Current Booking & TTE allotment.
+- [Live Train Running Status API](https://irctc.dev/live-train-status-api): Real-time satellite GPS tracking, current station, and delay minutes.
+- [Trains Between Stations API](https://irctc.dev/trains-between-stations-api): Direct route discovery, travel duration, running days, and base fares.
+- [Train Fare API](https://irctc.dev/train-fare-api): Real-time ticket fare calculation with itemized fee breakups (Base, Superfast, GST).
+- [Train Schedule API](https://irctc.dev/train-schedule-api): Full timetable, sequential station halts, distances, and GPS lat/lng coordinates.
+- [Developer Guides Hub](https://irctc.dev/guides): Step-by-step practical implementation guides and bot blueprints.
+- [WhatsApp Train Status Bot Guide](https://irctc.dev/guides/whatsapp-train-status-bot-nodejs): Tutorial on building a WhatsApp live train running status & PNR bot with Baileys and Node.js.
+- [Telegram Vacant Berths Alert Bot Guide](https://irctc.dev/guides/telegram-vacant-berths-alert-bot): Tutorial on monitoring chart preparation and sending Telegram alerts when vacant berths open for Current Booking.
+- [Check PNR Programmatically Guide](https://irctc.dev/guides/check-indian-railway-pnr-programmatically): Comprehensive guide to checking 10-digit Indian Railways PNR status with Node.js and Python.
+- [Automated Seat Availability Tracker Guide](https://irctc.dev/guides/irctc-seat-availability-tracker-python): Python daemon to monitor 14-day seat availability and send Telegram/Discord alerts when seats open.
+- [NPM SDK Client](https://www.npmjs.com/package/irctc-api): Zero-dependency Node.js and TypeScript client library (`v4.1.0`).
+
+---
+
+## Optional
+
+- [Full LLM Specification](https://irctc.dev/llms-full.txt): Comprehensive machine-readable API catalog with full schemas and complete responses for all 14 endpoints.
+- [OpenAPI Specification](https://irctc.dev/openapi.json): Authoritative OpenAPI 3.1.0 JSON schema definition.
+- [Postman Collection](https://irctc.dev/postman_collection.json): Pre-configured Postman Collection v2.1.0 for rapid B2B testing.

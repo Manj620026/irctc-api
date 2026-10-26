@@ -30,6 +30,49 @@ const Privacy = () => {
 
   return (
     <div className="min-h-screen bg-[#050505] text-[#e0e0e0] font-sans selection:bg-white selection:text-black pb-16 sm:pb-24 md:pb-32">
+      {/* Schema.org Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@graph': [
+              {
+                '@type': 'WebPage',
+                '@id': 'https://irctc.dev/privacy/#webpage',
+                url: 'https://irctc.dev/privacy',
+                name: 'Privacy Policy & Data Protection Practices — IRCTC API',
+                description: 'Learn how IRCTC API collects, stores, processes, and protects developer information in compliance with Indian DPDP Act 2023 and GDPR data protection regulations.',
+                isPartOf: {
+                  '@id': 'https://irctc.dev/#website'
+                },
+                about: {
+                  '@id': 'https://irctc.dev/#webapi'
+                },
+                inLanguage: 'en-IN'
+              },
+              {
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                  {
+                    '@type': 'ListItem',
+                    position: 1,
+                    name: 'Home',
+                    item: 'https://irctc.dev'
+                  },
+                  {
+                    '@type': 'ListItem',
+                    position: 2,
+                    name: 'Privacy Policy',
+                    item: 'https://irctc.dev/privacy'
+                  }
+                ]
+              }
+            ]
+          })
+        }}
+      />
+
       {/* Header */}
       <header className="relative border-b border-white/10 px-4 sm:px-6 pt-12 sm:pt-24 md:pt-28 pb-8 sm:pb-16 md:pb-20">
         <div className="mx-auto max-w-7xl flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-12">

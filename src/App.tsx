@@ -6,6 +6,9 @@ import LandingPage from './pages/LandingPage';
 import Dashboard from './pages/Dashboard';
 import ApiPlayground from './pages/ApiPlayground';
 import Docs from './pages/Docs';
+import FeatureLanding from './pages/FeatureLanding';
+import GuidesIndex from './pages/GuidesIndex';
+import GuideDetail from './pages/GuideDetail';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
 import AdminPortal from './pages/admin/AdminPortal';
@@ -13,11 +16,33 @@ import { AdminRoute } from './components/AdminRoute';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ErrorBoundary } from './ErrorBoundary';
 import { Toaster } from 'sonner';
+import { ROUTE_META } from './data/routeMeta';
 
-function ScrollToTop() {
+const CURRENT_YEAR = new Date().getFullYear();
+
+function RouteHeadManager() {
   const { pathname, hash } = useLocation();
 
   useEffect(() => {
+    // 1. Dynamic Head Title & Meta Description update per route
+    const meta = ROUTE_META[pathname] || {
+      title: 'IRCTC API — Sub-Millisecond Indian Railways Infrastructure',
+      desc: 'High-performance developer platform and REST API gateway for Indian Railways.',
+    };
+
+    document.title = meta.title;
+
+    let descEl = document.querySelector('meta[name="description"]');
+    if (descEl) {
+      descEl.setAttribute('content', meta.desc);
+    }
+
+    let canonicalEl = document.querySelector('link[rel="canonical"]');
+    if (canonicalEl) {
+      canonicalEl.setAttribute('href', `https://irctc.dev${pathname === '/' ? '/' : pathname}`);
+    }
+
+    // 2. Scroll to top or anchor hash
     if (hash) {
       const element = document.getElementById(hash.replace('#', ''));
       if (element) {
@@ -107,6 +132,36 @@ function Navigation() {
   );
 }
 
+function NotFound() {
+  return (
+    <div className="w-full max-w-3xl mx-auto px-4 py-24 sm:py-32 flex flex-col items-center text-center">
+      <div className="px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 font-mono text-xs mb-6">
+        HTTP 404 // NOT_FOUND
+      </div>
+      <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-textMain mb-4">
+        Endpoint Not Found
+      </h1>
+      <p className="text-sm sm:text-base text-textMuted max-w-lg mb-8 leading-relaxed">
+        The requested path or Indian Railways resource does not exist or has moved. Return to the home dashboard or explore our API reference.
+      </p>
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        <Link
+          to="/"
+          className="px-5 py-2.5 rounded-xl bg-brand text-white font-medium text-xs hover:bg-brand/90 transition-colors shadow-lg shadow-brand/20"
+        >
+          ← Return to Homepage
+        </Link>
+        <Link
+          to="/docs"
+          className="px-5 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.08] border border-white/10 text-textMain font-medium text-xs transition-colors"
+        >
+          Explore API Documentation
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 function AnimatedRoutes() {
   const location = useLocation();
   return (
@@ -116,11 +171,81 @@ function AnimatedRoutes() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/playground" element={<ApiPlayground />} />
         <Route path="/docs" element={<Docs />} />
+        <Route path="/pnr-status-api" element={<FeatureLanding slug="pnr-status-api" />} />
+        <Route path="/irctc-seats-availability-api" element={<FeatureLanding slug="irctc-seats-availability-api" />} />
+        <Route path="/chart-vacant-berths-api" element={<FeatureLanding slug="chart-vacant-berths-api" />} />
+        <Route path="/live-train-status-api" element={<FeatureLanding slug="live-train-status-api" />} />
+        <Route path="/trains-between-stations-api" element={<FeatureLanding slug="trains-between-stations-api" />} />
+        <Route path="/train-fare-api" element={<FeatureLanding slug="train-fare-api" />} />
+        <Route path="/train-schedule-api" element={<FeatureLanding slug="train-schedule-api" />} />
+        <Route path="/guides" element={<GuidesIndex />} />
+        <Route path="/guides/:slug" element={<GuideDetail />} />
         <Route path="/admin/*" element={<AdminRoute><AdminPortal /></AdminRoute>} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
+        <Route path="/404" element={<NotFound />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>
+  );
+}
+
+export function AppShell() {
+  const location = useLocation();
+  const hideFooter =
+    location.pathname === '/dashboard' ||
+    location.pathname === '/playground' ||
+    location.pathname.startsWith('/admin');
+
+  return (
+    <>
+      <RouteHeadManager />
+      <Toaster theme="dark" position="bottom-right" />
+      <Navigation />
+      <div className="min-h-[100dvh] bg-base text-textMain selection:bg-brand selection:text-white flex flex-col font-sans">
+        <main className={`flex-1 flex flex-col pt-16 sm:pt-24 ${hideFooter ? 'pb-4' : 'pb-8 sm:pb-4'}`}>
+          <ErrorBoundary><AnimatedRoutes /></ErrorBoundary>
+        </main>
+        {!hideFooter && (
+          <footer className="mt-auto border-t border-borderRoot bg-surface/30 px-4 py-8 sm:px-6 md:px-12 pb-[max(1.5rem,env(safe-area-inset-bottom))] text-xs text-textMuted">
+            <div className="max-w-7xl mx-auto flex flex-col gap-6">
+              <div className="flex flex-col gap-1 pb-6 border-b border-borderSubtle/60">
+                <span className="text-sm font-semibold text-textMain tracking-tight">IRCTC API Platform</span>
+                <p className="text-[11px] text-textMuted max-w-xl">
+                  Developer APIs and telemetry infrastructure for live Indian Railways data.
+                </p>
+              </div>
+
+              {/* Core APIs Crawl Network */}
+              <div className="flex flex-wrap items-center gap-x-5 sm:gap-x-7 gap-y-2 py-1 text-[11px] font-mono">
+                <Link to="/pnr-status-api" className="hover:text-textMain transition-colors">/pnr-status</Link>
+                <Link to="/irctc-seats-availability-api" className="hover:text-textMain transition-colors">/seat-availability</Link>
+                <Link to="/chart-vacant-berths-api" className="hover:text-textMain transition-colors">/chart-vacant</Link>
+                <Link to="/live-train-status-api" className="hover:text-textMain transition-colors">/live-train-status</Link>
+                <Link to="/trains-between-stations-api" className="hover:text-textMain transition-colors">/trains-between-stations</Link>
+                <Link to="/train-fare-api" className="hover:text-textMain transition-colors">/train-fare</Link>
+                <Link to="/train-schedule-api" className="hover:text-textMain transition-colors">/train-schedule</Link>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-borderSubtle/60 text-[11px]">
+                <p>© {CURRENT_YEAR} IRCTC API.</p>
+                <div className="flex items-center flex-wrap justify-center gap-x-3 sm:gap-x-4 gap-y-1.5 font-medium">
+                  <Link to="/docs" className="hover:text-textMain transition-colors">Docs</Link>
+                  <span className="text-white/20 select-none">•</span>
+                  <Link to="/guides" className="hover:text-textMain transition-colors">Guides</Link>
+                  <span className="text-white/20 select-none">•</span>
+                  <a href="https://github.com/Manj620026" target="_blank" rel="noreferrer" className="hover:text-textMain transition-colors">GitHub</a>
+                  <span className="text-white/20 select-none">•</span>
+                  <Link to="/terms" className="hover:text-textMain transition-colors">Terms</Link>
+                  <span className="text-white/20 select-none">•</span>
+                  <Link to="/privacy" className="hover:text-textMain transition-colors">Privacy</Link>
+                </div>
+              </div>
+            </div>
+          </footer>
+        )}
+      </div>
+    </>
   );
 }
 
@@ -128,31 +253,7 @@ export default function App() {
   return (
     <AuthProvider>
       <Router>
-        <ScrollToTop />
-        <Toaster theme="dark" position="bottom-right" />
-        <Navigation />
-        <div className="min-h-[100dvh] bg-base text-textMain selection:bg-brand selection:text-white flex flex-col font-sans">
-          <main className="flex-1 flex flex-col pt-16 sm:pt-24 pb-8 sm:pb-4">
-            <ErrorBoundary><AnimatedRoutes /></ErrorBoundary>
-          </main>
-          <footer className="mt-auto border-t border-borderRoot bg-surface/30 px-4 py-5 sm:px-6 md:px-12 pb-[max(1.25rem,env(safe-area-inset-bottom))] flex flex-col sm:flex-row items-center justify-between text-xs text-textMuted gap-3.5 sm:gap-0">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 font-mono text-[11px] text-emerald-400/90">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse" />
-                Operational
-              </div>
-              <span className="text-borderRoot">|</span>
-              <p>© {new Date().getFullYear()} IRCTC API.</p>
-            </div>
-            <div className="flex items-center flex-wrap justify-center gap-4 sm:gap-6 text-[11px] sm:text-xs font-medium">
-              <Link to="/playground" className="hover:text-textMain transition-colors">Playground</Link>
-              <Link to="/dashboard" className="hover:text-textMain transition-colors">Dashboard</Link>
-              <a href="https://github.com/Manj620026" target="_blank" rel="noreferrer" className="hover:text-textMain transition-colors">GitHub</a>
-              <Link to="/terms" className="hover:text-textMain transition-colors">Terms</Link>
-              <Link to="/privacy" className="hover:text-textMain transition-colors">Privacy</Link>
-            </div>
-          </footer>
-        </div>
+        <AppShell />
       </Router>
     </AuthProvider>
   );

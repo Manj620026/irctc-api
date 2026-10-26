@@ -517,97 +517,195 @@ All responses return a standardized JSON envelope with microsecond-accurate serv
 ```json
 {
   "status": "up",
-  "version": "1.0.2",
-  "_time": 0.05
+  "version": "1.0.2"
 }
 ```
 </details>
 
 <details open>
-<summary><b>2. Find Trains (Between Stations) (<code>GET /api/v1/trains/search?from=NDLS&to=PNBE&date=2026-10-22</code>)</b></summary>
+<summary><b>2. Find Trains (Between Stations) (<code>GET /api/v1/trains/search?from=NDLS&to=GD&date=2026-10-24</code>)</b></summary>
 
 ```json
 {
   "success": true,
   "data": [
     {
-      "trainNo": "12304",
-      "trainName": "POORVA EXPRESS",
+      "trainNo": "12556",
+      "trainName": "GORAKHDHAM EXP",
       "trainType": "SUPERFAST",
       "fromStation": "NDLS",
-      "toStation": "PNBE",
+      "toStation": "GD",
       "fromStationName": "NEW DELHI",
-      "toStationName": "PATNA JN",
-      "trainSrc": "NDLS",
-      "trainDstn": "HWH",
-      "departure": "17:40",
-      "arrival": "06:48",
-      "durationMin": 788,
-      "durationStr": "13:08",
-      "runningDays": ["Wed", "Thu", "Sat", "Sun"],
+      "toStationName": "GONDA JN",
+      "trainSrc": "BTI",
+      "trainDstn": "GKP",
+      "departure": "21:25",
+      "arrival": "07:00",
+      "durationMin": 575,
+      "durationStr": "9:35",
+      "runningDays": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat",
+        "Sun"
+      ],
       "classes": [],
-      "distance": "995",
-      "estimatedFare": 518,
-      "halts": 9,
+      "distance": "631",
+      "estimatedFare": 372,
+      "halts": 4,
       "fromStationDayOffset": 0,
       "toStationDayOffset": 1
     },
     {
-      "trainNo": "12310",
-      "trainName": "RJPB TEJAS RAJ",
-      "trainType": "RAJDHANI",
+      "trainNo": "12566",
+      "trainName": "BIHAR S KRANTI",
+      "trainType": "SUPERFAST",
       "fromStation": "NDLS",
-      "toStation": "PNBE",
+      "toStation": "GD",
       "fromStationName": "NEW DELHI",
-      "toStationName": "PATNA JN",
+      "toStationName": "GONDA JN",
       "trainSrc": "NDLS",
-      "trainDstn": "RJPB",
-      "departure": "17:10",
-      "arrival": "04:38",
-      "durationMin": 688,
-      "durationStr": "11:28",
-      "runningDays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      "trainDstn": "DBG",
+      "departure": "12:45",
+      "arrival": "22:26",
+      "durationMin": 581,
+      "durationStr": "9:41",
+      "runningDays": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat",
+        "Sun"
+      ],
       "classes": [],
-      "distance": "996",
-      "estimatedFare": 518,
+      "distance": "639",
+      "estimatedFare": 376,
       "halts": 4,
+      "fromStationDayOffset": 0,
+      "toStationDayOffset": 0
+    },
+    {
+      "trainNo": "15566",
+      "trainName": "VAISHALI EXP",
+      "trainType": "MAIL_EXPRESS",
+      "fromStation": "NDLS",
+      "toStation": "GD",
+      "fromStationName": "NEW DELHI",
+      "toStationName": "GONDA JN",
+      "trainSrc": "NDLS",
+      "trainDstn": "LLP",
+      "departure": "20:40",
+      "arrival": "06:33",
+      "durationMin": 593,
+      "durationStr": "9:53",
+      "runningDays": [
+        "Mon",
+        "Tue",
+        "Wed",
+        "Thu",
+        "Fri",
+        "Sat",
+        "Sun"
+      ],
+      "classes": [],
+      "distance": "639",
+      "estimatedFare": 376,
+      "halts": 8,
       "fromStationDayOffset": 0,
       "toStationDayOffset": 1
     }
   ],
   "source": "irctc-api",
-  "cached": true,
-  "_time": 4.19
+  "isLive": false
 }
 ```
 </details>
 
 <details>
-<summary><b>3. Train by Name (<code>GET /api/v1/trains/search/name?name=rajdhani</code>)</b></summary>
+<summary><b>3. Train by Name (<code>GET /api/v1/trains/search/name?name=duronto</code>)</b></summary>
 
 ```json
 {
   "success": true,
   "data": [
     {
-      "trainNo": "12301",
-      "trainName": "RAJDHANI EXPRESS",
-      "trainType": "RAJDHANI",
-      "from": "HWH",
-      "to": "NDLS"
+      "trainNo": "12213",
+      "trainName": "YPR DEE DURONTO",
+      "trainType": "DURONTO",
+      "from": "YPR",
+      "to": "DEE"
     },
     {
-      "trainNo": "12302",
-      "trainName": "HWH RAJDHANI",
-      "trainType": "RAJDHANI",
-      "from": "NDLS",
+      "trainNo": "12214",
+      "trainName": "DEE YPR DURONTO",
+      "trainType": "DURONTO",
+      "from": "DEE",
+      "to": "YPR"
+    },
+    {
+      "trainNo": "12219",
+      "trainName": "SC DURONTO EXP",
+      "trainType": "DURONTO",
+      "from": "LTT",
+      "to": "SC"
+    },
+    {
+      "trainNo": "12220",
+      "trainName": "LTT DURONTO",
+      "trainType": "DURONTO",
+      "from": "SC",
+      "to": "LTT"
+    },
+    {
+      "trainNo": "12221",
+      "trainName": "HOWRAH DURONTO",
+      "trainType": "DURONTO",
+      "from": "PUNE",
       "to": "HWH"
+    },
+    {
+      "trainNo": "12222",
+      "trainName": "PUNE DURONTO EX",
+      "trainType": "DURONTO",
+      "from": "HWH",
+      "to": "PUNE"
+    },
+    {
+      "trainNo": "12223",
+      "trainName": "LTT ERS DURONTO",
+      "trainType": "DURONTO",
+      "from": "LTT",
+      "to": "ERS"
+    },
+    {
+      "trainNo": "12224",
+      "trainName": "ERS LTT DURONTO",
+      "trainType": "DURONTO",
+      "from": "ERS",
+      "to": "LTT"
+    },
+    {
+      "trainNo": "12227",
+      "trainName": "INDB DURONTO",
+      "trainType": "DURONTO",
+      "from": "MMCT",
+      "to": "INDB"
+    },
+    {
+      "trainNo": "12228",
+      "trainName": "MMCT DURONTO",
+      "trainType": "DURONTO",
+      "from": "INDB",
+      "to": "MMCT"
     }
   ],
   "total": 10,
-  "source": "irctc-api",
-  "cached": true,
-  "_time": 4.301
+  "source": "irctc-api"
 }
 ```
 </details>
@@ -620,9 +718,9 @@ All responses return a standardized JSON envelope with microsecond-accurate serv
   "success": true,
   "date": "23-10-2026",
   "dateISO": "2026-10-23",
-  "total": 64,
-  "fullyCancelledCount": 18,
-  "partiallyCancelledCount": 46,
+  "total": 65,
+  "fullyCancelledCount": 17,
+  "partiallyCancelledCount": 48,
   "trains": [
     {
       "trainNumber": "11002",
@@ -635,95 +733,303 @@ All responses return a standardized JSON envelope with microsecond-accurate serv
       "cancelledFromStation": "DR",
       "cancelledToStation": "CSMT",
       "startDate": "23-10-2026",
-      "railwayTimestamp": "2026-10-01T10:34:23.286000"
+      "railwayTimestamp": "2026-10-01T10:34:23.288000"
+    },
+    {
+      "trainNumber": "11020",
+      "trainName": "KONARK EXPRESS",
+      "source": "BHUBANESWAR NEW JN",
+      "destination": "C SHIVAJI MAH T",
+      "trainType": "EXPRESS",
+      "isPartial": true,
+      "cancellationType": "PARTIALLY_CANCELLED",
+      "cancelledFromStation": "DR",
+      "cancelledToStation": "CSMT",
+      "startDate": "23-10-2026",
+      "railwayTimestamp": "2026-10-01T06:09:16.750000"
+    },
+    {
+      "trainNumber": "12134",
+      "trainName": "MAJN CSMT SF EXP",
+      "source": "MANGALORE JN",
+      "destination": "C SHIVAJI MAH T",
+      "trainType": "EXPRESS",
+      "isPartial": true,
+      "cancellationType": "PARTIALLY_CANCELLED",
+      "cancelledFromStation": "TNA",
+      "cancelledToStation": "CSMT",
+      "startDate": "23-10-2026",
+      "railwayTimestamp": "2026-10-01T06:19:18.079000"
     }
   ],
-  "source": "irctc-api",
-  "_time": 0.0
+  "syncedAt": "2026-10-23T12:23:57.049Z",
+  "isArchivedFallback": true
 }
 ```
 </details>
 
 <details>
-<summary><b>5. Train by Number (<code>GET /api/v1/trains/12309</code>)</b></summary>
+<summary><b>5. Train by Number (<code>GET /api/v1/trains/26502</code>)</b></summary>
 
 ```json
 {
   "success": true,
   "data": {
-    "trainNo": "12309",
-    "trainName": "RJPB TEJAS RAJ",
-    "trainType": "RAJDHANI",
-    "runningDays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    "totalDistance": 1001,
-    "originCode": "RJPB",
-    "destinationCode": "NDLS",
-    "stationCodes": ["RJPB", "PNBE", "DDU", "PRYJ", "CNB", "NDLS"],
+    "trainNo": "26502",
+    "trainName": "VANDE BHARAT EXP",
+    "trainType": "VANDE_BHARAT",
+    "runningDays": [
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sun"
+    ],
+    "totalDistance": 384,
+    "originCode": "GKP",
+    "destinationCode": "PPTA",
+    "stationCodes": [
+      "GKP",
+      "CPJ",
+      "BUG",
+      "NKE",
+      "BTH",
+      "SGL",
+      "BMKI",
+      "MFP",
+      "HJP",
+      "PPTA"
+    ],
     "stations": [
       {
         "seq": 1,
-        "code": "RJPB",
-        "name": "RAJENDRA NAGAR T",
+        "code": "GKP",
+        "name": "GORAKHPUR JN",
         "arrival": null,
-        "departure": "19:10",
+        "departure": "05:40",
+        "arrivalMin": null,
+        "departureMin": 340,
+        "dayOffset": 0,
         "haltMinutes": 0,
         "distanceKm": 0,
-        "lat": 25.6025,
-        "lng": 85.1638
+        "lat": 26.7596884,
+        "lng": 83.381806,
+        "arrivalDayOffset": null
       },
       {
         "seq": 2,
-        "code": "PNBE",
-        "name": "PATNA JN",
-        "arrival": "19:25",
-        "departure": "19:35",
-        "haltMinutes": 10,
-        "distanceKm": 3,
-        "lat": 25.6022,
-        "lng": 85.1376
+        "code": "CPJ",
+        "name": "KAPTANGANJ JN",
+        "arrival": "06:24",
+        "departure": "06:26",
+        "arrivalMin": 384,
+        "departureMin": 386,
+        "dayOffset": 0,
+        "haltMinutes": 2,
+        "distanceKm": 40,
+        "lat": 26.9262389,
+        "lng": 83.69904849999999,
+        "arrivalDayOffset": 0
+      },
+      {
+        "seq": 3,
+        "code": "BUG",
+        "name": "BAGAHA",
+        "arrival": "07:30",
+        "departure": "07:32",
+        "arrivalMin": 450,
+        "departureMin": 452,
+        "dayOffset": 0,
+        "haltMinutes": 2,
+        "distanceKm": 109,
+        "lat": 27.1304131,
+        "lng": 84.0674887,
+        "arrivalDayOffset": 0
+      },
+      {
+        "seq": 4,
+        "code": "NKE",
+        "name": "NARKATIAGANJ JN",
+        "arrival": "08:08",
+        "departure": "08:10",
+        "arrivalMin": 488,
+        "departureMin": 490,
+        "dayOffset": 0,
+        "haltMinutes": 2,
+        "distanceKm": 151,
+        "lat": 27.1050503,
+        "lng": 84.4627715,
+        "arrivalDayOffset": 0
+      },
+      {
+        "seq": 5,
+        "code": "BTH",
+        "name": "BETTIAH",
+        "arrival": "08:36",
+        "departure": "08:38",
+        "arrivalMin": 516,
+        "departureMin": 518,
+        "dayOffset": 0,
+        "haltMinutes": 2,
+        "distanceKm": 187,
+        "lat": 26.805388,
+        "lng": 84.5223565,
+        "arrivalDayOffset": 0
       },
       {
         "seq": 6,
-        "code": "NDLS",
-        "name": "NEW DELHI",
-        "arrival": "07:40",
+        "code": "SGL",
+        "name": "SAGAULI JN",
+        "arrival": "08:54",
+        "departure": "08:56",
+        "arrivalMin": 534,
+        "departureMin": 536,
+        "dayOffset": 0,
+        "haltMinutes": 2,
+        "distanceKm": 209,
+        "lat": 26.7585186,
+        "lng": 84.7397626,
+        "arrivalDayOffset": 0
+      },
+      {
+        "seq": 7,
+        "code": "BMKI",
+        "name": "BAPUDM MOTIHARI",
+        "arrival": "09:18",
+        "departure": "09:20",
+        "arrivalMin": 558,
+        "departureMin": 560,
+        "dayOffset": 0,
+        "haltMinutes": 2,
+        "distanceKm": 231,
+        "lat": 26.6554373,
+        "lng": 84.9050998,
+        "arrivalDayOffset": 0
+      },
+      {
+        "seq": 8,
+        "code": "MFP",
+        "name": "MUZAFFARPUR JN",
+        "arrival": "10:45",
+        "departure": "10:50",
+        "arrivalMin": 645,
+        "departureMin": 650,
+        "dayOffset": 0,
+        "haltMinutes": 5,
+        "distanceKm": 310,
+        "lat": 26.1223553,
+        "lng": 85.3779498,
+        "arrivalDayOffset": 0
+      },
+      {
+        "seq": 9,
+        "code": "HJP",
+        "name": "HAJIPUR JN",
+        "arrival": "11:43",
+        "departure": "11:45",
+        "arrivalMin": 703,
+        "departureMin": 705,
+        "dayOffset": 0,
+        "haltMinutes": 2,
+        "distanceKm": 364,
+        "lat": 25.7019167,
+        "lng": 85.2149445,
+        "arrivalDayOffset": 0
+      },
+      {
+        "seq": 10,
+        "code": "PPTA",
+        "name": "PATLIPUTRA",
+        "arrival": "12:45",
         "departure": null,
+        "arrivalMin": 765,
+        "departureMin": null,
+        "dayOffset": 0,
         "haltMinutes": 0,
-        "distanceKm": 1001,
-        "lat": 28.6424,
-        "lng": 77.2195
+        "distanceKm": 384,
+        "lat": 25.6216198,
+        "lng": 85.0688695,
+        "arrivalDayOffset": 0
       }
-    ]
+    ],
+    "convertedAt": "2026-07-08T11:06:11.814Z",
+    "dataVersion": 2,
+    "source": "mntes"
   },
-  "source": "irctc-api",
-  "_time": 3.29
+  "source": "irctc-api"
 }
 ```
 </details>
 
 <details>
-<summary><b>6. Fare Lookup (<code>GET /api/v1/trains/12558/fare?from=ANVT&to=MFP&class=all&quota=GN</code>)</b></summary>
+<summary><b>6. Fare Lookup (<code>GET /api/v1/trains/12558/fare?from=ANVT&to=NKE&class=all&quota=GN</code>)</b></summary>
 
 ```json
 {
   "success": true,
   "trainNumber": "12558",
-  "trainName": "Sapt Kranti Exp",
+  "trainName": "SAPT KRANTI EXP",
   "from": "ANVT",
-  "to": "MFP",
+  "to": "NKE",
   "quota": "GN",
   "category": "Adult",
+  "availableClasses": [
+    {
+      "code": "1A",
+      "name": "First AC"
+    },
+    {
+      "code": "2A",
+      "name": "Second AC"
+    },
+    {
+      "code": "3A",
+      "name": "Third AC"
+    },
+    {
+      "code": "3E",
+      "name": "AC 3 Tier Economy"
+    },
+    {
+      "code": "SL",
+      "name": "Sleeper"
+    }
+  ],
+  "availableQuotas": [
+    {
+      "code": "GN",
+      "name": "General Quota"
+    },
+    {
+      "code": "TQ",
+      "name": "Tatkal Quota"
+    }
+  ],
   "totalClasses": 5,
   "fares": [
     {
       "class": "1A",
       "className": "First AC",
-      "totalFare": 3410,
+      "totalFare": 3045,
       "breakup": {
-        "baseFare": 3112,
+        "baseFare": 2765,
         "reservationCharge": 60,
         "superfastCharge": 75,
-        "gst": 163,
+        "gst": 145,
+        "cateringCharge": 0,
+        "dynamicFare": 0
+      }
+    },
+    {
+      "class": "2A",
+      "className": "Second AC",
+      "totalFare": 1825,
+      "breakup": {
+        "baseFare": 1643,
+        "reservationCharge": 50,
+        "superfastCharge": 45,
+        "gst": 87,
         "cateringCharge": 0,
         "dynamicFare": 0
       }
@@ -731,12 +1037,25 @@ All responses return a standardized JSON envelope with microsecond-accurate serv
     {
       "class": "3A",
       "className": "Third AC",
-      "totalFare": 1445,
+      "totalFare": 1300,
       "breakup": {
-        "baseFare": 1291,
+        "baseFare": 1149,
         "reservationCharge": 40,
         "superfastCharge": 45,
-        "gst": 69,
+        "gst": 62,
+        "cateringCharge": 0,
+        "dynamicFare": 0
+      }
+    },
+    {
+      "class": "3E",
+      "className": "AC 3 Tier Economy",
+      "totalFare": 1205,
+      "breakup": {
+        "baseFare": 1062,
+        "reservationCharge": 40,
+        "superfastCharge": 45,
+        "gst": 58,
         "cateringCharge": 0,
         "dynamicFare": 0
       }
@@ -744,9 +1063,9 @@ All responses return a standardized JSON envelope with microsecond-accurate serv
     {
       "class": "SL",
       "className": "Sleeper",
-      "totalFare": 565,
+      "totalFare": 505,
       "breakup": {
-        "baseFare": 515,
+        "baseFare": 454,
         "reservationCharge": 20,
         "superfastCharge": 30,
         "gst": 0,
@@ -755,8 +1074,7 @@ All responses return a standardized JSON envelope with microsecond-accurate serv
       }
     }
   ],
-  "_cached": true,
-  "_time": 7.0
+  "_cached": false
 }
 ```
 </details>
@@ -788,6 +1106,18 @@ All responses return a standardized JSON envelope with microsecond-accurate serv
       "currentBooking": "N"
     },
     {
+      "date": "2026-11-19",
+      "status": "GNWL200/WL138",
+      "type": "WAITLIST",
+      "currentBooking": "N"
+    },
+    {
+      "date": "2026-11-20",
+      "status": "GNWL160/WL110",
+      "type": "WAITLIST",
+      "currentBooking": "N"
+    },
+    {
       "date": "2026-11-21",
       "status": "AVAILABLE-0042",
       "type": "AVAILABLE",
@@ -802,119 +1132,276 @@ All responses return a standardized JSON envelope with microsecond-accurate serv
 </details>
 
 <details>
-<summary><b>8. Vacant Seats After Chart Preparation (<code>GET /api/v1/trains/26501/chart-vacant?boardingStation=BTH&class=ALL</code>)</b></summary>
+<summary><b>8. Vacant Seats After Chart Preparation (<code>GET /api/v1/trains/12557/chart-vacant?boardingStation=GKP&date=2026-10-24&class=ALL</code>)</b></summary>
 
 ```json
 {
   "success": true,
-  "trainNumber": "26501",
-  "trainName": "VANDE BHARAT EX",
-  "boardingStation": "BTH",
-  "from": "PPTA",
-  "to": "GKP",
-  "date": "2026-10-23",
+  "trainNumber": "12557",
+  "trainName": "SAPT KRANTI EXP",
+  "boardingStation": "GKP",
+  "from": "MFP",
+  "to": "ANVT",
+  "date": "2026-10-24",
   "chartStatus": {
     "isChartPrepared": true,
-    "firstChartTime": "2026-10-23 07:30:38",
-    "currentChartTime": "2026-10-23 16:50:14",
-    "remoteStation": "PPTA",
-    "nextRemoteStation": "GKP"
+    "firstChartTime": "2026-10-24 08:40:47",
+    "currentChartTime": null,
+    "remoteStation": "GKP",
+    "nextRemoteStation": "LKO"
   },
-  "totalVacantBerths": 185,
+  "totalVacantBerths": 0,
   "summaryByClass": {
-    "CC": 149,
-    "EC": 36
+    "2A": 0,
+    "3A": 0,
+    "1A": 0,
+    "3E": 0,
+    "SL": 0
   },
-  "vacantBerths": [
+  "vacantBerths": [],
+  "coaches": [
     {
-      "coach": "C1",
-      "class": "CC",
-      "berthNo": 16,
-      "berthType": "Middle",
-      "berthCode": "M",
-      "cabin": "2",
-      "from": "BTH",
-      "to": "GKP"
+      "coach": "A1",
+      "class": "2A",
+      "position": 0,
+      "vacantBerths": 0
     },
     {
-      "coach": "C1",
-      "class": "CC",
-      "berthNo": 17,
-      "berthType": "S",
-      "berthCode": "S",
-      "cabin": "2",
-      "from": "BMKI",
-      "to": "GKP"
+      "coach": "A2",
+      "class": "2A",
+      "position": 0,
+      "vacantBerths": 0
+    },
+    {
+      "coach": "B1",
+      "class": "3A",
+      "position": 0,
+      "vacantBerths": 0
+    },
+    {
+      "coach": "B2",
+      "class": "3A",
+      "position": 0,
+      "vacantBerths": 0
+    },
+    {
+      "coach": "B3",
+      "class": "3A",
+      "position": 0,
+      "vacantBerths": 0
+    },
+    {
+      "coach": "B4",
+      "class": "3A",
+      "position": 0,
+      "vacantBerths": 0
+    },
+    {
+      "coach": "B5",
+      "class": "3A",
+      "position": 0,
+      "vacantBerths": 0
+    },
+    {
+      "coach": "H1",
+      "class": "1A",
+      "position": 0,
+      "vacantBerths": 0
+    },
+    {
+      "coach": "M1",
+      "class": "3E",
+      "position": 0,
+      "vacantBerths": 0
+    },
+    {
+      "coach": "S1",
+      "class": "SL",
+      "position": 0,
+      "vacantBerths": 0
+    },
+    {
+      "coach": "S2",
+      "class": "SL",
+      "position": 0,
+      "vacantBerths": 0
+    },
+    {
+      "coach": "S3",
+      "class": "SL",
+      "position": 0,
+      "vacantBerths": 0
+    },
+    {
+      "coach": "S4",
+      "class": "SL",
+      "position": 0,
+      "vacantBerths": 0
+    },
+    {
+      "coach": "S5",
+      "class": "SL",
+      "position": 0,
+      "vacantBerths": 0
+    },
+    {
+      "coach": "S6",
+      "class": "SL",
+      "position": 0,
+      "vacantBerths": 0
     }
   ],
-  "coaches": [
-    { "coach": "C1", "class": "CC", "position": 0, "vacantBerths": 149 }
-  ],
   "source": "irctc-charts",
-  "syncedAt": "2026-10-23T11:20:00.000Z",
-  "_cached": true,
-  "_time": 0.899
+  "syncedAt": "2026-10-24T07:36:22.920Z"
 }
 ```
 </details>
 
 <details>
-<summary><b>9. Station by Name (<code>GET /api/v1/trains/stations?q=patna</code>)</b></summary>
+<summary><b>9. Station by Name (<code>GET /api/v1/trains/stations?q=pur</code>)</b></summary>
 
 ```json
 {
   "success": true,
   "data": [
-    { "code": "PNBE", "name": "Patna Junction", "state": "Bihar" },
-    { "code": "PPTA", "name": "Patliputra Junction", "state": "Bihar" },
-    { "code": "PNC", "name": "Patna Saheb", "state": "Bihar" },
-    { "code": "RJPB", "name": "Rajendra Nagar Terminal", "state": "Bihar" }
+    {
+      "code": "AAM",
+      "name": "Angadippuram",
+      "state": "Malappuram"
+    },
+    {
+      "code": "AAP",
+      "name": "Ambiapur",
+      "state": "Ambiapur"
+    },
+    {
+      "code": "ABKP",
+      "name": "Ambikapur",
+      "state": "Ambikapur"
+    },
+    {
+      "code": "ABP",
+      "name": "Akbarpur",
+      "state": "Akbarpur"
+    },
+    {
+      "code": "ADR",
+      "name": "Mandi Adampur",
+      "state": "Adampur"
+    },
+    {
+      "code": "ADTP",
+      "name": "Adityapur",
+      "state": "Jamshedpur"
+    },
+    {
+      "code": "ADX",
+      "name": "Adapur",
+      "state": ""
+    },
+    {
+      "code": "AFR",
+      "name": "Asafpur",
+      "state": "Asafpur"
+    }
   ],
   "source": "irctc-api",
-  "cached": true,
-  "_time": 0.84
+  "degraded": false,
+  "cached": false
 }
 ```
 </details>
 
 <details>
-<summary><b>10. Station Timetable (<code>GET /api/v1/trains/stations/NDLS/timetable/2026-10-22</code>)</b></summary>
+<summary><b>10. Station Timetable (<code>GET /api/v1/trains/stations/NKE/timetable/2026-10-24</code>)</b></summary>
 
 ```json
 {
   "success": true,
   "data": {
-    "stationCode": "NDLS",
-    "day": "Thu",
-    "total": 241,
+    "stationCode": "NKE",
+    "day": "Sat",
+    "total": 53,
     "trains": [
       {
-        "trainNo": "12004",
-        "trainName": "LKO SHTBDI EXP",
-        "trainType": "SHATABDI",
+        "trainNo": "63374",
+        "trainName": "NKE-RXL-DBG MEMU",
+        "trainType": "SUBURBAN",
         "arrival": null,
-        "departure": "06:10",
+        "departure": "02:35",
         "dayOffset": 0,
-        "from": "NDLS",
-        "to": "LKO",
-        "runsOn": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        "from": "NKE",
+        "to": "DBG",
+        "runsOn": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat",
+          "Sun"
+        ]
       },
       {
-        "trainNo": "12310",
-        "trainName": "RJPB TEJAS RAJ",
-        "trainType": "RAJDHANI",
+        "trainNo": "63338",
+        "trainName": "NKE-MFP MEMU",
+        "trainType": "SUBURBAN",
         "arrival": null,
-        "departure": "17:10",
+        "departure": "02:45",
         "dayOffset": 0,
-        "from": "NDLS",
-        "to": "RJPB",
-        "runsOn": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        "from": "NKE",
+        "to": "MFP",
+        "runsOn": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat",
+          "Sun"
+        ]
+      },
+      {
+        "trainNo": "15515",
+        "trainName": "NKE-DNR EXPRESS",
+        "trainType": "MAIL_EXPRESS",
+        "arrival": null,
+        "departure": "03:25",
+        "dayOffset": 0,
+        "from": "NKE",
+        "to": "DNR",
+        "runsOn": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat",
+          "Sun"
+        ]
+      },
+      {
+        "trainNo": "15202",
+        "trainName": "BUG-PPTA INTERCITY EXP",
+        "trainType": "MAIL_EXPRESS",
+        "arrival": "04:55",
+        "departure": "05:05",
+        "dayOffset": 0,
+        "from": "BUG",
+        "to": "PPTA",
+        "runsOn": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat",
+          "Sun"
+        ]
       }
     ]
   },
-  "source": "irctc-api",
-  "cached": true,
-  "_time": 7.458
+  "source": "irctc-api"
 }
 ```
 </details>
@@ -930,156 +1417,254 @@ All responses return a standardized JSON envelope with microsecond-accurate serv
     "name": "New Delhi",
     "state": "Delhi"
   },
-  "source": "redis_offline",
-  "cached": true,
-  "_time": 3.685
+  "source": "irctc-api",
+  "cached": true
 }
 ```
 </details>
 
 <details>
-<summary><b>12. Live Train Running Status (<code>GET /api/v1/live/12558?date=2026-10-15</code>)</b></summary>
+<summary><b>12. Live Train Running Status (<code>GET /api/v1/live/12557?date=2026-10-24</code>)</b></summary>
 
 ```json
 {
   "success": true,
   "data": {
-    "trainNumber": "12558",
+    "trainNumber": "12557",
     "trainName": "Sapt Kranti Exp",
-    "currentLocation": "KATHOLA",
+    "currentLocation": "Chakia",
     "locationStatus": "departed from",
-    "currentDelayMin": 0,
-    "currentDelayStr": "Right Time",
+    "currentDelayMin": 33,
+    "currentDelayStr": "+33 min",
+    "lastUpdated": "24 Oct 2026 12:58,",
     "totalDistanceKm": 1060,
-    "totalHalts": 19,
+    "totalHalts": 18,
     "stops": [
       {
-        "stationName": "Anand Vihar TRM",
+        "stationName": "Muzaffarpur Jn",
         "day": 1,
-        "date": "15-Oct",
-        "arrives": "14:46",
+        "date": "24-Oct",
+        "arrives": "11:46",
+        "departs": null,
         "delayMin": 11,
         "delayStr": "+11 min",
+        "isOnTime": false,
         "status": "passed",
         "distanceKm": 0
       },
       {
-        "stationName": "Moradabad",
+        "stationName": "Motipur",
         "day": 1,
-        "date": "15-Oct",
-        "arrives": "17:16",
-        "departs": "17:33",
-        "delayMin": 20,
-        "delayStr": "+20 min",
+        "date": "24-Oct",
+        "arrives": "12:10",
+        "departs": "12:12",
+        "delayMin": 3,
+        "delayStr": "+3 min",
+        "isOnTime": false,
         "status": "passed",
-        "distanceKm": 154
+        "distanceKm": 26
       },
       {
-        "stationName": "Muzaffarpur Jn",
+        "stationName": "Mehsi",
+        "day": 1,
+        "date": "24-Oct",
+        "arrives": "12:28",
+        "departs": "12:30",
+        "delayMin": 6,
+        "delayStr": "+6 min",
+        "isOnTime": false,
+        "status": "passed",
+        "distanceKm": 39
+      },
+      {
+        "stationName": "Chakia",
+        "day": 1,
+        "date": "24-Oct",
+        "arrives": "12:58",
+        "departs": "13:09",
+        "delayMin": 33,
+        "delayStr": "+33 min",
+        "isOnTime": false,
+        "status": "current",
+        "distanceKm": 48
+      },
+      {
+        "stationName": "Moradabad",
         "day": 2,
-        "date": "16-Oct",
-        "arrives": "11:06",
-        "departs": null,
-        "delayMin": 1,
-        "delayStr": "+1 min",
+        "date": "25-Oct",
+        "arrives": "05:46",
+        "departs": "05:54",
+        "delayMin": 64,
+        "delayStr": "+64 min",
+        "isOnTime": false,
         "status": "upcoming",
-        "distanceKm": 1060
+        "distanceKm": 906
+      },
+      {
+        "stationName": "Anand Vihar TRM",
+        "day": 2,
+        "date": "25-Oct",
+        "arrives": "09:09",
+        "departs": null,
+        "delayMin": 89,
+        "delayStr": "+89 min",
+        "isOnTime": false,
+        "status": "upcoming",
+        "distanceKm": 1059
       }
     ],
-    "updatedAt": "2026-10-15T18:57:35.462Z"
+    "updatedAt": "2026-10-24T07:38:35.596Z",
+    "source": "confirmtkt-fetch"
   },
-  "source": "irctc-api",
-  "_time": 663.1
+  "source": "irctc-api"
 }
 ```
 </details>
 
 <details>
-<summary><b>13. Live Station Display Board (<code>GET /api/v1/live/station/NDLS?hours=2</code>)</b></summary>
+<summary><b>13. Live Station Display Board (<code>GET /api/v1/live/station/GKP?hours=2</code>)</b></summary>
 
 ```json
 {
   "success": true,
-  "stationCode": "NDLS",
-  "stationName": "NEW DELHI",
-  "hours": 2,
-  "toStation": null,
-  "totalTrains": 28,
+  "stationCode": "GKP",
+  "stationName": "GORAKHPUR JN",
+  "totalTrains": 23,
   "trains": [
     {
-      "trainNo": "12004",
-      "trainName": "LKO SHTBDI EXP",
-      "route": "NDLS-LKO",
-      "trainType": "SHATABDI",
+      "trainNo": "04013",
+      "trainName": "LKQ ANVT SPL",
+      "route": "LKQ-ANVT",
+      "trainType": "TRAIN ON DEMAND 2A,3A,SL,GEN,PWD",
       "platform": {
-        "number": "1",
+        "number": "6",
+        "isProvisional": true
+      },
+      "hasCoachPosition": true,
+      "arrival": {
+        "isSource": false,
+        "scheduled": "10:25",
+        "actualOrEstimated": "12:16*",
+        "delay": "01:51 Hrs.",
+        "delayMinutes": 111,
+        "status": "DELAYED"
+      },
+      "departure": {
+        "isDestination": false,
+        "scheduled": "10:35",
+        "actualOrEstimated": "12:21*",
+        "delay": "01:46 Hrs.",
+        "delayMinutes": 106,
+        "status": "DELAYED"
+      }
+    },
+    {
+      "trainNo": "22551",
+      "trainName": "DBG-JUC ANTYODAY EXPRESS",
+      "route": "DBG-JUC",
+      "trainType": "SUPERFAST GEN",
+      "platform": {
+        "number": "4",
         "isProvisional": false
       },
       "hasCoachPosition": true,
       "arrival": {
-        "isSource": true,
-        "scheduled": null,
-        "actualOrEstimated": null,
-        "delay": "Originates Here",
-        "delayMinutes": 0,
-        "status": "SOURCE"
+        "isSource": false,
+        "scheduled": "10:40",
+        "actualOrEstimated": "12:56",
+        "delay": "02:16 Hrs.",
+        "delayMinutes": 136,
+        "status": "DELAYED"
       },
       "departure": {
         "isDestination": false,
-        "scheduled": "06:10",
-        "actualOrEstimated": "06:10",
-        "delay": "On Time",
+        "scheduled": "10:50",
+        "actualOrEstimated": "13:01*",
+        "delay": "02:11 Hrs.",
+        "delayMinutes": 131,
+        "status": "DELAYED"
+      }
+    },
+    {
+      "trainNo": "55032",
+      "trainName": "GD-GKP PASSENGER",
+      "route": "GD-GKP",
+      "trainType": "PASSENGER GEN,PWD",
+      "platform": {
+        "number": "4",
+        "isProvisional": true
+      },
+      "hasCoachPosition": true,
+      "arrival": {
+        "isSource": false,
+        "scheduled": "09:05",
+        "actualOrEstimated": "13:05*",
+        "delay": "04:00 Hrs.",
+        "delayMinutes": 240,
+        "status": "DELAYED"
+      },
+      "departure": {
+        "isDestination": true,
+        "scheduled": null,
+        "actualOrEstimated": null,
+        "delay": "Terminates Here",
         "delayMinutes": 0,
-        "status": "ON_TIME"
+        "status": "DESTINATION"
       }
     }
   ],
-  "source": "irctc-api",
-  "_time": 210.4
+  "hours": 2,
+  "toStation": null,
+  "queryTime": "2026-10-24T07:38:47.241Z"
 }
 ```
 </details>
 
 <details>
-<summary><b>14. PNR Status (<code>GET /api/v1/pnr/2434567890</code>)</b></summary>
+<summary><b>14. PNR Status (<code>GET /api/v1/pnr/2265248473</code>)</b></summary>
 
 ```json
 {
   "success": true,
   "data": {
-    "pnr": "2434567890",
-    "trainNumber": "12309",
-    "trainName": "RJPB TEJAS RAJ",
-    "from": { "code": "RJPB", "time": "19:10" },
-    "to": { "code": "NDLS", "time": "07:40" },
-    "journeyDate": "2026-10-20",
-    "class": "3A",
+    "pnr": "2265248473",
+    "trainNumber": "15726",
+    "trainName": "ANVT NJP EXP",
+    "from": {
+      "code": "MFP",
+      "time": "Nov 23, 2026 10:05:00 AM"
+    },
+    "to": {
+      "code": "NJP",
+      "time": "Nov 23, 2026 6:45:00 PM"
+    },
+    "journeyDate": "Nov 23, 2026 10:05:00 AM",
+    "class": "SL",
     "quota": "GN",
-    "expectedPlatform": "1",
-    "chartStatus": "not prepared",
+    "expectedPlatform": null,
+    "chartStatus": "chart not prepared",
     "passengers": [
       {
         "number": 1,
         "status": "CNF",
-        "coach": "B1",
-        "seat": "42",
-        "berth": "LOWER",
-        "isConfirmed": true
+        "coach": "S4",
+        "seat": "65",
+        "berth": "LOWER BERTH",
+        "raw": "CNF/S4/65/LB"
       },
       {
         "number": 2,
         "status": "CNF",
-        "coach": "B1",
-        "seat": "45",
-        "berth": "UPPER",
-        "isConfirmed": true
+        "coach": "S4",
+        "seat": "66",
+        "berth": "MIDDLE BERTH",
+        "raw": "CNF/S4/66/MB"
       }
     ],
-    "updatedAt": "2026-10-15T18:45:00.000Z",
-    "source": "irctc-api"
+    "updatedAt": "2026-10-24T07:40:06.056Z",
+    "source": "indianrail"
   },
-  "source": "irctc-api",
-  "_time": 412.5
+  "source": "irctc-api"
 }
 ```
 </details>

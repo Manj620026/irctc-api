@@ -1,0 +1,736 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "IRCTC Real-Time API Engine",
+    "version": "1.0.2",
+    "description": "High-performance REST API gateway and developer platform for Indian Railways. Access real-time PNR verification, live train GPS tracking, 14-day seat availability calendar forecasts, post-charting vacant berth allocations, real-time ticket fare breakups, and station intelligence.",
+    "contact": {
+      "name": "IRCTC Developer Support",
+      "url": "https://irctc.dev",
+      "email": "support@irctc.dev"
+    },
+    "license": {
+      "name": "Proprietary",
+      "url": "https://irctc.dev/terms"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.irctc.dev",
+      "description": "Production Indian Railways PRS Gateway"
+    }
+  ],
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "Your 64-character secret API Key from https://irctc.dev/dashboard"
+      }
+    },
+    "schemas": {
+      "StandardError": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": false },
+          "error": { "type": "string", "example": "Invalid API key or unauthorized request" },
+          "code": { "type": "string", "example": "UNAUTHORIZED" }
+        },
+        "required": ["success", "error"]
+      }
+    }
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Gateway Health Check",
+        "description": "Check if the API server and connection pools are up and running.",
+        "operationId": "getHealth",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Gateway is online",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "up",
+                  "version": "1.0.2"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/trains/search": {
+      "get": {
+        "summary": "Find Trains Between Stations",
+        "description": "Discover direct running trains between any two station codes with travel duration, distance, and running days.",
+        "operationId": "searchTrainsBetweenStations",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "description": "Source station code (e.g. NDLS)",
+            "schema": { "type": "string", "example": "NDLS" }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "description": "Destination station code (e.g. GD)",
+            "schema": { "type": "string", "example": "GD" }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "required": false,
+            "description": "Journey date in YYYY-MM-DD format",
+            "schema": { "type": "string", "example": "2026-10-24" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Direct trains matching origin and destination",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "data": [
+                    {
+                      "trainNo": "12556",
+                      "trainName": "GORAKHDHAM EXP",
+                      "trainType": "SUPERFAST",
+                      "fromStation": "NDLS",
+                      "toStation": "GD",
+                      "fromStationName": "NEW DELHI",
+                      "toStationName": "GONDA JN",
+                      "trainSrc": "BTI",
+                      "trainDstn": "GKP",
+                      "departure": "21:25",
+                      "arrival": "07:00",
+                      "durationMin": 575,
+                      "durationStr": "9:35",
+                      "runningDays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+                      "classes": [],
+                      "distance": "631",
+                      "estimatedFare": 372,
+                      "halts": 4,
+                      "fromStationDayOffset": 0,
+                      "toStationDayOffset": 1
+                    }
+                  ],
+                  "source": "irctc-api",
+                  "isLive": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/StandardError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/trains/search/name": {
+      "get": {
+        "summary": "Search Train by Name",
+        "description": "Search for trains using a partial or full name with instant prefix search.",
+        "operationId": "searchTrainByName",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "description": "Partial or full train name (min 2 chars, e.g. duronto)",
+            "schema": { "type": "string", "example": "duronto" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Matching trains list",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "data": [
+                    {
+                      "trainNo": "12213",
+                      "trainName": "YPR DEE DURONTO",
+                      "trainType": "DURONTO",
+                      "from": "YPR",
+                      "to": "DEE"
+                    }
+                  ],
+                  "total": 1,
+                  "source": "irctc-api"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/trains/cancelled": {
+      "get": {
+        "summary": "Daily Cancelled Trains",
+        "description": "Fetch daily fully and partially cancelled trains across Indian Railways with 0ms cache.",
+        "operationId": "getCancelledTrains",
+        "responses": {
+          "200": {
+            "description": "List of fully and partially cancelled trains",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "date": "25-10-2026",
+                  "total": 65,
+                  "fullyCancelledCount": 17,
+                  "partiallyCancelledCount": 48,
+                  "trains": [
+                    {
+                      "trainNumber": "11002",
+                      "trainName": "NANDIGRAM EXP",
+                      "source": "BALHARSHAH",
+                      "destination": "C SHIVAJI MAH T",
+                      "trainType": "EXPRESS",
+                      "isPartial": true,
+                      "cancellationType": "PARTIALLY_CANCELLED"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/trains/{trainNo}": {
+      "get": {
+        "summary": "Train Schedule & Halts",
+        "description": "Get the full schedule, halts, timings, distances, and GPS coordinates for a specific 5-digit train number.",
+        "operationId": "getTrainSchedule",
+        "parameters": [
+          {
+            "name": "trainNo",
+            "in": "path",
+            "required": true,
+            "description": "5-digit train number (e.g. 26502)",
+            "schema": { "type": "string", "example": "26502" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Full train route schedule and halt stations",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "data": {
+                    "trainNo": "26502",
+                    "trainName": "VANDE BHARAT EXP",
+                    "trainType": "VANDE_BHARAT",
+                    "runningDays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sun"],
+                    "totalDistance": 384,
+                    "originCode": "GKP",
+                    "destinationCode": "PPTA",
+                    "stations": [
+                      {
+                        "seq": 1,
+                        "code": "GKP",
+                        "name": "GORAKHPUR JN",
+                        "arrival": null,
+                        "departure": "05:40",
+                        "distanceKm": 0,
+                        "lat": 26.7596884,
+                        "lng": 83.381806
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/trains/{trainNo}/fare": {
+      "get": {
+        "summary": "Train Ticket Fare Breakup",
+        "description": "Fetch real-time train ticket fare breakup (Base, Reservation, Superfast, GST, Catering) for all running classes or a specific class.",
+        "operationId": "getTrainFare",
+        "parameters": [
+          {
+            "name": "trainNo",
+            "in": "path",
+            "required": true,
+            "description": "5-digit train number (e.g. 12558)",
+            "schema": { "type": "string", "example": "12558" }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "description": "Origin station code (e.g. ANVT)",
+            "schema": { "type": "string", "example": "ANVT" }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "description": "Destination station code (e.g. NKE)",
+            "schema": { "type": "string", "example": "NKE" }
+          },
+          {
+            "name": "class",
+            "in": "query",
+            "required": false,
+            "description": "Travel class code (1A, 2A, 3A, 3E, SL, or all). Default: all",
+            "schema": { "type": "string", "default": "all", "example": "all" }
+          },
+          {
+            "name": "quota",
+            "in": "query",
+            "required": false,
+            "description": "Quota code (GN for General). Default: GN",
+            "schema": { "type": "string", "default": "GN", "example": "GN" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Real-time fare calculation with itemized fee breakdown",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "trainNumber": "12558",
+                  "trainName": "SAPT KRANTI EXP",
+                  "from": "ANVT",
+                  "to": "NKE",
+                  "quota": "GN",
+                  "fares": [
+                    {
+                      "class": "3A",
+                      "className": "Third AC",
+                      "totalFare": 1300,
+                      "breakup": {
+                        "baseFare": 1149,
+                        "reservationCharge": 40,
+                        "superfastCharge": 45,
+                        "gst": 62,
+                        "cateringCharge": 0,
+                        "dynamicFare": 0
+                      }
+                    }
+                  ],
+                  "_cached": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/trains/{trainNo}/availability": {
+      "get": {
+        "summary": "14-Day Seat & Berth Availability",
+        "description": "Query real-time PRS seat & berth availability across travel classes and quotas with a 14-day calendar forecast.",
+        "operationId": "getSeatAvailability",
+        "parameters": [
+          {
+            "name": "trainNo",
+            "in": "path",
+            "required": true,
+            "description": "5-digit train number (e.g. 12557)",
+            "schema": { "type": "string", "example": "12557" }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": true,
+            "description": "Origin station code (e.g. NKE)",
+            "schema": { "type": "string", "example": "NKE" }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": true,
+            "description": "Destination station code (e.g. ANVT)",
+            "schema": { "type": "string", "example": "ANVT" }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "required": true,
+            "description": "Journey date in DD-MM-YYYY format (e.g. 17-11-2026)",
+            "schema": { "type": "string", "example": "17-11-2026" }
+          },
+          {
+            "name": "class",
+            "in": "query",
+            "required": false,
+            "description": "Travel class code (1A, 2A, 3A, 3E, CC, EC, SL). Default: 3A",
+            "schema": { "type": "string", "default": "3A", "example": "3A" }
+          },
+          {
+            "name": "quota",
+            "in": "query",
+            "required": false,
+            "description": "Quota code (GN, TQ, PT, LD). Default: GN",
+            "schema": { "type": "string", "default": "GN", "example": "GN" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "14-day availability status array",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "trainNumber": "12557",
+                  "trainName": "SAPT KRANTI EXP",
+                  "from": "NKE",
+                  "to": "ANVT",
+                  "date": "17-11-2026",
+                  "class": "3A",
+                  "quota": "GN",
+                  "availability": [
+                    {
+                      "date": "2026-11-17",
+                      "status": "AVAILABLE-0042",
+                      "type": "AVAILABLE",
+                      "currentBooking": "N"
+                    }
+                  ],
+                  "source": "irctc-api",
+                  "_cached": true,
+                  "_time": 1.482
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/trains/{trainNo}/chart-vacant": {
+      "get": {
+        "summary": "Vacant Berths After Chart Preparation",
+        "description": "Query real-time vacant berths post-charting (First & Second reservation charts) from online reservation charts for Current Booking & TTE allotment.",
+        "operationId": "getChartVacantBerths",
+        "parameters": [
+          {
+            "name": "trainNo",
+            "in": "path",
+            "required": true,
+            "description": "5-digit train number (e.g. 12557)",
+            "schema": { "type": "string", "example": "12557" }
+          },
+          {
+            "name": "boardingStation",
+            "in": "query",
+            "required": true,
+            "description": "Boarding station code (e.g. GKP)",
+            "schema": { "type": "string", "example": "GKP" }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "required": false,
+            "description": "Journey date in YYYY-MM-DD or DD-MM-YYYY format",
+            "schema": { "type": "string", "example": "2026-10-25" }
+          },
+          {
+            "name": "class",
+            "in": "query",
+            "required": false,
+            "description": "Travel class code (1A, 2A, 3A, 3E, SL, or ALL). Default: ALL",
+            "schema": { "type": "string", "default": "ALL", "example": "ALL" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Coach composition, vacant berth summary, and chart status",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "trainNumber": "12557",
+                  "trainName": "SAPT KRANTI EXP",
+                  "boardingStation": "GKP",
+                  "chartStatus": {
+                    "isChartPrepared": true,
+                    "firstChartTime": "2026-10-25 08:40:47"
+                  },
+                  "totalVacantBerths": 12,
+                  "coaches": [
+                    { "coach": "B1", "class": "3A", "vacantBerths": 4 }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/trains/stations": {
+      "get": {
+        "summary": "Station Autocomplete",
+        "description": "Lightning-fast autocomplete search for railway stations by name or exact station code across 8,500+ Indian Railways stations.",
+        "operationId": "searchStations",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "description": "Search query (min 2 characters, e.g. pur or NDLS)",
+            "schema": { "type": "string", "example": "pur" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Matching stations list",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "data": [
+                    {
+                      "code": "AAM",
+                      "name": "Angadippuram",
+                      "state": "Malappuram"
+                    }
+                  ],
+                  "source": "irctc-api"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/trains/stations/{code}": {
+      "get": {
+        "summary": "Station Details by Code",
+        "description": "Fetch detailed information about a station including its full name, zone, and location.",
+        "operationId": "getStationByCode",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "description": "Station code (e.g. NDLS)",
+            "schema": { "type": "string", "example": "NDLS" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Station metadata",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "data": {
+                    "code": "NDLS",
+                    "name": "New Delhi",
+                    "state": "Delhi"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/trains/stations/{code}/timetable/{date}": {
+      "get": {
+        "summary": "Station Daily Timetable",
+        "description": "Get a complete list of all trains arriving or departing from a specific station on a given date.",
+        "operationId": "getStationTimetable",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "description": "Station code (e.g. NKE)",
+            "schema": { "type": "string", "example": "NKE" }
+          },
+          {
+            "name": "date",
+            "in": "path",
+            "required": true,
+            "description": "Date in YYYY-MM-DD format (e.g. 2026-10-25)",
+            "schema": { "type": "string", "example": "2026-10-25" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Daily scheduled arrivals and departures",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "data": {
+                    "stationCode": "NKE",
+                    "day": "Sun",
+                    "total": 53,
+                    "trains": []
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/live/{trainNo}": {
+      "get": {
+        "summary": "Live Train Running Status",
+        "description": "Get real-time satellite GPS running status, current halt station, delay minutes, and upcoming halts.",
+        "operationId": "getLiveTrainStatus",
+        "parameters": [
+          {
+            "name": "trainNo",
+            "in": "path",
+            "required": true,
+            "description": "5-digit train number (e.g. 12557)",
+            "schema": { "type": "string", "example": "12557" }
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "required": false,
+            "description": "Journey date in YYYY-MM-DD",
+            "schema": { "type": "string", "example": "2026-10-25" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Live GPS location, current station, and delay minutes",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "data": {
+                    "trainNumber": "12557",
+                    "trainName": "Sapt Kranti Exp",
+                    "currentLocation": "Chakia",
+                    "locationStatus": "departed from",
+                    "currentDelayMin": 33,
+                    "currentDelayStr": "+33 min",
+                    "totalDistanceKm": 1060,
+                    "totalHalts": 18
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/live/station/{stationCode}": {
+      "get": {
+        "summary": "Live Station Display Board",
+        "description": "Real-time train arrivals and departures board with platform, delay, and coach position information.",
+        "operationId": "getStationLiveBoard",
+        "parameters": [
+          {
+            "name": "stationCode",
+            "in": "path",
+            "required": true,
+            "description": "Station code (e.g. GKP)",
+            "schema": { "type": "string", "example": "GKP" }
+          },
+          {
+            "name": "hours",
+            "in": "query",
+            "required": false,
+            "description": "Time window: 2, 4, or 8 hours (default: 2)",
+            "schema": { "type": "integer", "default": 2, "example": 2 }
+          },
+          {
+            "name": "toStation",
+            "in": "query",
+            "required": false,
+            "description": "Optional destination filter station code",
+            "schema": { "type": "string", "example": "ANVT" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Live station arrival and departure board",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "stationCode": "GKP",
+                  "stationName": "GORAKHPUR JN",
+                  "totalTrains": 23,
+                  "trains": []
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/pnr/{pnr}": {
+      "get": {
+        "summary": "Real-Time PNR Status",
+        "description": "Fetch real-time current PNR status, passenger manifest, berth/coach allocation, and reservation charting status.",
+        "operationId": "getPnrStatus",
+        "parameters": [
+          {
+            "name": "pnr",
+            "in": "path",
+            "required": true,
+            "description": "10-digit Indian Railways PNR number (e.g. 2265248473)",
+            "schema": { "type": "string", "example": "2265248473" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Real-time passenger booking and confirmation status",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "data": {
+                    "pnr": "2265248473",
+                    "trainNumber": "15726",
+                    "trainName": "ANVT NJP EXP",
+                    "journeyDate": "Nov 23, 2026 10:05:00 AM",
+                    "class": "SL",
+                    "quota": "GN",
+                    "chartStatus": "chart not prepared",
+                    "passengers": [
+                      {
+                        "number": 1,
+                        "status": "CNF",
+                        "coach": "S4",
+                        "seat": "65",
+                        "berth": "LOWER BERTH",
+                        "raw": "CNF/S4/65/LB"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

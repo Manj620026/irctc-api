@@ -29,6 +29,14 @@ dist-ssr
 .env.*
 !.env.example
 
+# Google Service Account & Indexing Credentials
+*service*account*.json
+*.credentials.json
+*secret*.json
+secrets/
+indexing-ledger.json
+scripts/indexing-ledger.json
+
 # Internal Blueprints & Audit Logs
 details.md
 parts.md

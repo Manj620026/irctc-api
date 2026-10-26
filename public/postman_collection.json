@@ -1,0 +1,344 @@
+{
+  "info": {
+    "_postman_id": "7b587d55-6688-4c19-94b3-d2d7938fe710",
+    "name": "IRCTC Real-Time API Engine",
+    "description": "Postman Collection for Indian Railways real-time developer API. Includes live PNR checks, 14-day seat availability calendar forecast, post-charting vacant berths, real-time train fare breakup, and live satellite GPS train running status.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.irctc.dev",
+      "type": "string"
+    },
+    {
+      "key": "apiKey",
+      "value": "irctc_live_9a8f2c7e01d4",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      {
+        "key": "key",
+        "value": "x-api-key",
+        "type": "string"
+      },
+      {
+        "key": "value",
+        "value": "{{apiKey}}",
+        "type": "string"
+      },
+      {
+        "key": "in",
+        "value": "header",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Availability & Pricing",
+      "item": [
+        {
+          "name": "14-Day Seat Availability Forecast",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/trains/12557/availability?from=NKE&to=ANVT&date=17-11-2026&class=3A&quota=GN",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "trains", "12557", "availability"],
+              "query": [
+                { "key": "from", "value": "NKE", "description": "Origin Station Code" },
+                { "key": "to", "value": "ANVT", "description": "Destination Station Code" },
+                { "key": "date", "value": "17-11-2026", "description": "Journey date DD-MM-YYYY" },
+                { "key": "class", "value": "3A", "description": "Travel class (1A, 2A, 3A, 3E, SL)" },
+                { "key": "quota", "value": "GN", "description": "Quota (GN, TQ, PT, LD)" }
+              ]
+            },
+            "description": "Fetch real-time PRS seat & berth availability across classes and quotas with 14-day calendar forecast."
+          }
+        },
+        {
+          "name": "Vacant Berths After Chart Preparation",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/trains/12557/chart-vacant?boardingStation=GKP&class=ALL",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "trains", "12557", "chart-vacant"],
+              "query": [
+                { "key": "boardingStation", "value": "GKP", "description": "Boarding Station Code" },
+                { "key": "class", "value": "ALL", "description": "Class filter (ALL, 1A, 2A, 3A, 3E, SL)" }
+              ]
+            },
+            "description": "Query real-time post-charting vacant berths from online reservation charts for Current Booking & TTE allotment."
+          }
+        },
+        {
+          "name": "Train Ticket Fare Breakup",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/trains/12558/fare?from=ANVT&to=NKE&class=all&quota=GN",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "trains", "12558", "fare"],
+              "query": [
+                { "key": "from", "value": "ANVT", "description": "Origin station" },
+                { "key": "to", "value": "NKE", "description": "Destination station" },
+                { "key": "class", "value": "all", "description": "Class (1A, 2A, 3A, 3E, SL, or all)" },
+                { "key": "quota", "value": "GN", "description": "Quota (GN, TQ)" }
+              ]
+            },
+            "description": "Fetch real-time train ticket fare breakup (Base, Reservation, Superfast, GST, Catering)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Live Tracking & Telemetry",
+      "item": [
+        {
+          "name": "Live Train Running Status (GPS)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/live/12557",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "live", "12557"]
+            },
+            "description": "Real-time satellite GPS running status, current halt station, delay minutes, and upcoming halts."
+          }
+        },
+        {
+          "name": "Live Station Display Board",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/live/station/GKP?hours=2",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "live", "station", "GKP"],
+              "query": [
+                { "key": "hours", "value": "2", "description": "Time window: 2, 4, or 8 hours" }
+              ]
+            },
+            "description": "Real-time train arrivals and departures board with platform, delay, and coach info."
+          }
+        },
+        {
+          "name": "Daily Cancelled Trains",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/trains/cancelled",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "trains", "cancelled"]
+            },
+            "description": "Daily fully and partially cancelled trains across Indian Railways with 0ms cache."
+          }
+        }
+      ]
+    },
+    {
+      "name": "PNR Status",
+      "item": [
+        {
+          "name": "Real-Time PNR Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/pnr/2265248473",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "pnr", "2265248473"]
+            },
+            "description": "Fetch real-time current PNR status, passenger manifest, berth/coach allocation, and charting status."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search & Schedules",
+      "item": [
+        {
+          "name": "Find Trains Between Stations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/trains/search?from=NDLS&to=GD",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "trains", "search"],
+              "query": [
+                { "key": "from", "value": "NDLS", "description": "Source station code" },
+                { "key": "to", "value": "GD", "description": "Destination station code" }
+              ]
+            },
+            "description": "Discover direct running trains between any two station codes with travel duration and running days."
+          }
+        },
+        {
+          "name": "Search Train by Name",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/trains/search/name?name=duronto",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "trains", "search", "name"],
+              "query": [
+                { "key": "name", "value": "duronto", "description": "Partial or full train name" }
+              ]
+            },
+            "description": "Search for trains using a partial or full name with instant prefix search."
+          }
+        },
+        {
+          "name": "Train Schedule & Halts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/trains/26502",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "trains", "26502"]
+            },
+            "description": "Get full schedule, halts, timings, distances, and GPS coordinates for a 5-digit train number."
+          }
+        },
+        {
+          "name": "Station Autocomplete",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/trains/stations?q=pur",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "trains", "stations"],
+              "query": [
+                { "key": "q", "value": "pur", "description": "Query prefix (min 2 chars)" }
+              ]
+            },
+            "description": "Lightning-fast autocomplete search for railway stations by name or exact code."
+          }
+        },
+        {
+          "name": "Station Details by Code",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/trains/stations/NDLS",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "trains", "stations", "NDLS"]
+            },
+            "description": "Fetch detailed information about a station including its full name, zone, and location."
+          }
+        },
+        {
+          "name": "Station Daily Timetable",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/trains/stations/NKE/timetable/2026-10-25",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "trains", "stations", "NKE", "timetable", "2026-10-25"]
+            },
+            "description": "Get a complete list of all trains arriving or departing from a station on a given date."
+          }
+        }
+      ]
+    },
+    {
+      "name": "System",
+      "item": [
+        {
+          "name": "Gateway Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Public health check endpoint."
+          }
+        }
+      ]
+    }
+  ]
+}

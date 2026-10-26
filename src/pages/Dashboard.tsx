@@ -1,9 +1,34 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Key, Copy, Check, Plus, Zap, Code2, AlertTriangle, Loader2, Trash2, List, RefreshCw, Download } from 'lucide-react';
+import { Key, Copy, Check, Plus, Zap, Code2, AlertTriangle, Loader2, Trash2, List, RefreshCw, Download, Eye, EyeOff, Terminal } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
 import { GoogleLogin } from '@react-oauth/google';
+
+function formatLogTime(timeStr: string) {
+  try {
+    const d = new Date(timeStr);
+    const now = new Date();
+    const isToday = d.toDateString() === now.toDateString();
+    const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    return isToday ? `Today, ${time}` : `${d.toLocaleDateString([], { month: 'short', day: 'numeric' })}, ${time}`;
+  } catch {
+    return timeStr;
+  }
+}
+
+function formatKeyExpiry(expiresAt?: string) {
+  if (!expiresAt) return 'Never expires';
+  try {
+    const exp = new Date(expiresAt);
+    return exp.getTime() < Date.now()
+      ? 'Expired'
+      : `Expires ${exp.toLocaleDateString([], { month: 'short', day: 'numeric' })}`;
+  } catch {
+    return 'Invalid date';
+  }
+}
 
 export default function Dashboard() {
   const { user, authLoading, setUser, logout } = useAuth();
@@ -16,6 +41,9 @@ export default function Dashboard() {
   const [expiryDays, setExpiryDays] = useState('never');
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [visibleLogsCount, setVisibleLogsCount] = useState(50);
+  const [unmaskedKeys, setUnmaskedKeys] = useState<Record<string, boolean>>({});
+  const [integrationTab, setIntegrationTab] = useState<'curl' | 'sdk'>('curl');
+  const [logStatusFilter, setLogStatusFilter] = useState<'all' | 'success' | 'error'>('all');
   
   const isPro = user?.plan === 'PAID' && (user?.apiCredits || 0) > 0;
 
@@ -251,6 +279,10 @@ export default function Dashboard() {
 
   const [copiedCurl, setCopiedCurl] = useState(false);
 
+  const toggleUnmask = (keyId: string) => {
+    setUnmaskedKeys(prev => ({ ...prev, [keyId]: !prev[keyId] }));
+  };
+
   const copyKey = (key: string, id: string) => {
     navigator.clipboard?.writeText(key).then(() => {
       setCopiedKey(id);
@@ -261,27 +293,23 @@ export default function Dashboard() {
     });
   };
 
-  const copyCurl = () => {
-    const curlCmd = `curl -X GET "${import.meta.env.VITE_API_URL || 'https://api.irctc.dev'}/api/v1/live/12309" \\\n  -H "Authorization: Bearer ${apiKeys[0]?.key || 'YOUR_API_KEY'}"`;
-    navigator.clipboard?.writeText(curlCmd).then(() => {
-      setCopiedCurl(true);
-      toast.success('cURL command copied to clipboard');
-      setTimeout(() => setCopiedCurl(false), 2000);
-    }).catch(() => {
-      toast.error('Failed to copy cURL command');
-    });
+  const getIntegrationSnippet = () => {
+    const activeKey = apiKeys[0]?.key || 'YOUR_API_KEY';
+    const API_URL = import.meta.env.VITE_API_URL || 'https://api.irctc.dev';
+    if (integrationTab === 'curl') {
+      return `curl -s -X GET "${API_URL}/api/v1/pnr/2265248473" \\\n  -H "x-api-key: ${activeKey}" \\\n  -H "accept: application/json"`;
+    }
+    return `import { IrctcApi } from 'irctc-api';\n\nconst client = new IrctcApi({ apiKey: '${activeKey}' });\nconst pnr = await client.pnr.check('2265248473');\nconsole.log(pnr.chartStatus);`;
   };
 
-  const formatLogTime = (timeStr: string) => {
-    try {
-      const d = new Date(timeStr);
-      const now = new Date();
-      const isToday = d.toDateString() === now.toDateString();
-      const time = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-      return isToday ? `Today, ${time}` : `${d.toLocaleDateString([], { month: 'short', day: 'numeric' })}, ${time}`;
-    } catch {
-      return timeStr;
-    }
+  const copySnippet = () => {
+    navigator.clipboard?.writeText(getIntegrationSnippet()).then(() => {
+      setCopiedCurl(true);
+      toast.success(`${integrationTab === 'curl' ? 'cURL command' : 'SDK snippet'} copied to clipboard`);
+      setTimeout(() => setCopiedCurl(false), 2000);
+    }).catch(() => {
+      toast.error('Failed to copy snippet');
+    });
   };
 
   const formatIp = (ip: string) => {
@@ -313,7 +341,35 @@ export default function Dashboard() {
 
   return (
     <div className={`relative flex-1 w-full flex flex-col pt-6 sm:pt-8 lg:pt-12 pb-12 ${!user ? 'min-h-[calc(100dvh-80px)] overflow-hidden' : ''}`}>
-      
+      {/* Schema.org Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@graph': [
+              {
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                  {
+                    '@type': 'ListItem',
+                    position: 1,
+                    name: 'Home',
+                    item: 'https://irctc.dev'
+                  },
+                  {
+                    '@type': 'ListItem',
+                    position: 2,
+                    name: 'Developer Dashboard',
+                    item: 'https://irctc.dev/dashboard'
+                  }
+                ]
+              }
+            ]
+          })
+        }}
+      />
+
       {/* Ghost UI Content */}
       <motion.div
         variants={containerVariants}
@@ -440,9 +496,12 @@ export default function Dashboard() {
                     </button>
                   </div>
                 ) : apiKeys.map((keyObj) => {
-                  const displayKey = keyObj.key.length > 12 ? `${keyObj.key.slice(0, 8)}••••••••••••${keyObj.key.slice(-4)}` : keyObj.key;
+                  const isUnmasked = Boolean(unmaskedKeys[keyObj._id]);
+                  const displayKey = isUnmasked
+                    ? keyObj.key
+                    : (keyObj.key.length > 12 ? `${keyObj.key.slice(0, 8)}••••••••••••${keyObj.key.slice(-4)}` : keyObj.key);
                   const createdDate = new Date(keyObj.created).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
-                  
+
                   return (
                     <div key={keyObj._id} className="p-4 sm:p-5 flex flex-col gap-3 hover:bg-white/[0.01] transition-colors">
                       {/* Row 1: Name, Status, Expiry, Delete */}
@@ -455,11 +514,7 @@ export default function Dashboard() {
                             </span>
                           </div>
                           <div className="text-[11px] text-textMuted flex items-center gap-2">
-                            <span>
-                              {keyObj.expiresAt 
-                                ? (new Date(keyObj.expiresAt) < new Date() ? 'Expired' : `Expires ${new Date(keyObj.expiresAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}`)
-                                : 'Never expires'}
-                            </span>
+                            <span>{formatKeyExpiry(keyObj.expiresAt)}</span>
                             <span>&bull;</span>
                             <span>Created {createdDate}</span>
                           </div>
@@ -469,13 +524,13 @@ export default function Dashboard() {
                         <div className="shrink-0">
                           {confirmDeleteId === keyObj._id ? (
                             <div className="flex items-center gap-1 bg-red-500/10 p-0.5 rounded-md border border-red-500/20">
-                              <button 
+                              <button
                                 onClick={() => setConfirmDeleteId(null)}
                                 className="text-[11px] px-2 py-1 text-textMuted hover:text-textMain transition-colors"
                               >
                                 Cancel
                               </button>
-                              <button 
+                              <button
                                 onClick={() => { setConfirmDeleteId(null); handleDeleteKey(keyObj._id, true); }}
                                 disabled={deletingId === keyObj._id}
                                 className="text-[11px] font-medium px-2 py-1 bg-red-500 text-white rounded transition-colors flex items-center gap-1 disabled:opacity-50"
@@ -484,7 +539,7 @@ export default function Dashboard() {
                               </button>
                             </div>
                           ) : (
-                            <button 
+                            <button
                               onClick={() => setConfirmDeleteId(keyObj._id)}
                               disabled={deletingId === keyObj._id}
                               className="p-1.5 text-textMuted/60 hover:text-red-400 hover:bg-red-400/10 rounded-md transition-all disabled:opacity-50"
@@ -497,7 +552,7 @@ export default function Dashboard() {
                       </div>
 
                       {/* Row 2: Unified Interactive Token Box (Click whole box to copy) */}
-                      <div 
+                      <div
                         onClick={() => copyKey(keyObj.key, keyObj._id)}
                         className="group relative flex items-center justify-between gap-3 bg-base hover:bg-[#090909] border border-borderRoot hover:border-brand/40 rounded-xl px-3.5 py-2.5 transition-all cursor-pointer shadow-inner"
                       >
@@ -507,26 +562,39 @@ export default function Dashboard() {
                             {displayKey}
                           </span>
                         </div>
-                        <button 
-                          type="button"
-                          className={`flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-md border transition-all shrink-0 shadow-sm ${
-                            copiedKey === keyObj._id
-                              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                              : 'bg-[#121212] group-hover:bg-brand group-hover:text-white border-borderRoot/80 text-textMuted'
-                          }`}
-                        >
-                          {copiedKey === keyObj._id ? (
-                            <>
-                              <Check size={12} className="text-emerald-400" />
-                              <span>Copied</span>
-                            </>
-                          ) : (
-                            <>
-                              <Copy size={12} />
-                              <span>Copy</span>
-                            </>
-                          )}
-                        </button>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleUnmask(keyObj._id);
+                            }}
+                            className="p-1 text-textMuted hover:text-textMain rounded transition-colors"
+                            title={isUnmasked ? "Mask API Key" : "Reveal API Key"}
+                          >
+                            {isUnmasked ? <EyeOff size={13} /> : <Eye size={13} />}
+                          </button>
+                          <button
+                            type="button"
+                            className={`flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-md border transition-all shrink-0 shadow-sm ${
+                              copiedKey === keyObj._id
+                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                                : 'bg-[#121212] group-hover:bg-brand group-hover:text-white border-borderRoot/80 text-textMuted'
+                            }`}
+                          >
+                            {copiedKey === keyObj._id ? (
+                              <>
+                                <Check size={12} className="text-emerald-400" />
+                                <span>Copied</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy size={12} />
+                                <span>Copy</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
                       </div>
 
                       {/* Row 3: Metrics */}
@@ -630,20 +698,53 @@ export default function Dashboard() {
                   </div>
                   <h3 className="text-base sm:text-lg font-medium text-textMain">Integration</h3>
                 </div>
-                <button 
-                  onClick={copyCurl}
-                  className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 bg-base hover:bg-[#151515] active:scale-[0.96] border border-borderRoot rounded-md transition-all text-textMain shadow-sm"
-                  title="Copy cURL snippet"
-                >
-                  {copiedCurl ? <Check size={13} className="text-emerald-500" /> : <Copy size={13} />}
-                  <span>{copiedCurl ? 'Copied' : 'Copy'}</span>
-                </button>
+
+                {/* Switcher & Copy */}
+                <div className="flex items-center gap-2">
+                  <div className="flex bg-[#0a0a0a] p-0.5 rounded-lg border border-borderRoot text-[11px] font-mono">
+                    <button
+                      type="button"
+                      onClick={() => setIntegrationTab('curl')}
+                      className={`px-2.5 py-1 rounded transition-colors ${integrationTab === 'curl' ? 'bg-white/10 text-white font-semibold' : 'text-textMuted hover:text-textMain'}`}
+                    >
+                      cURL
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIntegrationTab('sdk')}
+                      className={`px-2.5 py-1 rounded transition-colors ${integrationTab === 'sdk' ? 'bg-white/10 text-white font-semibold' : 'text-textMuted hover:text-textMain'}`}
+                    >
+                      SDK
+                    </button>
+                  </div>
+                  <button
+                    onClick={copySnippet}
+                    className="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 bg-base hover:bg-[#151515] active:scale-[0.96] border border-borderRoot rounded-md transition-all text-textMain shadow-sm cursor-pointer"
+                    title={`Copy ${integrationTab === 'curl' ? 'cURL command' : 'Node.js snippet'}`}
+                  >
+                    {copiedCurl ? <Check size={13} className="text-emerald-500" /> : <Copy size={13} />}
+                    <span>{copiedCurl ? 'Copied' : 'Copy'}</span>
+                  </button>
+                </div>
               </div>
-              <div className="p-4 sm:p-5 font-mono text-[11px] leading-relaxed text-textMuted overflow-x-auto">
-                <span className="opacity-50"># Using cURL</span><br/>
-                <span className="text-brand">curl</span> -X GET \<br/>
-                &nbsp;&nbsp;<span className="text-stone-300">"{import.meta.env.VITE_API_URL || 'https://api.irctc.dev'}/api/v1/live/12309"</span> \<br/>
-                &nbsp;&nbsp;-H <span className="text-stone-300">"Authorization: Bearer {apiKeys[0]?.key || 'YOUR_API_KEY'}"</span>
+              <div className="p-4 sm:p-5 font-mono text-[11px] leading-relaxed text-textMuted overflow-x-auto whitespace-pre">
+                {integrationTab === 'curl' ? (
+                  <>
+                    <span className="opacity-50"># Verified Gateway REST Endpoint</span>{'\n'}
+                    <span className="text-brand">curl</span> -s -X GET \{'\n'}
+                    &nbsp;&nbsp;<span className="text-stone-300">"{import.meta.env.VITE_API_URL || 'https://api.irctc.dev'}/api/v1/pnr/2265248473"</span> \{'\n'}
+                    &nbsp;&nbsp;-H <span className="text-stone-300">"x-api-key: {apiKeys[0]?.key || 'YOUR_API_KEY'}"</span> \{'\n'}
+                    &nbsp;&nbsp;-H <span className="text-stone-300">"accept: application/json"</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="opacity-50"># Zero-Dependency TypeScript SDK (npm i irctc-api)</span>{'\n'}
+                    <span className="text-blue-400">import</span> {'{ IrctcApi }'} <span className="text-blue-400">from</span> <span className="text-emerald-400">'irctc-api'</span>;{'\n\n'}
+                    <span className="text-blue-400">const</span> client = <span className="text-blue-400">new</span> <span className="text-amber-400">IrctcApi</span>({'{'} apiKey: <span className="text-emerald-400">'{apiKeys[0]?.key || 'YOUR_API_KEY'}'</span> {'}'});{'\n'}
+                    <span className="text-blue-400">const</span> pnr = <span className="text-blue-400">await</span> client.pnr.<span className="text-amber-400">check</span>(<span className="text-emerald-400">'2265248473'</span>);{'\n'}
+                    console.<span className="text-amber-400">log</span>(pnr.chartStatus);
+                  </>
+                )}
               </div>
             </motion.div>
 
@@ -652,115 +753,195 @@ export default function Dashboard() {
         
         {/* FULL WIDTH LOGS SECTION */}
         <motion.div variants={itemVariants} className="mt-6 sm:mt-8 bg-surface border border-borderRoot rounded-2xl overflow-hidden shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
-          <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-borderRoot flex items-center justify-between gap-3 bg-surface/50">
-            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-              <div className="p-2 bg-brand/10 rounded-lg text-brand ring-1 ring-brand/20 shrink-0">
-                <List size={18} />
-              </div>
-              <div className="min-w-0">
-                <h3 className="text-base sm:text-lg font-medium text-textMain truncate">Recent API Logs</h3>
-                <p className="text-[11px] sm:text-xs text-textMuted mt-0.5 truncate">
-                  Showing {Math.min(visibleLogsCount, user?.logs?.length || 0)} of {user?.logs?.length || 0} entries
-                </p>
-              </div>
-            </div>
-            {user?.logs && user.logs.length > 0 && (
-              <button 
-                onClick={downloadLogsCSV}
-                className="flex items-center justify-center gap-1.5 text-xs font-medium px-3 py-1.5 sm:px-4 sm:py-2 bg-base hover:bg-[#151515] active:scale-[0.98] border border-borderRoot rounded-md transition-all text-textMain shrink-0 shadow-sm"
-              >
-                <Download size={13} />
-                <span className="hidden sm:inline">Download CSV</span>
-                <span className="sm:hidden">CSV</span>
-              </button>
-            )}
-          </div>
+          {(() => {
+            const filteredLogs = (user?.logs || []).filter((log: any) => {
+              if (logStatusFilter === 'success') return log.status >= 200 && log.status < 300;
+              if (logStatusFilter === 'error') return log.status >= 400;
+              return true;
+            });
 
-          <div className="overflow-x-auto md:max-h-[500px] md:overflow-y-auto relative">
-            {/* Desktop Table View */}
-            <table className="hidden md:table w-full text-left text-sm whitespace-nowrap">
-              <thead className="bg-[#0a0a0a] text-xs uppercase text-textMuted tracking-wider sticky top-0 z-10 shadow-[0_1px_0_rgba(255,255,255,0.1)]">
-                <tr>
-                  <th className="px-6 py-3.5 font-medium bg-[#0a0a0a]">Time</th>
-                  <th className="px-6 py-3.5 font-medium bg-[#0a0a0a]">Method</th>
-                  <th className="px-6 py-3.5 font-medium bg-[#0a0a0a]">Path</th>
-                  <th className="px-6 py-3.5 font-medium bg-[#0a0a0a]">Status</th>
-                  <th className="px-6 py-3.5 font-medium bg-[#0a0a0a]">Duration</th>
-                  <th className="px-6 py-3.5 font-medium bg-[#0a0a0a]">IP</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-borderRoot text-textMuted">
-                {(!user?.logs || user.logs.length === 0) ? (
-                  <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center text-textMuted/60">No API logs available yet. Test an endpoint to see logs.</td>
-                  </tr>
-                ) : (
-                  user.logs.slice(0, visibleLogsCount).map((log: any, i: number) => {
-                    const isError = log.status >= 400;
-                    const isAuthError = log.status === 401 || log.status === 402;
-                    const rowKey = `${log.time}-${log.path}-${i}`;
-                    return (
-                      <tr key={rowKey} className={`transition-colors ${isAuthError ? 'bg-red-500/5 hover:bg-red-500/10' : 'hover:bg-white/[0.01]'}`}>
-                        <td className="px-6 py-3.5 text-xs">{formatLogTime(log.time)}</td>
-                        <td className="px-6 py-3.5 font-mono text-xs font-semibold text-blue-400">{log.method || 'GET'}</td>
-                        <td className="px-6 py-3.5 font-mono text-xs text-textMain">{log.path}</td>
-                        <td className="px-6 py-3.5 font-mono text-xs font-medium">
-                          <span className={log.status >= 200 && log.status < 300 ? 'text-emerald-400/80' : isError ? 'text-red-400/80' : 'text-amber-400/80'}>{log.status}</span>
-                        </td>
-                        <td className="px-6 py-3.5 font-mono text-xs text-textMuted">{log.duration ? `${Math.round(log.duration)} ms` : '-'}</td>
-                        <td className="px-6 py-3.5 font-mono text-xs opacity-70">{formatIp(log.ip)}</td>
-                      </tr>
-                    )
-                  })
-                )}
-              </tbody>
-            </table>
-
-            {/* Mobile Touch Card View */}
-            <div className="block md:hidden divide-y divide-borderRoot">
-              {(!user?.logs || user.logs.length === 0) ? (
-                <div className="px-4 py-12 text-center text-textMuted/60 text-xs">No API logs available yet. Test an endpoint to see logs.</div>
-              ) : (
-                user.logs.slice(0, visibleLogsCount).map((log: any, i: number) => {
-                  const isError = log.status >= 400;
-                  const isAuthError = log.status === 401 || log.status === 402;
-                  const cardKey = `m-${log.time}-${log.path}-${i}`;
-                  return (
-                    <div key={cardKey} className={`p-3.5 sm:p-4 flex flex-col gap-1.5 ${isAuthError ? 'bg-red-500/5' : 'hover:bg-white/[0.01]'}`}>
-                      <div className="flex items-center justify-between gap-2 min-w-0">
-                        <div className="flex items-center gap-2 min-w-0 flex-1">
-                          <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded text-blue-400 bg-blue-400/10 border border-blue-400/20 shrink-0">
-                            {log.method || 'GET'}
-                          </span>
-                          <span className="font-mono text-xs font-medium text-textMain truncate" title={log.path}>
-                            {log.path}
-                          </span>
-                        </div>
-                        <span className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold shrink-0 ${log.status >= 200 && log.status < 300 ? 'text-emerald-400 bg-emerald-400/10 border border-emerald-400/20' : isError ? 'text-red-400 bg-red-400/10 border border-red-400/20' : 'text-amber-400 bg-amber-400/10 border border-amber-400/20'}`}>
-                          {log.status}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between text-[11px] text-textMuted font-mono">
-                        <span>{formatLogTime(log.time)}</span>
-                        <span className="opacity-80">{log.duration ? `${Math.round(log.duration)} ms` : '-'} &bull; {formatIp(log.ip)}</span>
-                      </div>
+            return (
+              <>
+                <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-borderRoot flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface/50">
+                  <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                    <div className="p-2 bg-brand/10 rounded-lg text-brand ring-1 ring-brand/20 shrink-0">
+                      <List size={18} />
                     </div>
-                  );
-                })
-              )}
-            </div>
+                    <div className="min-w-0">
+                      <h3 className="text-base sm:text-lg font-medium text-textMain truncate">Recent API Logs</h3>
+                      <p className="text-[11px] sm:text-xs text-textMuted mt-0.5 truncate">
+                        Showing {Math.min(visibleLogsCount, filteredLogs.length)} of {filteredLogs.length} entries
+                      </p>
+                    </div>
+                  </div>
 
-            {user?.logs && visibleLogsCount < user.logs.length && (
-              <div className="p-4 border-t border-borderRoot flex justify-center bg-surface sticky bottom-0">
-                <button 
-                  onClick={() => setVisibleLogsCount(prev => prev + 50)}
-                  className="text-xs font-medium px-6 py-2 bg-base hover:bg-[#151515] active:scale-[0.98] border border-borderRoot rounded-full transition-all text-textMain"
-                >
-                  Load More
-                </button>
-              </div>
-            )}
-          </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {/* Status Filter Pills */}
+                    <div className="flex bg-[#0a0a0a] p-0.5 rounded-lg border border-borderRoot text-[11px] font-mono">
+                      <button
+                        type="button"
+                        onClick={() => setLogStatusFilter('all')}
+                        className={`px-2.5 py-1 rounded transition-colors ${logStatusFilter === 'all' ? 'bg-white/10 text-white font-medium' : 'text-textMuted hover:text-textMain'}`}
+                      >
+                        All ({user?.logs?.length || 0})
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setLogStatusFilter('success')}
+                        className={`px-2.5 py-1 rounded transition-colors ${logStatusFilter === 'success' ? 'bg-emerald-500/20 text-emerald-400 font-medium' : 'text-textMuted hover:text-textMain'}`}
+                      >
+                        2xx
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setLogStatusFilter('error')}
+                        className={`px-2.5 py-1 rounded transition-colors ${logStatusFilter === 'error' ? 'bg-red-500/20 text-red-400 font-medium' : 'text-textMuted hover:text-textMain'}`}
+                      >
+                        Errors
+                      </button>
+                    </div>
+
+                    {user?.logs && user.logs.length > 0 && (
+                      <button
+                        onClick={downloadLogsCSV}
+                        className="flex items-center justify-center gap-1.5 text-xs font-medium px-3 py-1.5 sm:px-4 sm:py-2 bg-base hover:bg-[#151515] active:scale-[0.98] border border-borderRoot rounded-md transition-all text-textMain shrink-0 shadow-sm"
+                      >
+                        <Download size={13} />
+                        <span className="hidden sm:inline">Download CSV</span>
+                        <span className="sm:hidden">CSV</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="overflow-x-auto md:max-h-[500px] md:overflow-y-auto relative">
+                  {/* Desktop Table View */}
+                  <table className="hidden md:table w-full text-left text-sm whitespace-nowrap">
+                    <thead className="bg-[#0a0a0a] text-xs uppercase text-textMuted tracking-wider sticky top-0 z-10 shadow-[0_1px_0_rgba(255,255,255,0.1)]">
+                      <tr>
+                        <th className="px-6 py-3.5 font-medium bg-[#0a0a0a]">Time</th>
+                        <th className="px-6 py-3.5 font-medium bg-[#0a0a0a]">Method</th>
+                        <th className="px-6 py-3.5 font-medium bg-[#0a0a0a]">Path</th>
+                        <th className="px-6 py-3.5 font-medium bg-[#0a0a0a]">Status</th>
+                        <th className="px-6 py-3.5 font-medium bg-[#0a0a0a]">Duration</th>
+                        <th className="px-6 py-3.5 font-medium bg-[#0a0a0a]">IP</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-borderRoot text-textMuted">
+                      {filteredLogs.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} className="px-6 py-12 text-center text-textMuted/60">
+                            <div className="flex flex-col items-center justify-center gap-2">
+                              <List size={28} className="text-textMuted/30" />
+                              <p className="text-sm font-medium text-textMain">
+                                {logStatusFilter === 'all' ? 'No API logs recorded yet' : `No ${logStatusFilter} requests found`}
+                              </p>
+                              <p className="text-xs text-textMuted max-w-sm">
+                                {logStatusFilter === 'all'
+                                  ? 'Send a request using cURL or test in the interactive sandbox to see real-time telemetry.'
+                                  : 'Try switching the filter to "All" to inspect other queries.'}
+                              </p>
+                              {logStatusFilter === 'all' && (
+                                <Link
+                                  to="/playground"
+                                  className="mt-2 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-brand/10 hover:bg-brand/20 border border-brand/20 text-brand text-xs font-medium transition-colors cursor-pointer"
+                                >
+                                  <Terminal size={12} />
+                                  <span>Test in Playground →</span>
+                                </Link>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ) : (
+                        filteredLogs.slice(0, visibleLogsCount).map((log: any, i: number) => {
+                          const isError = log.status >= 400;
+                          const isAuthError = log.status === 401 || log.status === 402;
+                          const rowKey = `${log.time}-${log.path}-${i}`;
+                          return (
+                            <tr key={rowKey} className={`transition-colors ${isAuthError ? 'bg-red-500/5 hover:bg-red-500/10' : 'hover:bg-white/[0.01]'}`}>
+                              <td className="px-6 py-3.5 text-xs">{formatLogTime(log.time)}</td>
+                              <td className="px-6 py-3.5 font-mono text-xs font-semibold text-blue-400">{log.method || 'GET'}</td>
+                              <td className="px-6 py-3.5 font-mono text-xs text-textMain">{log.path}</td>
+                              <td className="px-6 py-3.5 font-mono text-xs font-medium">
+                                <span className={log.status >= 200 && log.status < 300 ? 'text-emerald-400/80' : isError ? 'text-red-400/80' : 'text-amber-400/80'}>{log.status}</span>
+                              </td>
+                              <td className="px-6 py-3.5 font-mono text-xs text-textMuted">{log.duration ? `${Math.round(log.duration)} ms` : '-'}</td>
+                              <td className="px-6 py-3.5 font-mono text-xs opacity-70">{formatIp(log.ip)}</td>
+                            </tr>
+                          );
+                        })
+                      )}
+                    </tbody>
+                  </table>
+
+                  {/* Mobile Touch Card View */}
+                  <div className="block md:hidden divide-y divide-borderRoot">
+                    {filteredLogs.length === 0 ? (
+                      <div className="px-4 py-12 text-center flex flex-col items-center justify-center gap-2">
+                        <List size={28} className="text-textMuted/30" />
+                        <p className="text-sm font-medium text-textMain">
+                          {logStatusFilter === 'all' ? 'No API logs recorded yet' : `No ${logStatusFilter} requests found`}
+                        </p>
+                        <p className="text-xs text-textMuted max-w-sm">
+                          {logStatusFilter === 'all'
+                            ? 'Send a request using cURL or test in the interactive sandbox to see real-time telemetry.'
+                            : 'Try switching the filter to "All" to inspect other queries.'}
+                        </p>
+                        {logStatusFilter === 'all' && (
+                          <Link
+                            to="/playground"
+                            className="mt-2 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-brand/10 hover:bg-brand/20 border border-brand/20 text-brand text-xs font-medium transition-colors cursor-pointer"
+                          >
+                            <Terminal size={12} />
+                            <span>Test in Playground →</span>
+                          </Link>
+                        )}
+                      </div>
+                    ) : (
+                      filteredLogs.slice(0, visibleLogsCount).map((log: any, i: number) => {
+                        const isError = log.status >= 400;
+                        const isAuthError = log.status === 401 || log.status === 402;
+                        const cardKey = `m-${log.time}-${log.path}-${i}`;
+                        return (
+                          <div key={cardKey} className={`p-3.5 sm:p-4 flex flex-col gap-1.5 ${isAuthError ? 'bg-red-500/5' : 'hover:bg-white/[0.01]'}`}>
+                            <div className="flex items-center justify-between gap-2 min-w-0">
+                              <div className="flex items-center gap-2 min-w-0 flex-1">
+                                <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded text-blue-400 bg-blue-400/10 border border-blue-400/20 shrink-0">
+                                  {log.method || 'GET'}
+                                </span>
+                                <span className="font-mono text-xs font-medium text-textMain truncate" title={log.path}>
+                                  {log.path}
+                                </span>
+                              </div>
+                              <span className={`text-[10px] font-mono px-2 py-0.5 rounded font-bold shrink-0 ${log.status >= 200 && log.status < 300 ? 'text-emerald-400 bg-emerald-400/10 border border-emerald-400/20' : isError ? 'text-red-400 bg-red-400/10 border border-red-400/20' : 'text-amber-400 bg-amber-400/10 border border-amber-400/20'}`}>
+                                {log.status}
+                              </span>
+                            </div>
+                            <div className="flex items-center justify-between text-[11px] text-textMuted font-mono">
+                              <span>{formatLogTime(log.time)}</span>
+                              <span className="opacity-80">{log.duration ? `${Math.round(log.duration)} ms` : '-'} &bull; {formatIp(log.ip)}</span>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+
+                  {visibleLogsCount < filteredLogs.length && (
+                    <div className="p-4 border-t border-borderRoot flex justify-center bg-surface sticky bottom-0">
+                      <button
+                        onClick={() => setVisibleLogsCount(prev => prev + 50)}
+                        className="text-xs font-medium px-6 py-2 bg-base hover:bg-[#151515] active:scale-[0.98] border border-borderRoot rounded-full transition-all text-textMain cursor-pointer"
+                      >
+                        Load More
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
+            );
+          })()}
         </motion.div>
       </motion.div>
 

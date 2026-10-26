@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Play, Loader2, Copy, Check, Settings2, Server, Key, Search, Eye, EyeOff } from 'lucide-react';
+import { Play, Loader2, Copy, Check, Settings2, Server, Key, Search, Eye, EyeOff, Terminal } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GoogleLogin } from '@react-oauth/google';
 import { toast } from 'sonner';
@@ -23,138 +24,358 @@ type Endpoint = {
 };
 
 const ENDPOINTS: Endpoint[] = [
-  // --- CORE SYSTEM & HEALTH ---
-  { group: 'System', id: 'health', method: 'GET', basePath: '/health', name: 'Gateway Health', params: [] },
-
-  // --- TRAINS ---
   {
-    group: 'Trains', id: 'trainSearch', method: 'GET', basePath: '/api/v1/trains/search', name: 'Find Trains (Between Stations)',
-    params: [
-      { key: 'from', label: 'From Code', type: 'query', default: 'NDLS' },
-      { key: 'to', label: 'To Code', type: 'query', default: 'PNBE' },
-      { key: 'date', label: 'Date', type: 'query', default: new Date().toISOString().split('T')[0] }
-    ]
+    "group": "System",
+    "id": "health",
+    "method": "GET",
+    "basePath": "/health",
+    "name": "Gateway Health",
+    "params": []
   },
   {
-    group: 'Trains', id: 'trainSearchByName', method: 'GET', basePath: '/api/v1/trains/search/name', name: 'Train by Name',
-    params: [
-      { key: 'name', label: 'Train Name', type: 'query', default: 'shatabdi' }
-    ]
-  },
-  {
-    group: 'Trains', id: 'cancelledTrains', method: 'GET', basePath: '/api/v1/trains/cancelled', name: 'Cancelled Trains',
-    params: []
-  },
-  {
-    group: 'Trains', id: 'trainSchedule', method: 'GET', basePath: '/api/v1/trains/:trainNo', name: 'Train by Number',
-    params: [
-      { key: 'trainNo', label: 'Train Number', type: 'path', default: '12309' }
-    ]
-  },
-  {
-    group: 'Trains', id: 'trainFare', method: 'GET', basePath: '/api/v1/trains/:trainNo/fare', name: 'Fare Lookup',
-    params: [
-      { key: 'trainNo', label: 'Train Number', type: 'path', default: '12558' },
-      { key: 'from', label: 'Origin Station', type: 'query', default: 'ANVT' },
-      { key: 'to', label: 'Destination Station', type: 'query', default: 'MFP' },
+    "group": "Trains",
+    "id": "trainSearch",
+    "method": "GET",
+    "basePath": "/api/v1/trains/search",
+    "name": "Find Trains (Between Stations)",
+    "params": [
       {
-        key: 'class',
-        label: 'Travel Class',
-        type: 'query',
-        default: 'all',
-        options: ['all', '1A', '2A', '3A', '3E', 'CC', 'EC', 'SL', '2S']
+        "key": "from",
+        "label": "From Code",
+        "type": "query",
+        "default": "NDLS"
       },
       {
-        key: 'quota',
-        label: 'Quota',
-        type: 'query',
-        default: 'GN',
-        options: ['GN', 'TQ', 'PT', 'LD']
-      }
-    ]
-  },
-  {
-    group: 'Trains', id: 'seatAvailability', method: 'GET', basePath: '/api/v1/trains/:trainNo/availability', name: 'Seat Availability',
-    params: [
-      { key: 'trainNo', label: 'Train Number', type: 'path', default: '12557' },
-      { key: 'from', label: 'Origin Station', type: 'query', default: 'NKE' },
-      { key: 'to', label: 'Destination Station', type: 'query', default: 'ANVT' },
-      { key: 'date', label: 'Journey Date (DD-MM-YYYY)', type: 'query', default: '17-11-2026' },
-      {
-        key: 'class',
-        label: 'Travel Class',
-        type: 'query',
-        default: '3A',
-        options: ['3A', '2A', '1A', '3E', 'CC', 'EC', 'SL', '2S']
+        "key": "to",
+        "label": "To Code",
+        "type": "query",
+        "default": "GD"
       },
       {
-        key: 'quota',
-        label: 'Quota',
-        type: 'query',
-        default: 'GN',
-        options: ['GN', 'TQ', 'PT', 'LD']
+        "key": "date",
+        "label": "Date (YYYY-MM-DD)",
+        "type": "query",
+        "default": "2026-10-25"
       }
     ]
   },
   {
-    group: 'Trains', id: 'chartVacant', method: 'GET', basePath: '/api/v1/trains/:trainNo/chart-vacant', name: 'Vacant Seats After Chart Preparation',
-    params: [
-      { key: 'trainNo', label: 'Train Number', type: 'path', default: '12557' },
-      { key: 'boardingStation', label: 'Boarding Station', type: 'query', default: 'NKE' },
-      { key: 'date', label: 'Journey Date (YYYY-MM-DD)', type: 'query', default: new Date().toISOString().split('T')[0] },
+    "group": "Trains",
+    "id": "trainSearchByName",
+    "method": "GET",
+    "basePath": "/api/v1/trains/search/name",
+    "name": "Train by Name",
+    "params": [
       {
-        key: 'class',
-        label: 'Travel Class',
-        type: 'query',
-        default: 'ALL',
-        options: ['ALL', '3A', '2A', '1A', '3E', 'SL', 'CC', '2S']
+        "key": "name",
+        "label": "Train Name",
+        "type": "query",
+        "default": "duronto"
       }
     ]
   },
-
-  // --- STATIONS ---
   {
-    group: 'Stations', id: 'stationAutocomplete', method: 'GET', basePath: '/api/v1/trains/stations', name: 'Station by Name',
-    params: [
-      { key: 'q', label: 'Search Query', type: 'query', default: 'patna' }
+    "group": "Trains",
+    "id": "cancelledTrains",
+    "method": "GET",
+    "basePath": "/api/v1/trains/cancelled",
+    "name": "Cancelled Trains",
+    "params": []
+  },
+  {
+    "group": "Trains",
+    "id": "trainSchedule",
+    "method": "GET",
+    "basePath": "/api/v1/trains/:trainNo",
+    "name": "Train by Number",
+    "params": [
+      {
+        "key": "trainNo",
+        "label": "Train Number",
+        "type": "path",
+        "default": "26502"
+      }
     ]
   },
   {
-    group: 'Stations', id: 'stationTimetable', method: 'GET', basePath: '/api/v1/trains/stations/:code/timetable/:date', name: 'Station Timetable',
-    params: [
-      { key: 'code', label: 'Station Code', type: 'path', default: 'NDLS' },
-      { key: 'date', label: 'Date', type: 'path', default: new Date().toISOString().split('T')[0] }
+    "group": "Trains",
+    "id": "trainFare",
+    "method": "GET",
+    "basePath": "/api/v1/trains/:trainNo/fare",
+    "name": "Fare Lookup",
+    "params": [
+      {
+        "key": "trainNo",
+        "label": "Train Number",
+        "type": "path",
+        "default": "12558"
+      },
+      {
+        "key": "from",
+        "label": "Origin Station",
+        "type": "query",
+        "default": "ANVT"
+      },
+      {
+        "key": "to",
+        "label": "Destination Station",
+        "type": "query",
+        "default": "NKE"
+      },
+      {
+        "key": "class",
+        "label": "Travel Class",
+        "type": "query",
+        "default": "all",
+        "options": [
+          "all",
+          "1A",
+          "2A",
+          "3A",
+          "3E",
+          "CC",
+          "EC",
+          "SL",
+          "2S"
+        ]
+      },
+      {
+        "key": "quota",
+        "label": "Quota",
+        "type": "query",
+        "default": "GN",
+        "options": [
+          "GN",
+          "TQ",
+          "PT",
+          "LD"
+        ]
+      }
     ]
   },
   {
-    group: 'Stations', id: 'stationByCode', method: 'GET', basePath: '/api/v1/trains/stations/:code', name: 'Station by Code',
-    params: [
-      { key: 'code', label: 'Station Code', type: 'path', default: 'NDLS' }
+    "group": "Trains",
+    "id": "seatAvailability",
+    "method": "GET",
+    "basePath": "/api/v1/trains/:trainNo/availability",
+    "name": "Seat Availability",
+    "params": [
+      {
+        "key": "trainNo",
+        "label": "Train Number",
+        "type": "path",
+        "default": "12557"
+      },
+      {
+        "key": "from",
+        "label": "Origin Station",
+        "type": "query",
+        "default": "NKE"
+      },
+      {
+        "key": "to",
+        "label": "Destination Station",
+        "type": "query",
+        "default": "ANVT"
+      },
+      {
+        "key": "date",
+        "label": "Journey Date (DD-MM-YYYY)",
+        "type": "query",
+        "default": "17-11-2026"
+      },
+      {
+        "key": "class",
+        "label": "Travel Class",
+        "type": "query",
+        "default": "3A",
+        "options": [
+          "3A",
+          "2A",
+          "1A",
+          "3E",
+          "CC",
+          "EC",
+          "SL",
+          "2S"
+        ]
+      },
+      {
+        "key": "quota",
+        "label": "Quota",
+        "type": "query",
+        "default": "GN",
+        "options": [
+          "GN",
+          "TQ",
+          "PT",
+          "LD"
+        ]
+      }
     ]
   },
-
-  // --- LIVE & PNR ---
   {
-    group: 'Live Status & PNR', id: 'live', method: 'GET', basePath: '/api/v1/live/:trainNo', name: 'Live Train Running Status',
-    params: [
-      { key: 'trainNo', label: 'Train Number', type: 'path', default: '12309' },
-      { key: 'date', label: 'Date', type: 'query', default: new Date().toISOString().split('T')[0] }
+    "group": "Trains",
+    "id": "chartVacant",
+    "method": "GET",
+    "basePath": "/api/v1/trains/:trainNo/chart-vacant",
+    "name": "Vacant Seats After Chart Preparation",
+    "params": [
+      {
+        "key": "trainNo",
+        "label": "Train Number",
+        "type": "path",
+        "default": "12557"
+      },
+      {
+        "key": "boardingStation",
+        "label": "Boarding Station",
+        "type": "query",
+        "default": "GKP"
+      },
+      {
+        "key": "date",
+        "label": "Journey Date (YYYY-MM-DD)",
+        "type": "query",
+        "default": "2026-10-25"
+      },
+      {
+        "key": "class",
+        "label": "Travel Class",
+        "type": "query",
+        "default": "ALL",
+        "options": [
+          "ALL",
+          "3A",
+          "2A",
+          "1A",
+          "3E",
+          "SL",
+          "CC",
+          "2S"
+        ]
+      }
     ]
   },
   {
-    group: 'Live Status & PNR', id: 'liveStation', method: 'GET', basePath: '/api/v1/live/station/:stationCode', name: 'Live Station Display Board',
-    params: [
-      { key: 'stationCode', label: 'Station Code', type: 'path', default: 'NDLS' },
-      { key: 'hours', label: 'Hours Window', type: 'query', default: '2', options: ['2', '4', '8'] },
-      { key: 'toStation', label: 'Destination Filter (Optional)', type: 'query', default: '' }
+    "group": "Stations",
+    "id": "stationAutocomplete",
+    "method": "GET",
+    "basePath": "/api/v1/trains/stations",
+    "name": "Station by Name",
+    "params": [
+      {
+        "key": "q",
+        "label": "Search Query",
+        "type": "query",
+        "default": "pur"
+      }
     ]
   },
   {
-    group: 'Live Status & PNR', id: 'pnr', method: 'GET', basePath: '/api/v1/pnr/:pnr', name: 'PNR Status',
-    params: [
-      { key: 'pnr', label: 'PNR Number', type: 'path', default: '2434567890' }
+    "group": "Stations",
+    "id": "stationTimetable",
+    "method": "GET",
+    "basePath": "/api/v1/trains/stations/:code/timetable/:date",
+    "name": "Station Timetable",
+    "params": [
+      {
+        "key": "code",
+        "label": "Station Code",
+        "type": "path",
+        "default": "NKE"
+      },
+      {
+        "key": "date",
+        "label": "Date (DD-MM-YYYY)",
+        "type": "path",
+        "default": "17-11-2026"
+      }
     ]
   },
+  {
+    "group": "Stations",
+    "id": "stationByCode",
+    "method": "GET",
+    "basePath": "/api/v1/trains/stations/:code",
+    "name": "Station by Code",
+    "params": [
+      {
+        "key": "code",
+        "label": "Station Code",
+        "type": "path",
+        "default": "NDLS"
+      }
+    ]
+  },
+  {
+    "group": "Live Status & PNR",
+    "id": "live",
+    "method": "GET",
+    "basePath": "/api/v1/live/:trainNo",
+    "name": "Live Train Running Status",
+    "params": [
+      {
+        "key": "trainNo",
+        "label": "Train Number",
+        "type": "path",
+        "default": "12557"
+      },
+      {
+        "key": "date",
+        "label": "Date (YYYY-MM-DD)",
+        "type": "query",
+        "default": "2026-10-25"
+      }
+    ]
+  },
+  {
+    "group": "Live Status & PNR",
+    "id": "liveStation",
+    "method": "GET",
+    "basePath": "/api/v1/live/station/:stationCode",
+    "name": "Live Station Display Board",
+    "params": [
+      {
+        "key": "stationCode",
+        "label": "Station Code",
+        "type": "path",
+        "default": "GKP"
+      },
+      {
+        "key": "hours",
+        "label": "Hours Window",
+        "type": "query",
+        "default": "2",
+        "options": [
+          "2",
+          "4",
+          "8"
+        ]
+      },
+      {
+        "key": "toStation",
+        "label": "Destination Filter (Optional)",
+        "type": "query",
+        "default": ""
+      }
+    ]
+  },
+  {
+    "group": "Live Status & PNR",
+    "id": "pnr",
+    "method": "GET",
+    "basePath": "/api/v1/pnr/:pnr",
+    "name": "PNR Status",
+    "params": [
+      {
+        "key": "pnr",
+        "label": "PNR Number",
+        "type": "path",
+        "default": "2265248473"
+      }
+    ]
+  }
 ];
 
 const buildUrl = (ep: Endpoint, vals: Record<string, string>) => {
@@ -203,24 +424,50 @@ const renderHighlightedJson = (jsonString: string) => {
 };
 
 export default function ApiPlayground() {
-  const [activeEndpoint, setActiveEndpoint] = useState<Endpoint>(ENDPOINTS[0]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const endpointQuery = searchParams.get('endpoint');
+
+  const findEndpoint = (param: string | null): Endpoint | undefined => {
+    if (!param) return undefined;
+    const clean = decodeURIComponent(param).trim().toLowerCase();
+    return ENDPOINTS.find(ep =>
+      ep.id.toLowerCase() === clean ||
+      ep.basePath.toLowerCase() === clean ||
+      ep.basePath.toLowerCase().replace(/:\w+/g, '').replace(/\/+$/, '') === clean.replace(/:\w+/g, '').replace(/\/+$/, '')
+    );
+  };
+
+  const initialEndpoint = findEndpoint(endpointQuery) || ENDPOINTS[0];
+  const [activeEndpoint, setActiveEndpoint] = useState<Endpoint>(initialEndpoint);
   const [paramValues, setParamValues] = useState<Record<string, string>>({});
   const [playgroundKey, setPlaygroundKey] = useState<string>('');
   const [mobileTab, setMobileTab] = useState<'endpoints' | 'params' | 'response'>('endpoints');
   const [endpointSearch, setEndpointSearch] = useState('');
   const [showKeyPassword, setShowKeyPassword] = useState(false);
+  const [curlCopied, setCurlCopied] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   const [reqState, setReqState] = useState({
     data: '', loading: false, time: 0, status: 0, size: 0, copied: false
   });
-  const { user, authLoading, setUser, logout } = useAuth();
+  const { user, setUser, logout } = useAuth();
+  const isPlaygroundActive = Boolean(user);
 
   useEffect(() => {
     return () => {
       abortControllerRef.current?.abort();
     };
   }, []);
+
+  // Sync active endpoint if URL query param changes
+  useEffect(() => {
+    if (endpointQuery) {
+      const match = findEndpoint(endpointQuery);
+      if (match && match.id !== activeEndpoint.id) {
+        setActiveEndpoint(match);
+      }
+    }
+  }, [endpointQuery]);
 
   // Filter and group endpoints for the sidebar
   const filteredEndpoints = ENDPOINTS.filter(ep => {
@@ -235,28 +482,57 @@ export default function ApiPlayground() {
     return acc;
   }, {} as Record<string, Endpoint[]>);
 
-  // Initialize parameters when endpoint changes
+  // Initialize parameters when endpoint changes (with optional URL override)
   useEffect(() => {
     const initialVals: Record<string, string> = {};
     activeEndpoint.params.forEach(p => {
-      initialVals[p.key] = p.default;
+      const urlVal = searchParams.get(p.key);
+      initialVals[p.key] = urlVal || p.default;
     });
     setParamValues(initialVals);
     setReqState(s => ({...s, data: '', time: 0, status: 0, size: 0}));
   }, [activeEndpoint]);
 
+  const handleSelectEndpoint = (ep: Endpoint) => {
+    setActiveEndpoint(ep);
+    const newParams = new URLSearchParams(searchParams);
+    newParams.set('endpoint', ep.id);
+    setSearchParams(newParams, { replace: true });
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      setMobileTab('params');
+    }
+  };
+
   const currentUrl = buildUrl(activeEndpoint, paramValues);
+
+  const getCurlCommand = () => {
+    const API_URL = import.meta.env.VITE_API_URL || 'https://api.irctc.dev';
+    const cleanKey = playgroundKey.trim();
+    const authHeader = cleanKey ? `-H "x-api-key: ${cleanKey}"` : `-H "x-api-key: YOUR_API_KEY"`;
+    return `curl -s -X ${activeEndpoint.method} "${API_URL}${currentUrl}" \\\n  ${authHeader} \\\n  -H "accept: application/json"`;
+  };
+
+  const copyCurl = () => {
+    navigator.clipboard?.writeText(getCurlCommand()).then(() => {
+      setCurlCopied(true);
+      toast.success('cURL command copied to clipboard');
+      setTimeout(() => setCurlCopied(false), 2000);
+    }).catch(() => {
+      toast.error('Failed to copy cURL command');
+    });
+  };
 
   const handleTest = async () => {
     if (reqState.loading) return;
     const cleanKey = playgroundKey.trim();
+    const isPublicEndpoint = activeEndpoint.id === 'health';
     if (typeof window !== 'undefined' && window.innerWidth < 1024) {
       setMobileTab('response');
     }
 
-    if (!cleanKey) {
+    if (!cleanKey && !isPublicEndpoint) {
       setReqState({
-        data: '{\n  "error": "API Key Required. Please paste your valid API key in the Configuration panel."\n}',
+        data: '{\n  "error": "API Key Required. Please paste your valid API key in the Configuration panel, or test public /health endpoint."\n}',
         loading: false,
         time: 0,
         status: 401,
@@ -267,7 +543,7 @@ export default function ApiPlayground() {
     }
 
     // Check for masked keys (bullet characters) or any non-ASCII characters that crash native fetch headers
-    if (/[^\x20-\x7E]/.test(cleanKey) || cleanKey.includes('•')) {
+    if (cleanKey && (/[^\x20-\x7E]/.test(cleanKey) || cleanKey.includes('•'))) {
       setReqState({
         data: '{\n  "error": "Invalid API Key format. You pasted a masked key (••••). Please generate a new key in the Dashboard and copy the real one."\n}',
         loading: false,
@@ -301,8 +577,12 @@ export default function ApiPlayground() {
     setReqState(s => ({ ...s, loading: true, data: '', copied: false }));
     const t0 = performance.now();
     try {
-      const headers: Record<string, string> = {};
-      headers['x-api-key'] = cleanKey;
+      const headers: Record<string, string> = {
+        accept: 'application/json'
+      };
+      if (cleanKey) {
+        headers['x-api-key'] = cleanKey;
+      }
       const API_URL = import.meta.env.VITE_API_URL || 'https://api.irctc.dev';
       const res = await fetch(`${API_URL}${currentUrl}`, { headers, signal: controller.signal });
       const text = await res.text();
@@ -348,30 +628,70 @@ export default function ApiPlayground() {
     });
   };
 
-  if (authLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen bg-[#050505]">
-        <Loader2 className="w-8 h-8 text-brand animate-spin" />
-        <p className="mt-4 text-sm text-textMuted font-mono">Authenticating session...</p>
-      </div>
-    );
-  }
-
-
-
   return (
     <div className="relative w-full flex flex-col min-h-[calc(100dvh-80px)] lg:h-[calc(100vh-100px)] pt-6 sm:pt-8 pb-6 lg:overflow-hidden">
-      
+      {/* Schema.org Structured Data for Developer Sandbox */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@graph': [
+              {
+                '@type': 'WebApplication',
+                '@id': 'https://irctc.dev/playground/#webapp',
+                url: 'https://irctc.dev/playground',
+                name: 'IRCTC API Interactive Playground & Developer Sandbox',
+                description: 'Interactive developer console and sandbox to test live Indian Railways API endpoints, query PNR status, seat availability, train schedules, and live train GPS telemetry with real-time latency metrics.',
+                applicationCategory: 'DeveloperApplication',
+                operatingSystem: 'Web Browsers',
+                browserRequirements: 'Requires JavaScript. Requires HTML5.',
+                offers: {
+                  '@type': 'Offer',
+                  price: '0',
+                  priceCurrency: 'INR'
+                },
+                featureList: [
+                  'Live 10-Digit PNR Status Verification',
+                  '14-Day PRS Seat Availability Forecast',
+                  'Post-Charting Vacant Berths Allocation',
+                  'Live Train GPS Telemetry & Delays',
+                  'Station Timetable & Live Display Boards',
+                  'Sub-100ms Microsecond Execution Timing'
+                ]
+              },
+              {
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                  {
+                    '@type': 'ListItem',
+                    position: 1,
+                    name: 'Home',
+                    item: 'https://irctc.dev'
+                  },
+                  {
+                    '@type': 'ListItem',
+                    position: 2,
+                    name: 'API Playground',
+                    item: 'https://irctc.dev/playground'
+                  }
+                ]
+              }
+            ]
+          })
+        }}
+      />
+
       {/* Ghost UI Content */}
-      <motion.div 
-        initial={{ opacity: 0, filter: 'blur(0px) grayscale(0%)' }} 
-        animate={{ 
-          opacity: user ? 1 : 0.5, 
-          filter: user ? 'blur(0px) grayscale(0%)' : 'blur(4px) grayscale(60%)' 
-        }} 
-        exit={{ opacity: 0 }} 
+      <motion.div
+        initial={{ opacity: 0, filter: 'blur(0px) grayscale(0%)' }}
+        animate={{
+          opacity: isPlaygroundActive ? 1 : 0.5,
+          filter: isPlaygroundActive ? 'blur(0px) grayscale(0%)' : 'blur(4px) grayscale(60%)'
+        }}
+        exit={{ opacity: 0 }}
         transition={{ duration: 0.5 }}
-        className={`max-w-[1400px] mx-auto px-4 sm:px-6 w-full flex flex-1 flex-col min-h-0 ${!user ? 'select-none pointer-events-none' : ''}`}
+        className={`max-w-[1400px] mx-auto px-4 sm:px-6 w-full flex flex-1 flex-col min-h-0 ${!isPlaygroundActive ? 'select-none pointer-events-none' : ''}`}
       >
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-3.5 sm:mb-8 shrink-0">
@@ -379,7 +699,7 @@ export default function ApiPlayground() {
             <h2 className="text-xl sm:text-3xl font-medium tracking-tight mb-0.5 sm:mb-2">API Playground</h2>
             <p className="text-textMuted text-xs sm:text-sm">Interactive developer console to test live IRCTC API endpoints.</p>
           </div>
-          
+
           <div className="flex items-center gap-3 bg-surface border border-borderRoot rounded-full p-1.5 pr-2.5 shadow-sm w-full sm:w-auto shrink-0">
             <img
               src={user?.avatar || user?.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || 'User')}&background=1a1a1a&color=fff`}
@@ -390,13 +710,17 @@ export default function ApiPlayground() {
               }}
             />
             <div className="flex flex-col justify-center px-1 min-w-0 flex-1 sm:flex-initial">
-              <span className="text-xs sm:text-[13px] font-semibold text-textMain leading-none tracking-tight mb-1 truncate sm:max-w-[200px]">{user?.name || 'Guest Developer'}</span>
-              <span className="text-[10px] sm:text-[11px] font-medium text-textMuted leading-none truncate">{user?.email || 'Unauthorized'}</span>
+              <span className="text-xs sm:text-[13px] font-semibold text-textMain leading-none tracking-tight mb-1 truncate sm:max-w-[200px]">
+                {user?.name || 'Guest Developer'}
+              </span>
+              <span className="text-[10px] sm:text-[11px] font-medium text-textMuted leading-none truncate">
+                {user?.email || 'Sign in required'}
+              </span>
             </div>
             {user && (
-              <button 
+              <button
                 onClick={() => logout()}
-                className="ml-auto text-[11px] sm:text-xs font-medium text-textMuted hover:text-red-400 active:scale-[0.96] transition-all bg-base px-3 py-1.5 rounded-full border border-borderRoot shadow-sm hover:border-red-400/30 hover:bg-red-400/10 shrink-0"
+                className="ml-auto text-[11px] sm:text-xs font-medium text-textMuted hover:text-red-400 active:scale-[0.96] transition-all bg-base px-3 py-1.5 rounded-full border border-borderRoot shadow-sm hover:border-red-400/30 hover:bg-red-400/10 shrink-0 cursor-pointer"
               >
                 Sign Out
               </button>
@@ -483,11 +807,8 @@ export default function ApiPlayground() {
                       return (
                         <button
                           key={ep.id}
-                          onClick={() => {
-                            setActiveEndpoint(ep);
-                            if (window.innerWidth < 1024) setMobileTab('params');
-                          }}
-                          className="relative w-full text-left px-3 py-2.5 sm:py-2 transition-colors group flex flex-col rounded-md active:bg-white/[0.04]"
+                          onClick={() => handleSelectEndpoint(ep)}
+                          className="relative w-full text-left px-3 py-2.5 sm:py-2 transition-colors group flex flex-col rounded-md active:bg-white/[0.04] cursor-pointer"
                         >
                           {isActive && (
                             <motion.div
@@ -608,20 +929,24 @@ export default function ApiPlayground() {
                             </option>
                           ))}
                         </select>
-                      ) : (
-                        <input
-                          type={param.key === 'date' ? 'date' : 'text'}
-                          value={paramValues[param.key] || ''}
-                          onChange={(e) => setParamValues(prev => ({...prev, [param.key]: e.target.value}))}
-                          onKeyDown={(e) => e.key === 'Enter' && handleTest()}
-                          className="w-full bg-[#050505] border border-borderRoot rounded-md px-3 py-2 text-base sm:text-[13px] text-textMain focus:ring-2 focus:ring-brand/20 focus:border-brand/50 focus:outline-none transition-all placeholder:text-textMuted/40 shadow-sm"
-                          placeholder={`Enter ${param.label.toLowerCase()}`}
-                          autoCapitalize={['from', 'to', 'code', 'station', 'trainNo', 'pnr'].includes(param.key) ? 'characters' : 'none'}
-                          autoCorrect="off"
-                          spellCheck="false"
-                          style={{ colorScheme: 'dark' }}
-                        />
-                      )}
+                      ) : (() => {
+                        const isDdMmYyyy = param.label.includes('DD-MM-YYYY') || (param.default && /^\d{2}-\d{2}-\d{4}$/.test(param.default));
+                        const inputType = (param.key === 'date' && !isDdMmYyyy) ? 'date' : 'text';
+                        return (
+                          <input
+                            type={inputType}
+                            value={paramValues[param.key] || ''}
+                            onChange={(e) => setParamValues(prev => ({...prev, [param.key]: e.target.value}))}
+                            onKeyDown={(e) => e.key === 'Enter' && handleTest()}
+                            className="w-full bg-[#050505] border border-borderRoot rounded-md px-3 py-2 text-base sm:text-[13px] text-textMain focus:ring-2 focus:ring-brand/20 focus:border-brand/50 focus:outline-none transition-all placeholder:text-textMuted/40 shadow-sm"
+                            placeholder={isDdMmYyyy ? 'DD-MM-YYYY (e.g. 17-11-2026)' : `Enter ${param.label.toLowerCase()}`}
+                            autoCapitalize={['from', 'to', 'code', 'station', 'trainNo', 'pnr'].includes(param.key) ? 'characters' : 'none'}
+                            autoCorrect="off"
+                            spellCheck="false"
+                            style={{ colorScheme: 'dark' }}
+                          />
+                        );
+                      })()}
                     </div>
                   ))}
                 </div>
@@ -657,6 +982,17 @@ export default function ApiPlayground() {
                   <span className="text-textMuted select-none hidden sm:inline">{import.meta.env.VITE_API_URL || 'https://api.irctc.dev'}</span>
                   <span className="text-textMain truncate sm:overflow-visible">{currentUrl}</span>
                 </div>
+                {/* Copy cURL Button */}
+                <button
+                  type="button"
+                  onClick={copyCurl}
+                  title="Copy executable cURL command"
+                  className="flex items-center gap-1.5 px-3 py-2 sm:py-3 text-xs font-mono text-textMuted hover:text-textMain hover:bg-white/[0.04] transition-colors border-r border-borderRoot shrink-0 cursor-pointer"
+                >
+                  {curlCopied ? <Check size={13} className="text-emerald-400" /> : <Terminal size={13} />}
+                  <span className="hidden sm:inline">{curlCopied ? 'cURL Copied' : 'cURL'}</span>
+                </button>
+
                 <button
                   onClick={handleTest}
                   disabled={reqState.loading}
@@ -748,18 +1084,18 @@ export default function ApiPlayground() {
       </motion.div>
 
       {/* Ghost UI Auth Overlay */}
-      {!user && (
+      {!isPlaygroundActive && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95, y: 10 }} 
-            animate={{ opacity: 1, scale: 1, y: 0 }} 
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.4, ease: 'easeOut', delay: 0.1 }}
             className="max-w-md w-full p-8 bg-[#0a0a0a]/90 border border-white/10 backdrop-blur-3xl rounded-3xl shadow-[0_0_80px_rgba(0,0,0,0.8)] ring-1 ring-white/5 flex flex-col items-center text-center mx-4 -mt-10"
           >
             <div className="w-16 h-16 bg-brand/10 text-brand rounded-2xl flex items-center justify-center mb-6 ring-1 ring-brand/30 shadow-[inset_0_0_20px_rgba(var(--brand),0.2)]">
               <Server size={32} strokeWidth={1.5} />
             </div>
-            
+
             <h1 className="text-2xl font-bold text-textMain tracking-tight mb-2">Enter the Playground</h1>
             <p className="text-textMuted text-sm mb-8 leading-relaxed max-w-xs mx-auto">
               Sign in to test live API endpoints, view payloads, and interact with the engine.

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>IRCTC API Developer Guides &amp; Practical Tutorials</title>
+    <link>https://irctc.dev/guides</link>
+    <description>Production-grade walkthroughs, runnable blueprints, and developer guides for building WhatsApp train bots, Telegram vacant berth alerts, automated PNR status checks, and Python seat availability monitors on Indian Railways.</description>
+    <language>en-in</language>
+    <lastBuildDate>Sun, 25 Oct 2026 12:00:00 GMT</lastBuildDate>
+    <atom:link href="https://irctc.dev/rss.xml" rel="self" type="application/rss+xml" />
+
+    <item>
+      <title>How to Build an Automated 14-Day Seat Availability Tracker in Python</title>
+      <link>https://irctc.dev/guides/irctc-seat-availability-tracker-python</link>
+      <guid isPermaLink="true">https://irctc.dev/guides/irctc-seat-availability-tracker-python</guid>
+      <pubDate>Sun, 25 Oct 2026 09:00:00 GMT</pubDate>
+      <category>Alerts &amp; Automation</category>
+      <description>Monitor Indian Railways 14-day seat availability across classes and quotas with a recurring Python daemon and instant Telegram/Discord webhook alerts when seats become available.</description>
+      <author>support@irctc.dev (IRCTC API Developer Relations)</author>
+    </item>
+
+    <item>
+      <title>How to Check Indian Railway PNR Status Programmatically (Node.js &amp; Python Guide)</title>
+      <link>https://irctc.dev/guides/check-indian-railway-pnr-programmatically</link>
+      <guid isPermaLink="true">https://irctc.dev/guides/check-indian-railway-pnr-programmatically</guid>
+      <pubDate>Sun, 25 Oct 2026 08:00:00 GMT</pubDate>
+      <category>Developer Guides</category>
+      <description>The definitive developer guide to querying live 10-digit PNR status, passenger manifests, berth allocations, and charting status with Node.js and Python.</description>
+      <author>support@irctc.dev (IRCTC API Developer Relations)</author>
+    </item>
+
+    <item>
+      <title>How to Build a Telegram Alert Bot for Vacant Berths After Chart Preparation</title>
+      <link>https://irctc.dev/guides/telegram-vacant-berths-alert-bot</link>
+      <guid isPermaLink="true">https://irctc.dev/guides/telegram-vacant-berths-alert-bot</guid>
+      <pubDate>Sun, 25 Oct 2026 07:00:00 GMT</pubDate>
+      <category>Alerts &amp; Automation</category>
+      <description>Learn how to monitor train chart preparation events and send instant Telegram notifications when vacant berths become available for Current Booking.</description>
+      <author>support@irctc.dev (IRCTC API Developer Relations)</author>
+    </item>
+
+    <item>
+      <title>How to Build a WhatsApp Train Running Status &amp; PNR Bot in Node.js (2026 Tutorial)</title>
+      <link>https://irctc.dev/guides/whatsapp-train-status-bot-nodejs</link>
+      <guid isPermaLink="true">https://irctc.dev/guides/whatsapp-train-status-bot-nodejs</guid>
+      <pubDate>Sun, 25 Oct 2026 06:00:00 GMT</pubDate>
+      <category>Bots &amp; Messaging</category>
+      <description>Step-by-step guide to building a production-ready WhatsApp bot for live Indian Railways GPS tracking, PNR verification, and seat availability using Baileys and the irctc-api SDK.</description>
+      <author>support@irctc.dev (IRCTC API Developer Relations)</author>
+    </item>
+  </channel>
+</rss>

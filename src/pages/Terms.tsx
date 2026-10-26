@@ -43,6 +43,49 @@ const Terms = () => {
 
   return (
     <div className="min-h-screen bg-[#050505] text-[#e0e0e0] font-sans selection:bg-white selection:text-black pb-16 sm:pb-24 md:pb-32">
+      {/* Schema.org Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@graph': [
+              {
+                '@type': 'WebPage',
+                '@id': 'https://irctc.dev/terms/#webpage',
+                url: 'https://irctc.dev/terms',
+                name: 'Commercial Terms of Service & API Agreement — IRCTC API',
+                description: 'Official commercial terms of service, API license, usage guidelines, rate limits, and liability disclaimers for the IRCTC API platform.',
+                isPartOf: {
+                  '@id': 'https://irctc.dev/#website'
+                },
+                about: {
+                  '@id': 'https://irctc.dev/#webapi'
+                },
+                inLanguage: 'en-IN'
+              },
+              {
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                  {
+                    '@type': 'ListItem',
+                    position: 1,
+                    name: 'Home',
+                    item: 'https://irctc.dev'
+                  },
+                  {
+                    '@type': 'ListItem',
+                    position: 2,
+                    name: 'Terms & Conditions',
+                    item: 'https://irctc.dev/terms'
+                  }
+                ]
+              }
+            ]
+          })
+        }}
+      />
+
       {/* Header */}
       <header className="relative border-b border-white/10 px-4 sm:px-6 pt-12 sm:pt-24 md:pt-28 pb-8 sm:pb-16 md:pb-20">
         <div className="mx-auto max-w-7xl flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-12">

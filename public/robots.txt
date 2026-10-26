@@ -1,0 +1,69 @@
+# robots.txt for https://irctc.dev
+# IRCTC Developer Portal & Indian Railways API Engine
+
+User-agent: *
+Allow: /
+Allow: /docs
+Allow: /playground
+Allow: /terms
+Allow: /privacy
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /dashboard
+Disallow: /dashboard/*
+
+# AI Search Crawlers (Generative Engine Optimization)
+User-agent: GPTBot
+Allow: /
+Allow: /docs
+Allow: /playground
+Allow: /guides
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /openapi.json
+Allow: /postman_collection.json
+
+User-agent: ChatGPT-User
+Allow: /
+Allow: /docs
+Allow: /playground
+Allow: /guides
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /openapi.json
+Allow: /postman_collection.json
+
+User-agent: PerplexityBot
+Allow: /
+Allow: /docs
+Allow: /playground
+Allow: /guides
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /openapi.json
+Allow: /postman_collection.json
+
+User-agent: ClaudeBot
+Allow: /
+Allow: /docs
+Allow: /playground
+Allow: /guides
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /openapi.json
+Allow: /postman_collection.json
+
+User-agent: Google-Extended
+Allow: /
+Allow: /docs
+Allow: /playground
+Allow: /guides
+Allow: /llms.txt
+Allow: /llms-full.txt
+Allow: /openapi.json
+Allow: /postman_collection.json
+
+# Sitemaps & Machine-Readable LLM Specifications
+Sitemap: https://irctc.dev/sitemap.xml
+# Machine-Readable LLM Specification: https://irctc.dev/llms.txt
+# Machine-Readable Full Specification: https://irctc.dev/llms-full.txt
