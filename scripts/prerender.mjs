@@ -42,6 +42,11 @@ async function prerender() {
     '/guides/telegram-vacant-berths-alert-bot',
     '/guides/check-indian-railway-pnr-programmatically',
     '/guides/irctc-seat-availability-tracker-python',
+    '/alternatives/rapidapi-indian-railway-api',
+    '/alternatives/railway-api-pricing-comparison',
+    '/tools/clean-pnr-checker',
+    '/tools/live-station-radar',
+    '/tools/train-fare-calculator',
     '/404'
   ];
   const results = [];

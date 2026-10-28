@@ -20,6 +20,38 @@ export const ROUTE_META: Record<string, RouteMeta> = {
     title: 'Developer Console & API Key Management — IRCTC API',
     desc: 'Manage secret API keys, monitor request quotas, view real-time telemetry logs, and top up credits with Google OAuth authentication.',
   },
+  '/cli-auth': {
+    title: 'Terminal CLI Device Authorization — IRCTC API',
+    desc: 'Authorize local terminal CLI session and connect API key with 1-click Google OAuth verification.',
+  },
+  '/alternatives/rapidapi-indian-railway-api': {
+    title: 'Best RapidAPI Indian Railway API Alternative (10ms Latency & ₹99 UPI Topup)',
+    desc: 'Switch from RapidAPI Indian Railways API in 30 seconds with zero code rewrites. 180ms latency vs 5000ms, ₹99 for 100k requests vs $35/mo recurring card lock.',
+  },
+  '/rapidapi-alternative': {
+    title: 'Best RapidAPI Indian Railway API Alternative (10ms Latency & ₹99 UPI Topup)',
+    desc: 'Switch from RapidAPI Indian Railways API in 30 seconds with zero code rewrites. 180ms latency vs 5000ms, ₹99 for 100k requests vs $35/mo recurring card lock.',
+  },
+  '/alternatives/railway-api-pricing-comparison': {
+    title: 'Indian Railways API Pricing: Why CRIS Access Costs ₹50L & How We Made It ₹99',
+    desc: 'Complete economic and technical transparency report comparing official CRIS ₹50L enterprise bank guarantees vs RapidAPI USD card locks vs irctc.dev ₹99.',
+  },
+  '/pricing-comparison': {
+    title: 'Indian Railways API Pricing: Why CRIS Access Costs ₹50L & How We Made It ₹99',
+    desc: 'Complete economic and technical transparency report comparing official CRIS ₹50L enterprise bank guarantees vs RapidAPI USD card locks vs irctc.dev ₹99.',
+  },
+  '/tools/clean-pnr-checker': {
+    title: 'Free Ad-Free PNR Status Checker — Instant Passenger & Charting Verification',
+    desc: 'Clean, lightning-fast 150ms Indian Railways PNR status checker with coach, berth, and chart preparation status without ads.',
+  },
+  '/tools/live-station-radar': {
+    title: 'Live Railway Station Radar — Digital Arrivals & Departures Display Board',
+    desc: 'Real-time station display board for all Indian Railway stations. Track live delays, platforms, and scheduled train arrivals.',
+  },
+  '/tools/train-fare-calculator': {
+    title: 'Train Ticket Fare Calculator — Multi-Class IRCTC Fee Breakup',
+    desc: 'Calculate official Indian Railways ticket fares with itemized breakdowns: Base Fare, Reservation Charges, Superfast, GST, and Catering.',
+  },
   '/terms': {
     title: 'Commercial Terms of Service — IRCTC API',
     desc: 'Read the commercial terms of service, API license, usage guidelines, and service agreements governing the IRCTC API platform.',

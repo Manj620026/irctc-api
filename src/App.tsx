@@ -11,6 +11,10 @@ import GuidesIndex from './pages/GuidesIndex';
 import GuideDetail from './pages/GuideDetail';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
+import CliAuth from './pages/CliAuth';
+import RapidApiAlternative from './pages/RapidApiAlternative';
+import EmbedWidget from './pages/EmbedWidget';
+import PricingComparison from './pages/PricingComparison';
 import AdminPortal from './pages/admin/AdminPortal';
 import { AdminRoute } from './components/AdminRoute';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -181,6 +185,15 @@ function AnimatedRoutes() {
         <Route path="/guides" element={<GuidesIndex />} />
         <Route path="/guides/:slug" element={<GuideDetail />} />
         <Route path="/admin/*" element={<AdminRoute><AdminPortal /></AdminRoute>} />
+        <Route path="/cli-auth" element={<CliAuth />} />
+        <Route path="/alternatives/rapidapi-indian-railway-api" element={<RapidApiAlternative />} />
+        <Route path="/rapidapi-alternative" element={<RapidApiAlternative />} />
+        <Route path="/alternatives/railway-api-pricing-comparison" element={<PricingComparison />} />
+        <Route path="/pricing-comparison" element={<PricingComparison />} />
+        <Route path="/tools/clean-pnr-checker" element={<FeatureLanding slug="pnr-status-api" />} />
+        <Route path="/tools/live-station-radar" element={<FeatureLanding slug="live-train-status-api" />} />
+        <Route path="/tools/train-fare-calculator" element={<FeatureLanding slug="train-fare-api" />} />
+        <Route path="/embed/:type" element={<EmbedWidget />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/404" element={<NotFound />} />
@@ -192,18 +205,21 @@ function AnimatedRoutes() {
 
 export function AppShell() {
   const location = useLocation();
+  const isEmbed = location.pathname.startsWith('/embed');
   const hideFooter =
+    isEmbed ||
     location.pathname === '/dashboard' ||
     location.pathname === '/playground' ||
+    location.pathname === '/cli-auth' ||
     location.pathname.startsWith('/admin');
 
   return (
     <>
       <RouteHeadManager />
-      <Toaster theme="dark" position="bottom-right" />
-      <Navigation />
-      <div className="min-h-[100dvh] bg-base text-textMain selection:bg-brand selection:text-white flex flex-col font-sans">
-        <main className={`flex-1 flex flex-col pt-16 sm:pt-24 ${hideFooter ? 'pb-4' : 'pb-8 sm:pb-4'}`}>
+      {!isEmbed && <Toaster theme="dark" position="bottom-right" />}
+      {!isEmbed && <Navigation />}
+      <div className={`min-h-[100dvh] bg-base text-textMain selection:bg-brand selection:text-white flex flex-col font-sans ${isEmbed ? 'p-0 bg-transparent min-h-0' : ''}`}>
+        <main className={`flex-1 flex flex-col ${isEmbed ? 'p-0 pt-0' : hideFooter ? 'pt-16 sm:pt-24 pb-4' : 'pt-16 sm:pt-24 pb-8 sm:pb-4'}`}>
           <ErrorBoundary><AnimatedRoutes /></ErrorBoundary>
         </main>
         {!hideFooter && (
@@ -233,6 +249,8 @@ export function AppShell() {
                   <Link to="/docs" className="hover:text-textMain transition-colors">Docs</Link>
                   <span className="text-white/20 select-none">•</span>
                   <Link to="/guides" className="hover:text-textMain transition-colors">Guides</Link>
+                  <span className="text-white/20 select-none">•</span>
+                  <Link to="/alternatives/rapidapi-indian-railway-api" className="hover:text-textMain transition-colors">RapidAPI Alternative</Link>
                   <span className="text-white/20 select-none">•</span>
                   <a href="https://github.com/Manj620026" target="_blank" rel="noreferrer" className="hover:text-textMain transition-colors">GitHub</a>
                   <span className="text-white/20 select-none">•</span>

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Play, Loader2, Copy, Check, Settings2, Server, Key, Search, Eye, EyeOff, Terminal } from 'lucide-react';
+import { Play, Loader2, Copy, Check, Settings2, Server, Key, Search, Eye, EyeOff, Terminal, Download } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GoogleLogin } from '@react-oauth/google';
 import { toast } from 'sonner';
@@ -992,6 +992,17 @@ export default function ApiPlayground() {
                   {curlCopied ? <Check size={13} className="text-emerald-400" /> : <Terminal size={13} />}
                   <span className="hidden sm:inline">{curlCopied ? 'cURL Copied' : 'cURL'}</span>
                 </button>
+
+                {/* Postman Collection Button */}
+                <a
+                  href="/postman_collection.json"
+                  download="irctc_postman_collection.json"
+                  title="Download Postman Collection v2.1.0 with Test Assertions"
+                  className="flex items-center gap-1.5 px-3 py-2 sm:py-3 text-xs font-mono text-textMuted hover:text-textMain hover:bg-white/[0.04] transition-colors border-r border-borderRoot shrink-0"
+                >
+                  <Download size={13} className="text-orange-400" />
+                  <span className="hidden sm:inline">Postman</span>
+                </a>
 
                 <button
                   onClick={handleTest}

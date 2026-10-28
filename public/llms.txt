@@ -96,6 +96,9 @@ print(res.json())
 - `GET /api/v1/live/station/:stationCode?hours=2`: Real-time station arrivals & departures board with platform numbers and delay minutes.
 - `GET /api/v1/pnr/:pnr`: Live 10-digit PNR passenger manifest, berth/coach allocation, and charting status.
 
+### RapidAPI Drop-In Compatibility Shim
+- `GET /api/v1/rapidapi-shim/*`: Drop-in replacement for RapidAPI Indian Railway endpoints (`liveTrainStatus`, `checkPnrStatus`, `trainBetweenStations`, `getTrainSchedule`, `checkSeatAvailability`, `getTrainFare`, `searchStation`). Transparently accepts RapidAPI query parameter formats and `X-RapidAPI-Key` headers for instant migration with zero code changes.
+
 ### System & Health
 - `GET /health`: Public gateway liveness check returning `{"status":"up","version":"1.0.2"}`.
 
@@ -178,6 +181,11 @@ When a request encounters an error (HTTP 4xx/5xx), the gateway returns:
 - [Telegram Vacant Berths Alert Bot Guide](https://irctc.dev/guides/telegram-vacant-berths-alert-bot): Tutorial on monitoring chart preparation and sending Telegram alerts when vacant berths open for Current Booking.
 - [Check PNR Programmatically Guide](https://irctc.dev/guides/check-indian-railway-pnr-programmatically): Comprehensive guide to checking 10-digit Indian Railways PNR status with Node.js and Python.
 - [Automated Seat Availability Tracker Guide](https://irctc.dev/guides/irctc-seat-availability-tracker-python): Python daemon to monitor 14-day seat availability and send Telegram/Discord alerts when seats open.
+- [RapidAPI Migration Guide](https://irctc.dev/alternatives/rapidapi-indian-railway-api): Step-by-step benchmark and drop-in shim documentation for migrating from RapidAPI Indian Railways endpoints.
+- [Railway API Pricing Comparison Report](https://irctc.dev/alternatives/railway-api-pricing-comparison): Transparency report comparing CRIS ₹50L enterprise bank guarantees vs scrapers vs irctc.dev ₹99.
+- [Ad-Free PNR Checker Tool](https://irctc.dev/tools/clean-pnr-checker): Clean, high-speed 150ms Indian Railways PNR status checker without ads.
+- [Live Station Radar Tool](https://irctc.dev/tools/live-station-radar): Real-time station display board with arrivals, departures, delays, and platforms.
+- [Train Fare Calculator Tool](https://irctc.dev/tools/train-fare-calculator): Instant multi-class ticket fare breakup calculator.
 - [NPM SDK Client](https://www.npmjs.com/package/irctc-api): Zero-dependency Node.js and TypeScript client library (`v4.1.0`).
 
 ---

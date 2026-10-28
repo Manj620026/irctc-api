@@ -7,8 +7,9 @@
 [![API Gateway](https://img.shields.io/badge/API-api.irctc.dev-blue.svg?style=for-the-badge)](https://api.irctc.dev)
 [![API Version](https://img.shields.io/badge/API%20Version-v1.0.2-emerald.svg?style=for-the-badge)](https://api.irctc.dev/health)
 [![npm version](https://img.shields.io/npm/v/irctc-api.svg?style=for-the-badge&logo=npm)](https://www.npmjs.com/package/irctc-api)
-[![npm downloads](https://img.shields.io/npm/dm/irctc-api.svg?style=for-the-badge&logo=npm&color=CB3837)](https://www.npmjs.com/package/irctc-api)
-[![npm total downloads](https://img.shields.io/npm/dt/irctc-api.svg?style=for-the-badge&logo=npm&color=blue)](https://www.npmjs.com/package/irctc-api)
+[![PyPI version](https://img.shields.io/pypi/v/irctc-api.svg?style=for-the-badge&logo=pypi&color=3776AB)](https://pypi.org/project/irctc-api/)
+[![n8n Community Node](https://img.shields.io/npm/v/n8n-nodes-irctc.svg?label=n8n%20node&style=for-the-badge&logo=n8n&color=EA4B71)](https://www.npmjs.com/package/n8n-nodes-irctc)
+[![MCP Server](https://img.shields.io/npm/v/irctc-mcp.svg?label=irctc-mcp&style=for-the-badge&logo=anthropic&color=black)](https://www.npmjs.com/package/irctc-mcp)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19.x-61DAFB?style=for-the-badge&logo=react)](https://react.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4.x-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
@@ -30,7 +31,12 @@ Designed for developers building train tracking applications, travel booking int
 | **🧪 API Playground** | [https://irctc.dev/playground](https://irctc.dev/playground) | In-browser interactive API sandbox with real-time latency benchmarks |
 | **📑 Documentation** | [https://irctc.dev/docs](https://irctc.dev/docs) | Complete endpoint schemas, parameters & multi-language code snippets |
 | **🔑 Developer Console** | [https://irctc.dev/dashboard](https://irctc.dev/dashboard) | Google OAuth, API key management, quota tracking & telemetry logs |
-| **📦 Official Client SDK** | [`irctc-api` on npm](https://www.npmjs.com/package/irctc-api) | Zero-dependency Node.js & TypeScript client library (v4.1.0) |
+| **📦 TypeScript / Node SDK** | [`irctc-api` on npm](https://www.npmjs.com/package/irctc-api) | Zero-dependency Node.js & TypeScript client library (v4.3.1) |
+| **🐍 Python Client SDK** | [`irctc-api` on PyPI](https://pypi.org/project/irctc-api/) | Zero-dependency Python 3.8+ client library (`pip install irctc-api`) |
+| **🤖 Model Context Protocol (MCP)** | [`irctc-mcp` on npm](https://www.npmjs.com/package/irctc-mcp) | Official 14-tool AI Agent integration for Cursor, Windsurf & Claude Desktop |
+| **🔄 n8n Community Node** | [`n8n-nodes-irctc` on npm](https://www.npmjs.com/package/n8n-nodes-irctc) | Official low-code automation node for n8n (15 operations, 5 resources) |
+| **💻 Zero-Install CLI** | `npx irctc-api` on npm | Instant terminal train tracking & 1-click device OAuth tunnel |
+| **📮 Postman Collection** | [Download Collection](https://irctc.dev/postman_collection.json) | OpenAPI 3.1 & Postman v2.1.0 test suite with automated assertions |
 | **📫 Developer Support** | [support@irctc.dev](mailto:support@irctc.dev) | Integration assistance, technical inquiries & enterprise support |
 
 ---
@@ -141,10 +147,14 @@ irctc-api/
     │
     └── pages/
         ├── ApiPlayground.tsx            # Interactive API tester, AbortController cancellation & key masking
+        ├── CliAuth.tsx                  # RFC 8628 Terminal-to-Dashboard 1-click OAuth approval tunnel
         ├── Dashboard.tsx                # Key management, RFC 4180 CSV export & Razorpay top-up flow
         ├── Docs.tsx                     # API reference, syntax tokenizer & multi-language tabs
+        ├── EmbedWidget.tsx              # Standalone embeddable iframe widget for travel sites & blogs
         ├── LandingPage.tsx              # Conversion hero, animated request firehose & benchmark stats
+        ├── PricingComparison.tsx        # Railway API pricing transparency report (CRIS ₹50L vs irctc.dev)
         ├── Privacy.tsx                  # DPDP/GDPR compliant privacy policy with mobile bottom sheet index
+        ├── RapidApiAlternative.tsx      # RapidAPI switcher hub with head-to-head latency benchmarks
         └── Terms.tsx                    # Commercial API usage agreement with mobile drawer navigation
 ```
 
@@ -416,6 +426,143 @@ curl -s -X GET "https://api.irctc.dev/api/v1/live/station/NDLS?hours=2" \
 # 9. Gateway Health Check (No Key Required)
 curl -s -X GET "https://api.irctc.dev/health"
 ```
+
+---
+
+### 5. Python Client SDK (`pip install irctc-api`)
+
+Zero-dependency Python 3.8+ library built with native Python standard library (`urllib.request`, `ssl`, `json`). Ultra-lightweight (< 20 KB), with instant sub-second installation and full PEP 561 typed auto-completion.
+
+```bash
+pip install irctc-api
+```
+
+```python
+from irctc import RailEngine
+
+rail = RailEngine(api_key="your_api_key_here")
+
+# 1. Live Train Tracking
+live = rail.live.get_status("12557")
+print(f"Train {live['trainNumber']}: {live['currentLocation']} (Delay: {live['currentDelayStr']})")
+
+# 2. Check PNR Status
+pnr = rail.pnr.check("2265248473")
+print(f"PNR Status: {pnr['chartStatus']} | Coach: {pnr['passengers'][0]['coach']} Berth: {pnr['passengers'][0]['berth']}")
+
+# 3. 14-Day Continuous Seat Availability Forecast
+seats = rail.trains.get_availability("12557", from_station="NKE", to_station="ANVT", date="17-11-2026", class_code="3A")
+print(f"Availability: {seats['availability'][0]['status']}")
+
+# 4. Vacant Berths Post-Chart Preparation (Current Booking)
+vacant = rail.trains.get_chart_vacant("12557", boarding_station="NKE")
+print(f"Vacant Berths: {vacant['totalVacantBerths']}")
+```
+
+---
+
+## 💻 Zero-Install Terminal CLI (`npx irctc-api`)
+
+Get live Indian Railways data directly in your active terminal in **under 3 seconds without signing up or creating an account**.
+
+```bash
+# 1. Check Live GPS Train Status
+npx irctc-api live 12557
+
+# 2. Check PNR Confirmation & Berth Allocations
+npx irctc-api pnr 2265248473
+
+# 3. Search Direct Trains Between Stations
+npx irctc-api search NDLS PNBE
+
+# 4. Calculate Official Multi-Class Ticket Fare
+npx irctc-api fare 12558 ANVT MFP
+
+# 5. One-Click Device OAuth Login Tunnel
+npx irctc-api login
+```
+
+- **Pipe-Friendly Pure JSON**: By default or when piping (`npx irctc-api live 12557 | jq`), output emits clean machine-readable JSON on `stdout`.
+- **Global Install Available**: `npm install -g irctc-api` provides the short `irctc live 12557` command in any shell.
+
+---
+
+## 🤖 Model Context Protocol (MCP) Server for AI IDEs (`irctc-mcp`)
+
+Connect your AI coding agents in **Cursor, Claude Desktop, Windsurf, and Claude Code** directly to live Indian Railways intelligence across all 14 platform endpoints.
+
+[![MCP Server](https://img.shields.io/npm/v/irctc-mcp.svg?label=irctc-mcp&style=for-the-badge&logo=anthropic&color=black)](https://www.npmjs.com/package/irctc-mcp)
+
+### 1-Command Stdio Usage
+```bash
+npx -y irctc-mcp
+```
+
+### IDE Configuration
+
+#### Claude Desktop (`claude_desktop_config.json`)
+```json
+{
+  "mcpServers": {
+    "irctc": {
+      "command": "npx",
+      "args": ["-y", "irctc-mcp"],
+      "env": {
+        "IRCTC_API_KEY": "YOUR_API_KEY_HERE"
+      }
+    }
+  }
+}
+```
+
+#### Cursor IDE (`.cursor/mcp.json`)
+```json
+{
+  "mcpServers": {
+    "irctc": {
+      "command": "npx",
+      "args": ["-y", "irctc-mcp"],
+      "env": {
+        "IRCTC_API_KEY": "YOUR_API_KEY_HERE"
+      }
+    }
+  }
+}
+```
+
+### 14 Available AI Agent Tools
+Ask your AI agent natural questions like:
+- *"Check if train 12557 is on time today"* (`get_live_running_status`)
+- *"Check the current booking chart for vacant berths on train 12557 at NKE"* (`get_vacant_berths_post_chart`)
+- *"What is my coach and seat for PNR 2265248473?"* (`check_pnr`)
+- *"Find trains running between Delhi and Patna on Friday"* (`search_trains`)
+- *"Calculate ticket fare for train 12558 from ANVT to MFP"* (`get_train_fare`)
+
+---
+
+## 🔄 Workflow Automation with n8n (`n8n-nodes-irctc`)
+
+Automate railway alerts, Tatkal watchdog bots, and commute Slack digests with the official community node for **n8n**.
+
+[![n8n Community Node](https://img.shields.io/npm/v/n8n-nodes-irctc.svg?label=n8n%20node&style=for-the-badge&logo=n8n&color=EA4B71)](https://www.npmjs.com/package/n8n-nodes-irctc)
+
+### Installation
+In your self-hosted or cloud n8n instance:
+1. Go to **Settings** > **Community Nodes**.
+2. Click **Install a community node**.
+3. Enter `n8n-nodes-irctc` and click **Install**.
+
+### Capabilities (15 Operations across 5 Resources):
+- **PNR Status (`pnr`)**: Real-time confirmation, coach, berth, and charting status.
+- **Live Tracking (`liveStatus`)**: Live GPS running status, delays, and 2-hour station arrivals/departures board.
+- **Trains & Fares (`trains`)**: Train search, 14-day continuous seat availability calendar, post-charting vacant berths, ticket fare breakup, route schedule, train by number, train by name, daily cancelled trains.
+- **Stations & Timetables (`stations`)**: Station autocomplete, station details, daily timetable by date.
+- **Engine Health (`health`)**: Uptime and latency probe (`status: "up"`).
+
+### 3 Ready-to-Import Workflow Blueprints (`workflows/`):
+1. **`pnr-confirmation-alert.json`**: Cron polls PNR every 30m, detects `CNF` confirmation, and dispatches immediate Telegram alert.
+2. **`morning-commute-delay-digest.json`**: Scheduled weekday 8:30 AM cron checking daily commute trains and posting live status digest to Slack.
+3. **`tatkal-vacancy-watchdog.json`**: Polls charts 4 hours prior to departure, immediately pushing Current Booking vacant seat allocations to Telegram.
 
 ---
 

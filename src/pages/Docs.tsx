@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Copy, Check, ArrowUpRight, FileCode, Download, BookOpen } from 'lucide-react';
+import { Copy, Check, ArrowUpRight, FileCode, Download, BookOpen, Layers } from 'lucide-react';
 
 const ENDPOINT_FEATURE_MAP: Record<string, { slug: string; label: string }> = {
   '/api/v1/pnr/:pnr': { slug: '/pnr-status-api', label: 'View Standalone PNR Status API Guide' },
@@ -368,14 +368,17 @@ const BASE_URL = import.meta.env.VITE_API_URL || 'https://api.irctc.dev';
 
 const getSnippet = (lang: string, path: string): string => {
   const url = `${BASE_URL}${path}`;
+  if (lang === 'cURL') {
+    return `curl -X GET "${url}" \\\n  -H "x-api-key: YOUR_API_KEY" \\\n  -H "accept: application/json"`;
+  }
   if (lang === 'JavaScript') {
-    return `const response = await fetch("${url}", {\n  method: "GET",\n  headers: {\n    "Authorization": "Bearer YOUR_API_KEY",\n    "accept": "application/json",\n  },\n});\n\nconst data = await response.json();\nconsole.log(data);`;
+    return `const response = await fetch("${url}", {\n  method: "GET",\n  headers: {\n    "x-api-key": "YOUR_API_KEY",\n    "accept": "application/json",\n  },\n});\n\nconst data = await response.json();\nconsole.log(data);`;
   }
   if (lang === 'Python') {
-    return `import requests\n\nurl = "${url}"\nheaders = {\n    "Authorization": "Bearer YOUR_API_KEY",\n    "accept": "application/json"\n}\n\nresponse = requests.get(url, headers=headers)\nprint(response.json())`;
+    return `import requests\n\nurl = "${url}"\nheaders = {\n    "x-api-key": "YOUR_API_KEY",\n    "accept": "application/json"\n}\n\nresponse = requests.get(url, headers=headers)\nprint(response.json())`;
   }
-  if (lang === 'cURL') {
-    return `curl -X GET "${url}" \\\n  -H "Authorization: Bearer YOUR_API_KEY" \\\n  -H "accept: application/json"`;
+  if (lang === 'Node.js (SDK)') {
+    return `import { IrctcApi } from 'irctc-api';\n\nconst client = new IrctcApi({ apiKey: 'YOUR_API_KEY' });\n// Endpoint: ${path}\nconst response = await client._request('GET', '${path}');\nconsole.log(response);`;
   }
   return '';
 };
@@ -512,12 +515,12 @@ export default function Docs() {
           {/* Global Language Switcher - Sleek Segmented Control */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
             <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-textMuted/60">Language:</span>
-            <div className="grid grid-cols-3 sm:flex bg-[#111] p-1 rounded-lg border border-white/[0.05] shadow-inner w-full sm:w-auto">
-              {['JavaScript', 'Python', 'cURL'].map(lang => (
+            <div className="grid grid-cols-2 sm:flex bg-[#111] p-1 rounded-lg border border-white/[0.05] shadow-inner w-full sm:w-auto">
+              {['cURL', 'JavaScript', 'Python', 'Node.js (SDK)'].map(lang => (
                 <button
                   key={lang}
                   onClick={() => setActiveLang(lang)}
-                  className={`py-1.5 px-3 sm:px-5 text-center text-xs font-medium rounded-md transition-all duration-200 active:scale-[0.97] ${
+                  className={`py-1.5 px-3 sm:px-4 text-center text-xs font-medium rounded-md transition-all duration-200 active:scale-[0.97] ${
                     activeLang === lang
                       ? 'bg-[#222] text-white shadow-sm ring-1 ring-white/10'
                       : 'text-textMuted hover:text-textMain hover:bg-white/[0.02]'
@@ -531,6 +534,15 @@ export default function Docs() {
 
           {/* Secondary Developer Actions */}
           <div className="flex flex-wrap items-center gap-2">
+            <Link
+              to="/alternatives/rapidapi-indian-railway-api"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-brand/20 bg-brand/5 hover:bg-brand/10 text-xs font-medium text-brand hover:text-brand transition-all"
+              title="RapidAPI Drop-In Migration & Compatibility Shim"
+            >
+              <Layers size={13} className="text-brand" />
+              <span>RapidAPI Shim</span>
+            </Link>
+
             <Link
               to="/guides"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] text-xs font-medium text-textMuted hover:text-white transition-all"
@@ -555,10 +567,10 @@ export default function Docs() {
               href="/postman_collection.json"
               download="irctc_postman_collection.json"
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] text-xs font-medium text-textMuted hover:text-white transition-all"
-              title="Download Postman Collection v2.1.0"
+              title="Download Postman Collection v2.1.0 with Test Assertions"
             >
               <Download size={13} className="text-textMuted" />
-              <span>Postman</span>
+              <span>Postman Collection</span>
             </a>
           </div>
         </div>

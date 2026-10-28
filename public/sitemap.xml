@@ -114,6 +114,44 @@
     <priority>0.8</priority>
   </url>
 
+  <!-- High-Intent Competitor Alternative & Migration Hub -->
+  <url>
+    <loc>https://irctc.dev/alternatives/rapidapi-indian-railway-api</loc>
+    <lastmod>2026-10-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Pricing Transparency & Institutional Comparison Report -->
+  <url>
+    <loc>https://irctc.dev/alternatives/railway-api-pricing-comparison</loc>
+    <lastmod>2026-10-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Engineering as Marketing: Free Clean Micro-Tools -->
+  <url>
+    <loc>https://irctc.dev/tools/clean-pnr-checker</loc>
+    <lastmod>2026-10-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://irctc.dev/tools/live-station-radar</loc>
+    <lastmod>2026-10-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://irctc.dev/tools/train-fare-calculator</loc>
+    <lastmod>2026-10-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
   <!-- Commercial Terms of Service -->
   <url>
     <loc>https://irctc.dev/terms</loc>
