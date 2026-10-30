@@ -186,7 +186,7 @@ When a request encounters an error (HTTP 4xx/5xx), the gateway returns:
 - [Ad-Free PNR Checker Tool](https://irctc.dev/tools/clean-pnr-checker): Clean, high-speed 150ms Indian Railways PNR status checker without ads.
 - [Live Station Radar Tool](https://irctc.dev/tools/live-station-radar): Real-time station display board with arrivals, departures, delays, and platforms.
 - [Train Fare Calculator Tool](https://irctc.dev/tools/train-fare-calculator): Instant multi-class ticket fare breakup calculator.
-- [NPM SDK Client](https://www.npmjs.com/package/irctc-api): Zero-dependency Node.js and TypeScript client library (`v4.1.0`).
+- [NPM SDK Client](https://www.npmjs.com/package/irctc-api): Zero-dependency Node.js and TypeScript client library (`v4.3.1`).
 
 ---
 

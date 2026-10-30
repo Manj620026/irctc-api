@@ -93,7 +93,7 @@ npx tsc --init`,
         description:
           'Create a .env file in the root directory to store your secret IRCTC Developer API key securely. Never commit this file to version control.',
         language: 'bash',
-        codeSnippet: `IRCTC_API_KEY=irctc_live_9a8f2c7e01d4
+        codeSnippet: `IRCTC_API_KEY=your_api_key_here
 BOT_PREFIX=!
 NODE_ENV=production`,
         notes: 'Get your free API key with 10,000 initial credits at https://irctc.dev/dashboard.'
@@ -366,7 +366,7 @@ npx tsc --init`,
         language: 'bash',
         codeSnippet: `TELEGRAM_BOT_TOKEN=7182938491:AAHk1_example_token_here
 TELEGRAM_CHAT_ID=123456789
-IRCTC_API_KEY=irctc_live_9a8f2c7e01d4`,
+IRCTC_API_KEY=your_api_key_here`,
         notes: 'Make sure TELEGRAM_CHAT_ID matches your user ID or channel ID where you want alerts delivered.'
       },
       {
@@ -555,7 +555,7 @@ pm2 save`,
         codeSnippet: `import { IrctcApi } from 'irctc-api';
 
 const client = new IrctcApi({
-  apiKey: process.env.IRCTC_API_KEY || 'irctc_live_9a8f2c7e01d4'
+  apiKey: process.env.IRCTC_API_KEY || 'your_api_key_here'
 });
 
 async function verifyBooking(pnrNumber: string) {
@@ -586,7 +586,7 @@ verifyBooking('2265248473');`,
         codeSnippet: `import os
 import requests
 
-API_KEY = os.getenv("IRCTC_API_KEY", "irctc_live_9a8f2c7e01d4")
+API_KEY = os.getenv("IRCTC_API_KEY", "your_api_key_here")
 PNR = "2265248473"
 
 url = f"https://api.irctc.dev/api/v1/pnr/{PNR}"
@@ -703,7 +703,7 @@ source venv/bin/activate  # On Windows: .\\venv\\Scripts\\activate
 pip install requests schedule
 
 # Set environment variables
-export IRCTC_API_KEY="irctc_live_9a8f2c7e01d4"
+export IRCTC_API_KEY="your_api_key_here"
 export TELEGRAM_BOT_TOKEN="123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ"
 export TELEGRAM_CHAT_ID="987654321"`,
         notes: 'Never hardcode production API credentials in source control. Always load from environment variables.'

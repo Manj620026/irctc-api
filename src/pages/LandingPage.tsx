@@ -257,7 +257,7 @@ export default function LandingPage() {
                 rel="noreferrer"
                 className="hover:text-[#ff4d00] transition-colors font-mono text-[11px] text-textMuted/75 hover:underline py-1"
               >
-                v4.1.0 on npm ↗
+                v4.3.1 on npm ↗
               </a>
             </div>
           </div>

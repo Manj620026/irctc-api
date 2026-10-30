@@ -11,9 +11,9 @@ const ledgerPath = path.join(__dirname, 'indexing-ledger.json');
 
 // Default known locations for service account key
 const DEFAULT_KEY_PATHS = [
-  'C:\\Users\\manjo\\Downloads\\examnagar-ed14b-09efa3778248.json',
   path.join(projectRoot, 'secrets', 'google-sa.json'),
-  process.env.GOOGLE_APPLICATION_CREDENTIALS
+  process.env.GOOGLE_APPLICATION_CREDENTIALS,
+  process.env.GOOGLE_SERVICE_ACCOUNT_KEY
 ].filter(Boolean);
 
 function parseArgs() {
