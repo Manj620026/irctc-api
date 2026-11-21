@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <!-- Brand Railway Orange Gradient -->
+    <linearGradient id="brandOrange" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FF6B00" />
+      <stop offset="100%" stop-color="#FF3800" />
+    </linearGradient>
+
+    <!-- Smooth Ambient Orange Radial Glow -->
+    <radialGradient id="ambientGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FF5500" stop-opacity="0.32" />
+      <stop offset="65%" stop-color="#FF4500" stop-opacity="0.06" />
+      <stop offset="100%" stop-color="#FF4500" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Hardware Edge Light Sheen on Squircle Border -->
+    <linearGradient id="canvasBorder" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FF6B00" stop-opacity="0.45" />
+      <stop offset="40%" stop-color="#333336" stop-opacity="0.5" />
+      <stop offset="100%" stop-color="#161618" stop-opacity="0.8" />
+    </linearGradient>
+
+    <!-- Deep Obsidian Canvas Gradient -->
+    <linearGradient id="canvasBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#121215" />
+      <stop offset="100%" stop-color="#050506" />
+    </linearGradient>
+  </defs>
+
+  <!-- Obsidian Black Squircle Canvas with Precision Border -->
+  <rect x="1.5" y="1.5" width="61" height="61" rx="15" fill="url(#canvasBg)" stroke="url(#canvasBorder)" stroke-width="1.2" />
+
+  <!-- Ambient Glow Behind Monogram -->
+  <rect x="8" y="8" width="48" height="48" rx="12" fill="url(#ambientGlow)" />
+
+  <!-- Precision Architectural "I" Monogram -->
+  <g fill="url(#brandOrange)">
+    <!-- Top Crossbar -->
+    <rect x="17" y="15" width="30" height="6" rx="1.5" />
+    <!-- Center Vertical Stem -->
+    <rect x="26.5" y="19" width="11" height="26" rx="1" />
+    <!-- Bottom Crossbar -->
+    <rect x="17" y="43" width="30" height="6" rx="1.5" />
+  </g>
+
+  <!-- Top Edge Light Reflection (Apple Hardware Sheen) -->
+  <rect x="17.5" y="15.5" width="29" height="1" rx="0.5" fill="#FFFFFF" opacity="0.42" />
+</svg>

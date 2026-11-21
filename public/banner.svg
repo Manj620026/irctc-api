@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" width="100%" height="100%">
+  <defs>
+    <!-- Deep Obsidian Canvas (#050505) -->
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#050505" />
+      <stop offset="50%" stop-color="#080808" />
+      <stop offset="100%" stop-color="#040404" />
+    </linearGradient>
+
+    <!-- Warm Flame Orange Ambient Glow -->
+    <radialGradient id="ambientAura" cx="50%" cy="50%" r="55%">
+      <stop offset="0%" stop-color="#FF4D00" stop-opacity="0.18" />
+      <stop offset="35%" stop-color="#FF4D00" stop-opacity="0.05" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Razor Glass 1px Border with Subtle Orange Horizon Glow -->
+    <linearGradient id="border" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1C1C1F" />
+      <stop offset="30%" stop-color="#2D180E" />
+      <stop offset="50%" stop-color="#FF4D00" stop-opacity="0.75" />
+      <stop offset="70%" stop-color="#2D180E" />
+      <stop offset="100%" stop-color="#1C1C1F" />
+    </linearGradient>
+
+    <!-- Signature Flame Orange Gradient -->
+    <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FF4D00" />
+      <stop offset="100%" stop-color="#FF7528" />
+    </linearGradient>
+  </defs>
+
+  <style>
+    .font-brand {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", "Inter", -system-ui, sans-serif;
+      font-weight: 800;
+      letter-spacing: -3.5px;
+    }
+    .font-mono {
+      font-family: "JetBrains Mono", SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    }
+  </style>
+
+  <!-- Deep Black Base Canvas -->
+  <rect width="1200" height="360" rx="20" fill="url(#bg)" />
+
+  <!-- Center Atmospheric Ambient Glow -->
+  <rect width="1200" height="360" rx="20" fill="url(#ambientAura)" />
+
+  <!-- Razor Glass Border -->
+  <rect x="0.75" y="0.75" width="1198.5" height="358.5" rx="20" fill="none" stroke="url(#border)" stroke-width="1.5" />
+
+  <!-- Centerpiece Master Wordmark: irctc-api (Perfect Optical Center) -->
+  <g transform="translate(600, 192)">
+    <text text-anchor="middle" class="font-brand" font-size="112" fill="#FFFFFF">
+      irctc<tspan fill="url(#orangeGrad)">-api</tspan>
+    </text>
+  </g>
+
+  <!-- Bottom Minimalist Anchor: Pure Brand Unity -->
+  <g transform="translate(600, 268)">
+    <text text-anchor="middle" class="font-mono" font-size="13" font-weight="500" fill="#666670" letter-spacing="3.5">
+      DEVELOPER PLATFORM &#8226; <tspan fill="#FF7528" font-weight="600">irctc.dev</tspan>
+    </text>
+  </g>
+</svg>
